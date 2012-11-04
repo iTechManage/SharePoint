@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="ea059be9-4176-4b8e-acb5-9f7d62e208b1" solutionId="ea059be9-4176-4b8e-acb5-9f7d62e208b1" resetWebServer="false" name="CustomLookupField" xmlns="http://schemas.microsoft.com/VisualStudio/2008/SharePointTools/PackageModel">
+  <projectItems>
+    <projectItemReference itemId="e697a202-22dd-46b4-b23f-df8745332858" />
+    <projectItemReference itemId="19fcacf6-b5cf-42b4-82bd-71b948d8ff4f" />
+  </projectItems>
+</package>

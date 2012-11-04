@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<FieldTypes>
+  <FieldType>
+    <Field Name="TypeName">CustomDropDownList</Field>
+    <Field Name="ParentType">Lookup</Field>
+    <Field Name="TypeDisplayName">CustomDropDownList</Field>
+    <Field Name="TypeShortDescription">Customised List</Field>
+    <Field Name="UserCreatable">TRUE</Field>
+    <Field Name="FieldTypeClass">CustomLookupField.CustomDropDownList,$SharePoint.Project.AssemblyFullName$</Field>
+    <Field Name="FieldEditorUserControl">/_controltemplates/CustomLookupFieldEditor.ascx</Field>
+    <Field Name="BaseTypeRendering">TRUE</Field>
+    <PropertySchema>
+      <Fields>
+        <Field Name="Items" DisplayName="Items" Type="Text" Hidden="TRUE"/>
+      </Fields>
+      <Fields>
+        <Field Name="RightboxItems" DisplayName="RightboxItems" Type="Text" Hidden="TRUE"/>
+      </Fields>
+      <Fields>
+        <Field Name="ParentSelectedValues" DisplayName="ParentSelectedValues" Type="Text" Hidden="TRUE"/>
+      </Fields>
+    </PropertySchema>
+  </FieldType>
+</FieldTypes>
