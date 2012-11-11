@@ -1,3 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<package dslVersion="1.0.0.0" Id="083a8ff2-488b-44ce-a2f2-3fc5fc012b31" solutionId="083a8ff2-488b-44ce-a2f2-3fc5fc012b31" xmlns="http://schemas.microsoft.com/VisualStudio/2008/SharePointTools/PackageModel" name="CCSAdvancedAlerts">
+<package xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="083a8ff2-488b-44ce-a2f2-3fc5fc012b31" solutionId="083a8ff2-488b-44ce-a2f2-3fc5fc012b31" resetWebServer="false" name="CCSAdvancedAlerts" xmlns="http://schemas.microsoft.com/VisualStudio/2008/SharePointTools/PackageModel">
+  <features>
+    <featureReference itemId="bca75502-e7dc-472e-afdc-17a29d96d565" />
+  </features>
+  <projectItems>
+    <projectItemReference itemId="ebb5b882-9c5b-497f-a080-594ffa069be6" />
+    <projectItemReference itemId="ade668e2-551c-42f8-8597-4948868db7a0" />
+  </projectItems>
 </package>

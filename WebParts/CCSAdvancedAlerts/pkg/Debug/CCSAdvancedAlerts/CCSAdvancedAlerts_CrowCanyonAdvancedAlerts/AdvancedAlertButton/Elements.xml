@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Elements xmlns="http://schemas.microsoft.com/sharepoint/">
+  <CustomAction
+        Id="CrowCanyon.SiteAction.AdvancedAlerts.AlertSettings"
+        Location="Microsoft.SharePoint.StandardMenu"
+        GroupId="SiteActions"
+        Sequence="1000"
+        Title="CCS Advanced Alerts"
+        Description="Create custom alerts"
+        ImageUrl="/_layouts/images/CCSAdvancedAlerts/alarm-icon32x32.png">
+        <UrlAction Url="~site/_layouts/CCSAdvancedAlerts/AdvancedAlertSettings.aspx"/>
+  </CustomAction>
+  
+  <CustomAction
+      Id="CrowCanyon.AdvancedAlerts.AlertSettings"
+      Location="CommandUI.Ribbon"
+      Sequence="1001"
+      RegistrationId="0x01"
+      RegistrationType="ContentType">
+    <CommandUIExtension>
+      <CommandUIDefinitions>
+        <CommandUIDefinition Location="Ribbon.ListForm.Display.Actions.Controls._children">
+          <Button Id="Ribbon.ListForm.Display.Actions.CCSAlertSettings"
+                  CommandType="General"
+                  Image16by16="/_layouts/images/CCSAdvancedAlerts/alarm-icon16x16.png"
+                  Image32by32="/_layouts/images/CCSAdvancedAlerts/alarm-icon32x32.png"
+                  LabelText="Email Me"
+                  Sequence="1"
+                  ToolTipTitle="Customize Alerts"
+                  ToolTipDescription="Customize Alerts for the list"
+                  TemplateAlias="o2"
+                  Command="DisplayAdvancedAlertSettings"/>
+        </CommandUIDefinition>
+         </CommandUIDefinitions>
+      <CommandUIHandlers>
+        <CommandUIHandler
+          Command="DisplayAdvancedAlertSettings"
+          CommandAction="~site/_layouts/CCSAdvancedAlerts/AdvancedAlertSettings.aspx?List={ListId}&amp;ID={ItemId}&amp;Type=view"/>
+        <CommandUIHandler
+          Command="SendMailAction"
+          CommandAction="javascript:function openDialog(){var options = {url: '/_layouts/CCSAdvancedAlerts/AdvancedAlertSettings.aspx?List={ListId}&amp;ID=' + SP.ListOperation.Selection.getSelectedItems()[0].id+'&amp;Type=RibbonButton&amp;SiteUrl={SiteUrl}', 
+                          title:'Email',allowMaximize: true,showClose: true,width:550};
+                          SP.UI.ModalDialog.commonModalDialogOpen(options.url, options, null, null);};
+                          openDialog();"
+        EnabledScript="javascript:function checkIsEnabled(){
+              var selectedItems = SP.ListOperation.Selection.getSelectedItems();
+              var count = CountDictionary(selectedItems);return (count == 1);};checkIsEnabled();"/>
+      </CommandUIHandlers>
+    </CommandUIExtension>
+  </CustomAction>
+
+ 
+
+</Elements>

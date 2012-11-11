@@ -44,16 +44,47 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Microsoft.SharePoint" />
     <Reference Include="Microsoft.SharePoint.Security" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CCSAdvancedAlerts.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CCSAdvancedAlerts.resx</DependentUpon>
+    </Compile>
+    <Compile Include="AdvancedAlertReceiver\AdvancedAlertEventReceiver.cs" />
+    <Compile Include="Layouts\CCSAdvancedAlerts\AdvancedAlertSettings.aspx.cs">
+      <DependentUpon>AdvancedAlertSettings.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Layouts\CCSAdvancedAlerts\AdvancedAlertSettings.aspx.designer.cs">
+      <DependentUpon>AdvancedAlertSettings.aspx.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="AdvancedAlertButton\SharePointProjectItem.spdata">
+      <SharePointProjectItemId>{0e3de306-6da7-4670-92b8-85112a27e1ea}</SharePointProjectItemId>
+    </None>
+    <None Include="AdvancedAlertReceiver\SharePointProjectItem.spdata">
+      <SharePointProjectItemId>{36c7fd09-557d-4acf-936d-ddf53bdb81b8}</SharePointProjectItemId>
+    </None>
+    <None Include="Features\CrowCanyonAdvancedAlerts\CrowCanyonAdvancedAlerts.feature">
+      <FeatureId>{bca75502-e7dc-472e-afdc-17a29d96d565}</FeatureId>
+    </None>
+    <None Include="Images\SharePointProjectItem.spdata">
+      <SharePointProjectItemId>{ade668e2-551c-42f8-8597-4948868db7a0}</SharePointProjectItemId>
+    </None>
     <None Include="key.snk" />
+    <None Include="Layouts\SharePointProjectItem.spdata">
+      <SharePointProjectItemId>{ebb5b882-9c5b-497f-a080-594ffa069be6}</SharePointProjectItemId>
+    </None>
     <None Include="Package\Package.package">
       <PackageId>{083a8ff2-488b-44ce-a2f2-3fc5fc012b31}</PackageId>
     </None>
@@ -62,7 +93,30 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Features\" />
+    <EmbeddedResource Include="CCSAdvancedAlerts.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>CCSAdvancedAlerts.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="AdvancedAlertButton\Elements.xml" />
+    <Content Include="AdvancedAlertReceiver\Elements.xml" />
+    <Content Include="Features\CrowCanyonAdvancedAlerts\CrowCanyonAdvancedAlerts.Template.xml">
+      <DependentUpon>CrowCanyonAdvancedAlerts.feature</DependentUpon>
+    </Content>
+    <Content Include="Images\CCSAdvancedAlerts\alarm-icon16x16.png" />
+    <Content Include="Images\CCSAdvancedAlerts\alarm-icon32x32.png" />
+    <Content Include="Images\CCSAdvancedAlerts\crowcanyonlogo.jpg" />
+    <Content Include="Images\CCSAdvancedAlerts\email-alert.png" />
+    <Content Include="Images\CCSAdvancedAlerts\email-alert16x16.png" />
+    <Content Include="Images\CCSAdvancedAlerts\email-alert32x32.png" />
+    <Content Include="Images\CCSAdvancedAlerts\Email-Icon.png" />
+    <Content Include="Layouts\CCSAdvancedAlerts\AdvancedAlertSettings.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="AdvancedAlertTimerJob\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\SharePointTools\Microsoft.VisualStudio.SharePoint.targets" />

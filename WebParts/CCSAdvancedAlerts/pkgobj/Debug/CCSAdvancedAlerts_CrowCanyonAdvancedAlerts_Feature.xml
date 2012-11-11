@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Feature xmlns="http://schemas.microsoft.com/sharepoint/" ImageUrl="CCSAdvancedAlerts\crowcanyonlogo.jpg" Title="CrowCanyon Advanced Alerts" Description="CrowCanyon Advanced Alerts" Id="041d4cb3-e31e-4859-bd3d-51375fb89af4" Scope="Site">
+  <ElementManifests>
+    <ElementManifest Location="AdvancedAlertButton\Elements.xml" />
+    <ElementManifest Location="AdvancedAlertReceiver\Elements.xml" />
+  </ElementManifests>
+</Feature>

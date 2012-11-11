@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Solution xmlns="http://schemas.microsoft.com/sharepoint/" SolutionId="083a8ff2-488b-44ce-a2f2-3fc5fc012b31" SharePointProductVersion="14.0">
+  <Assemblies>
+    <Assembly Location="CCSAdvancedAlerts.dll" DeploymentTarget="GlobalAssemblyCache" />
+  </Assemblies>
+  <TemplateFiles>
+    <TemplateFile Location="Layouts\CCSAdvancedAlerts\AdvancedAlertSettings.aspx" />
+    <TemplateFile Location="Images\CCSAdvancedAlerts\alarm-icon16x16.png" />
+    <TemplateFile Location="Images\CCSAdvancedAlerts\alarm-icon32x32.png" />
+    <TemplateFile Location="Images\CCSAdvancedAlerts\crowcanyonlogo.jpg" />
+    <TemplateFile Location="Images\CCSAdvancedAlerts\email-alert.png" />
+    <TemplateFile Location="Images\CCSAdvancedAlerts\email-alert16x16.png" />
+    <TemplateFile Location="Images\CCSAdvancedAlerts\email-alert32x32.png" />
+    <TemplateFile Location="Images\CCSAdvancedAlerts\Email-Icon.png" />
+  </TemplateFiles>
+  <FeatureManifests>
+    <FeatureManifest Location="CCSAdvancedAlerts_CrowCanyonAdvancedAlerts\Feature.xml" />
+  </FeatureManifests>
+</Solution>

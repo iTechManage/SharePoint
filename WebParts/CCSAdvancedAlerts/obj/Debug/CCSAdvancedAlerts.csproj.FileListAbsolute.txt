@@ -1,0 +1,8 @@
+C:\iTechManageRep\SharePoint\WebParts\CCSAdvancedAlerts\bin\Debug\CCSAdvancedAlerts.dll
+C:\iTechManageRep\SharePoint\WebParts\CCSAdvancedAlerts\bin\Debug\CCSAdvancedAlerts.pdb
+C:\iTechManageRep\SharePoint\WebParts\CCSAdvancedAlerts\obj\Debug\ResolveAssemblyReference.cache
+C:\iTechManageRep\SharePoint\WebParts\CCSAdvancedAlerts\obj\Debug\CCSAdvancedAlerts.CCSAdvancedAlerts.resources
+C:\iTechManageRep\SharePoint\WebParts\CCSAdvancedAlerts\obj\Debug\ResGen.read.1.tlog
+C:\iTechManageRep\SharePoint\WebParts\CCSAdvancedAlerts\obj\Debug\ResGen.write.1.tlog
+C:\iTechManageRep\SharePoint\WebParts\CCSAdvancedAlerts\obj\Debug\CCSAdvancedAlerts.dll
+C:\iTechManageRep\SharePoint\WebParts\CCSAdvancedAlerts\obj\Debug\CCSAdvancedAlerts.pdb
