@@ -13,6 +13,146 @@
 <asp:Content ID="Main" ContentPlaceHolderID="PlaceHolderMain" runat="server">
 
 
+<head>
+    <style type="text/css">
+        .style1
+        {
+            width: 621px;
+        }
+        .style2
+        {
+            width: 617px;
+        }
+        .style3
+        {
+            width: 613px;
+        }
+        .style4
+        {
+            width: 118px;
+        }
+    </style>
+</head>
+<table width="100%" border="2" cellpadding="5" cellspacing="5">
+    <tr>
+        <td colspan="2">
+            <table width="100%">
+                <tr bgcolor ="#3399ff">
+                    <td colspan="2">
+                        <h4>
+                            General Settings
+                        </h4>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="style1">
+                        Title:
+                    </td>
+                    <td>
+                        <asp:textbox id="txtTitle" runat="server" style="" width="225px"></asp:textbox>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="style1">
+                        Site:
+                    </td>
+                    <td>
+                        <asp:dropdownlist id="ddlSite" runat="server" width="223px" AutoPostBack= "true"></asp:dropdownlist>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="style1">
+                        List:
+                    </td>
+                    <td>
+                        <asp:dropdownlist id="ddlList" runat="server" width="224px"></asp:dropdownlist>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td class="style4">
+            <table width="60%">
+                <tr bgcolor ="#3399ff">
+                    <td colspan="2" class="style2">
+                        <h4>
+                            Recipients
+                        </h4>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="style3">
+                        To:
+                    </td>
+                    <td>
+                        <asp:textbox id="txtTo" runat="server" style="margin-left: 1px" width="223px"></asp:textbox>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="style3">
+                        CC:
+                    </td>
+                    <td>
+                        <asp:textbox id="txtCc" runat="server" width="223px"></asp:textbox>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="style3">
+                        BCC:
+                    </td>
+                    <td>
+                        <asp:textbox id="txtBcc" runat="server" width="223px"></asp:textbox>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="style3">
+                        From:
+                    </td>
+                    <td>
+                        <asp:textbox id="txtFrom" runat="server" width="222px"></asp:textbox>
+                    </td>
+                </tr>
+            </table>
+        </td>
+        <td>
+            <table width="60%">
+                <tr bgcolor ="#3399ff">
+                    <td>
+                        <h4>
+                            Event Type</h4>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <asp:checkbox id="chkItemAdded" runat="server" text="Item Added" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <asp:checkbox id="chkItemUpdated" runat="server" text="Item Updated" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <asp:checkbox id="chkItemDeleted" runat="server" text="Item Deleted" />
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+    <td colspan ="2" style="margin-left: 400px">
+        <asp:button ID="btnsave" runat="server"   text="Save"/>
+        <asp:button ID="btncancel" runat="server" text="Cancel"/>
+    </td>
+    </tr>
+</table>
+
+
+
+
 
 </asp:Content>
 

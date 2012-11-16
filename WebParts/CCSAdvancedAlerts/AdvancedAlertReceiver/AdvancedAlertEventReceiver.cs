@@ -5,43 +5,57 @@ using Microsoft.SharePoint.Security;
 using Microsoft.SharePoint.Utilities;
 using Microsoft.SharePoint.Workflow;
 
-namespace CCSAdvancedAlerts
+namespace CCSAdvancedAlerts 
 {
     /// <summary>
     /// List Item Events
     /// </summary>
     public class AdvancedAlertEventReceiver : SPItemEventReceiver
     {
-       /// <summary>
-       /// An item is being added.
-       /// </summary>
-       public override void ItemAdding(SPItemEventProperties properties)
-       {
-           base.ItemAdding(properties);
-       }
 
-       /// <summary>
-       /// An item is being updated.
-       /// </summary>
-       public override void ItemUpdating(SPItemEventProperties properties)
-       {
-           base.ItemUpdating(properties);
-       }
 
-       /// <summary>
-       /// An item is being deleted.
-       /// </summary>
-       public override void ItemDeleting(SPItemEventProperties properties)
-       {
-           base.ItemDeleting(properties);
-       }
+        LoggingManager LogManager = new LoggingManager();
+        
+
+       ///// <summary>
+       ///// An item is being added.
+       ///// </summary>
+       //public override void ItemAdding(SPItemEventProperties properties)
+       //{
+       //    base.ItemAdding(properties);
+       //}
+
+       ///// <summary>
+       ///// An item is being updated.
+       ///// </summary>
+       //public override void ItemUpdating(SPItemEventProperties properties)
+       //{
+       //    base.ItemUpdating(properties);
+       //}
+
+       ///// <summary>
+       ///// An item is being deleted.
+       ///// </summary>
+       //public override void ItemDeleting(SPItemEventProperties properties)
+       //{
+       //    base.ItemDeleting(properties);
+       //}
 
        /// <summary>
        /// An item was added.
        /// </summary>
        public override void ItemAdded(SPItemEventProperties properties)
        {
-           base.ItemAdded(properties);
+           try
+           {
+               LogManager.write("entered in to itemadded event");
+               ExecuteReceivedEvent(ReceivedEventType.ItemAdded, properties);
+           }
+           catch (System.Exception Ex)
+           {
+               LogManager.write("error occured whule executing itemadded event : " + Ex.Message);
+           }
+          
        }
 
        /// <summary>
@@ -49,7 +63,17 @@ namespace CCSAdvancedAlerts
        /// </summary>
        public override void ItemUpdated(SPItemEventProperties properties)
        {
-           base.ItemUpdated(properties);
+           try
+           {
+               LogManager.write("entered in to ItemUpdated event");
+               ExecuteReceivedEvent(ReceivedEventType.ItemUpdated, properties);
+           }
+           catch (System.Exception Ex)
+           {
+               LogManager.write("error occured whule executing ItemUpdated event : " + Ex.Message);
+           }
+
+           
        }
 
        /// <summary>
@@ -57,7 +81,36 @@ namespace CCSAdvancedAlerts
        /// </summary>
        public override void ItemDeleted(SPItemEventProperties properties)
        {
-           base.ItemDeleted(properties);
+           try
+           {
+               LogManager.write("entered in to ItemDeleted event");
+               ExecuteReceivedEvent(ReceivedEventType.ItemDeleted, properties);
+           }
+           catch (System.Exception Ex)
+           {
+               LogManager.write("error occured whule executing ItemDeleted event : " + Ex.Message);
+           }
+
+       }
+
+
+       private void ExecuteReceivedEvent(ReceivedEventType eventType, SPItemEventProperties properties)
+       {
+           LogManager.write("Entered in to ExecuteReceivedEvent with event type" + eventType);
+           try
+           {
+               using (SPWeb web = properties.OpenWeb())
+               {
+                   //SPList list = web.get_Lists().get_Item(properties.get_ListId());
+                   Common.SendMail("spdev1", "krishna@itechmanage.com", "krishna@itechmanage.com", "", "test email from itech", "test body", null);
+               }
+
+           }
+           catch (System.Exception Ex)
+           {
+               LogManager.write("Error occured white excuting event receiver" + Ex.Message);
+           }
+
        }
 
 
