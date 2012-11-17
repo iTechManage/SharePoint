@@ -54,12 +54,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdvancedAlertTimerJob\AlertJobdefinition.cs" />
-    <Compile Include="CCSAdvancedAlerts.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CCSAdvancedAlerts.resx</DependentUpon>
-    </Compile>
     <Compile Include="AdvancedAlertReceiver\AdvancedAlertEventReceiver.cs" />
+    <Compile Include="Classes\Alert.cs" />
+    <Compile Include="Classes\AlertManager.cs" />
     <Compile Include="Classes\Common.cs" />
     <Compile Include="Classes\Enumarations.cs" />
     <Compile Include="Layouts\CCSAdvancedAlerts\AdvancedAlertSettings.aspx.cs">
@@ -70,7 +67,11 @@
       <DependentUpon>AdvancedAlertSettings.aspx.cs</DependentUpon>
     </Compile>
     <Compile Include="Classes\LoggingManager.cs" />
-    <Compile Include="Layouts\CCSAdvancedAlerts\FieldNames.cs" />
+    <Compile Include="ListAndFieldNames.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ListAndFieldNames.resx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Classes\Utilities.cs" />
   </ItemGroup>
@@ -99,9 +100,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="CCSAdvancedAlerts.resx">
+    <EmbeddedResource Include="ListAndFieldNames.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>CCSAdvancedAlerts.Designer.cs</LastGenOutput>
+      <LastGenOutput>ListAndFieldNames.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

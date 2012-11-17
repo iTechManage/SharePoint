@@ -9,6 +9,7 @@ namespace CCSAdvancedAlerts
     {
         ItemAdded = 0,
         ItemDeleted = 2,
-        ItemUpdated = 1
+        ItemUpdated = 1,
+        Custom = 3
     }
 }

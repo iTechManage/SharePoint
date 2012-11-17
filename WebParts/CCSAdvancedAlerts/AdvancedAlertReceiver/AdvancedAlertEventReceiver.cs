@@ -101,8 +101,10 @@ namespace CCSAdvancedAlerts
            {
                using (SPWeb web = properties.OpenWeb())
                {
-                   //SPList list = web.get_Lists().get_Item(properties.get_ListId());
-                   Common.SendMail("spdev1", "krishna@itechmanage.com", "krishna@itechmanage.com", "", "test email from itech", "test body", null);
+                   //TODO we have to check is feature activated for this site or not
+
+
+
                }
 
            }

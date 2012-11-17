@@ -87,13 +87,26 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
 
         void btnsave_Click(object sender, EventArgs e)
         {
-            SPList settingslist = SPContext.Current.Site.RootWeb.Lists.TryGetList(ListAndFieldNames.settingsListName);
-            if (settingslist != null)
+            try
             {
-                SPListItem listItem =  settingslist.AddItem();
-                listItem[ListAndFieldNames.
-            }
+                SPList settingslist = SPContext.Current.Site.RootWeb.Lists.TryGetList(ListAndFieldNames.settingsListName);
+                if (settingslist != null)
+                {
+                    SPListItem listItem = settingslist.AddItem();
+                    listItem[ListAndFieldNames.settingsListWebIdFieldName] = ddlSite.SelectedValue;
+                    listItem[ListAndFieldNames.settingsListListIdFieldName] = ddlList.SelectedValue;
+                    listItem[ListAndFieldNames.settingsListMailBpdyFieldName] = "this is sample message";
+                    listItem[ListAndFieldNames.settingsListSubjectFieldName] = "this is sample elert created by CCS";
+                    listItem[ListAndFieldNames.settingsListToAddressFieldName] = txtTo.Text;
+                    listItem[ListAndFieldNames.settingsListFromAddressFieldName] = txtFrom.Text;
 
+                    listItem.Update();
+
+                }
+            }
+            catch
+            {
+            }
         }
 
 

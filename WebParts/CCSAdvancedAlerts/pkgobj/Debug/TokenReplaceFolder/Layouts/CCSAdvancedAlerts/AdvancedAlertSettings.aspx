@@ -144,8 +144,8 @@
     </tr>
     <tr>
     <td colspan ="2" style="margin-left: 400px">
-        <asp:button ID="Button1" runat="server" text="Save"/>
-        <asp:button ID="Button2" runat="server" text="Cancel"/>
+        <asp:button ID="btnsave" runat="server"   text="Save"/>
+        <asp:button ID="btncancel" runat="server" text="Cancel"/>
     </td>
     </tr>
 </table>
