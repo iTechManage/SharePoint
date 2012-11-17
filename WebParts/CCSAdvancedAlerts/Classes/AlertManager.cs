@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System;
 using Microsoft.SharePoint;
 using Microsoft.SharePoint.Security;
 using System.Collections;
@@ -20,22 +19,37 @@ namespace CCSAdvancedAlerts
         }
 
 
-        internal void GetAlertForList(SPWeb rootWeb)
+        internal static IList<Alert> GetAlertForList(SPWeb rootWeb, ReceivedEventType eventType)
         {
+            IList<Alert> alerts = new List<Alert>();
             try
             {
-                
+                SPList list = rootWeb.Lists.TryGetList(ListAndFieldNames.settingsListName);
+                if (list != null)
+                {
+                    //TOD: write a caml query to get the alerts based onconditions
 
+                    foreach (SPListItem listItem in list.Items)
+                    {
+                        alerts.Add(new Alert(listItem));
+                    }
+
+                }
             }
             catch
             {
 
             }
-
+            return alerts;
         }
 
 
         internal static Alert CreateAlertFromItem(SPListItem item)
+        {
+            return (new Alert(item));
+        }
+
+        internal static Alert CreateItemFromalert(SPListItem item)
         {
             return (new Alert(item));
         }

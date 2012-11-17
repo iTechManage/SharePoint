@@ -4,6 +4,8 @@ using Microsoft.SharePoint;
 using Microsoft.SharePoint.Security;
 using Microsoft.SharePoint.Utilities;
 using Microsoft.SharePoint.Workflow;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace CCSAdvancedAlerts 
 {
@@ -102,8 +104,21 @@ namespace CCSAdvancedAlerts
                using (SPWeb web = properties.OpenWeb())
                {
                    //TODO we have to check is feature activated for this site or not
-
-
+                   IList<Alert> alerts = AlertManager.GetAlertForList(web, eventType);
+                   foreach (Alert alert in alerts)
+                   {
+                       if (alert.alertType == eventType)
+                       {
+                           Common.SendMail("spdev1",
+                                           alert.toAddress, 
+                                           alert.fromAdderss,
+                                           alert.ccAddress, 
+                                           alert.mailSubject,
+                                           alert.mailBody, 
+                                           null);
+                       }
+                   }
+  
 
                }
 

@@ -100,6 +100,24 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                     listItem[ListAndFieldNames.settingsListToAddressFieldName] = txtTo.Text;
                     listItem[ListAndFieldNames.settingsListFromAddressFieldName] = txtFrom.Text;
 
+                    string eventType;
+                    if (chkItemAdded.Checked)
+                    {
+                        eventType = "itemadded";
+                    }
+                    else if(chkItemDeleted.Checked)
+                    {
+                        eventType = "itemdeleted";
+                    }
+                    else if (chkItemUpdated.Checked)
+                    {
+                        eventType = "itemupdated";
+                    }
+                    else
+                    {
+                        eventType = "custom";
+                    }
+                    listItem[ListAndFieldNames.settingsListAlertTypeFieldName] = eventType;
                     listItem.Update();
 
                 }

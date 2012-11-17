@@ -61,6 +61,15 @@ namespace CCSAdvancedAlerts {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to AlertType.
+        /// </summary>
+        internal static string settingsListAlertTypeFieldName {
+            get {
+                return ResourceManager.GetString("settingsListAlertTypeFieldName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to FromAddress.
         /// </summary>
         internal static string settingsListFromAddressFieldName {

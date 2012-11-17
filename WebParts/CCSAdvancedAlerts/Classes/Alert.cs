@@ -21,14 +21,34 @@ namespace CCSAdvancedAlerts
 
         public Alert(SPListItem listItem)
         {
-            this.webId =  listItem[ListAndFieldNames.settingsListWebIdFieldName].ToString();
-            this.listId  = listItem[ListAndFieldNames.settingsListListIdFieldName].ToString();
-            this.mailBody = listItem[ListAndFieldNames.settingsListMailBpdyFieldName].ToString();
-            this.mailSubject = listItem[ListAndFieldNames.settingsListSubjectFieldName].ToString();
-            this.toAddress = listItem[ListAndFieldNames.settingsListToAddressFieldName].ToString();
-            this.fromAdderss  = listItem[ListAndFieldNames.settingsListFromAddressFieldName].ToString();
-
+            this.webId = Convert.ToString(listItem[ListAndFieldNames.settingsListWebIdFieldName]);
+            this.listId  =Convert.ToString( listItem[ListAndFieldNames.settingsListListIdFieldName]);
+            this.mailBody =Convert.ToString( listItem[ListAndFieldNames.settingsListMailBpdyFieldName]);
+            this.mailSubject = Convert.ToString(listItem[ListAndFieldNames.settingsListSubjectFieldName]);
+            this.toAddress = Convert.ToString(listItem[ListAndFieldNames.settingsListToAddressFieldName]);
+            this.fromAdderss  = Convert.ToString(listItem[ListAndFieldNames.settingsListFromAddressFieldName]);
+            this.alertType = GetAlertType(Convert.ToString(listItem[ListAndFieldNames.settingsListAlertTypeFieldName]));
             
+        }
+
+        private ReceivedEventType GetAlertType(string alertType)
+        {
+            if (alertType == "itemadded")
+            {
+                return ReceivedEventType.ItemAdded;
+            }
+            else if (alertType == "itemdeleted")
+            {
+                return ReceivedEventType.ItemDeleted;
+            }
+            else if (alertType == "itemupdated")
+            {
+                return ReceivedEventType.ItemUpdated;
+            }
+            else
+            {
+                return ReceivedEventType.Custom;
+            }
         }
 
 
