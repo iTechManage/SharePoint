@@ -59,6 +59,8 @@
     <Compile Include="Classes\AlertManager.cs" />
     <Compile Include="Classes\Common.cs" />
     <Compile Include="Classes\Enumarations.cs" />
+    <Compile Include="Classes\MailTemplate.cs" />
+    <Compile Include="Classes\MailTemplateManager.cs" />
     <Compile Include="Layouts\CCSAdvancedAlerts\AdvancedAlertSettings.aspx.cs">
       <DependentUpon>AdvancedAlertSettings.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

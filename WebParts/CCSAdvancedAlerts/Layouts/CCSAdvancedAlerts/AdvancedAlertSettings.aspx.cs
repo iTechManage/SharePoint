@@ -19,7 +19,16 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             }
             this.btnsave.Click += new EventHandler(btnsave_Click);
             this.ddlSite.SelectedIndexChanged += new EventHandler(ddlSite_SelectedIndexChanged);
+            this.ddlList.SelectedIndexChanged += new EventHandler(ddlList_SelectedIndexChanged);
+            this.btnAddTO.Click += new EventHandler(btnAddTO_Click);
+            this.btnAddCC.Click += new EventHandler(btnAddCC_Click);
+            this.btnAddBCC.Click += new EventHandler(btnAddBCC_Click);
+        
         }
+
+
+
+      
 
        
         void ddlSite_SelectedIndexChanged(object sender, EventArgs e)
@@ -77,6 +86,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                         }
 
                     }
+                    ListChanged();
                 }
             }
             catch
@@ -84,6 +94,104 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             }
         }
 
+        void ddlList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+          
+            //rdUsersincolumn
+            ListChanged();
+        }
+
+        void ListChanged()
+        {
+            try
+            {
+                SPList list = SPContext.Current.Site.AllWebs[new Guid(this.ddlSite.SelectedValue)].Lists[new Guid(ddlList.SelectedValue)];
+
+                if (list != null)
+                {
+                    foreach (SPField field in list.Fields)
+                    {
+                        if (field.Type == SPFieldType.User)
+                        {
+                            ddlUsersInColumn.Items.Add(field.Title);
+                        }
+                    }
+
+                }
+            }
+            catch
+            {
+            }
+        }
+
+        void btnAddBCC_Click(object sender, EventArgs e)
+        {
+            AddAddress(txtBcc);
+        }
+
+        void btnAddCC_Click(object sender, EventArgs e)
+        {
+            AddAddress(txtCc);
+        }
+
+        void btnAddTO_Click(object sender, EventArgs e)
+        {
+            AddAddress(txtTo);
+        }
+
+        void AddAddress(TextBox txtAddressBox)
+        {
+            if (txtAddressBox != null)
+            {
+                string emailAddresses = string.Empty;
+                if (rdCurrentUser.Checked)
+                {
+                    emailAddresses = SPContext.Current.Web.CurrentUser.Email;
+                }
+                else if (rdUsers.Checked)
+                {
+                    //string cC = string.Empty, ccEmail = string.Empty;
+                    if (additionalUsers != null)
+                    {
+                        int resolvedEntitiesCount = additionalUsers.ResolvedEntities.Count;
+                        if (resolvedEntitiesCount != 0)
+                        {
+                            for (int i = 0; i < resolvedEntitiesCount; i++)
+                            {
+                                try
+                                {
+                                    PickerEntity pEntity = (PickerEntity)additionalUsers.ResolvedEntities[i];
+                                    if (pEntity != null &&
+                                        !String.IsNullOrEmpty(Convert.ToString(pEntity.EntityData["Email"])))
+                                    {
+
+                                        if (!String.IsNullOrEmpty(emailAddresses))
+                                        {
+                                            emailAddresses = emailAddresses + ",";
+                                        }
+                                        emailAddresses =
+                                            emailAddresses + Convert.ToString(pEntity.EntityData["Email"]);
+                                    }
+                                }
+                                catch { }
+                            }
+                        }
+                    }
+                }
+
+
+                else if (rdUsersincolumn.Checked)
+                {
+
+                }
+                else if (rdEmailAddresses.Checked)
+                {
+                    emailAddresses = emailAddresses + "," + txtEmailAddresses;
+                }
+
+                txtAddressBox.Text += emailAddresses; 
+            }
+        }
 
         void btnsave_Click(object sender, EventArgs e)
         {
