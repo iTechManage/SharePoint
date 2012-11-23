@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.SharePoint;
 using Microsoft.SharePoint.Security;
 using System.Collections;
+using System.Xml;
 
 namespace CCSAdvancedAlerts
 {
@@ -66,6 +67,82 @@ namespace CCSAdvancedAlerts
             //if exist then no need to do anything
             //if not exist the need to create new one
         }
+
+        private static XmlDocument SerializeAlertInfo(Alert alert)
+        {
+            XmlDocument xmlDoc = new XmlDocument();
+            try
+            {
+                XmlNode rootNode = xmlDoc.CreateElement("AlertInformation");
+                xmlDoc.AppendChild(rootNode);
+                
+                //General Properties
+                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.ToAddress, alert.toAddress));
+                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.FromAddress, alert.fromAdderss));
+                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.CcAddress, alert.ccAddress));
+                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.BccAddress, alert.bccAddress));
+                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.CombineAlerts , alert.combineAlerts.ToString()));
+                //rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.ToAddress, alert.toAddress));
+                //rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.ToAddress, alert.toAddress));
+                //rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.ToAddress, alert.toAddress));
+                //rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.ToAddress, alert.toAddress));
+                //rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.ToAddress, alert.toAddress));
+
+               //Create Conditions
+                   
+
+
+               //
+
+                //XmlNode userNode = xmlDoc.CreateElement("To").InnerText="";
+                //userNode.InnerText = "krishna@itechmanage.com";
+                //rootNode.AppendChild(userNode);
+
+                //userNode = xmlDoc.CreateElement("user");
+                //attribute = xmlDoc.CreateAttribute("age");
+                //attribute.Value = "39";
+                //userNode.Attributes.Append(attribute);
+                //userNode.InnerText = "Jane Doe";
+                //rootNode.AppendChild(userNode);
+                //XmlAttribute attribute = xmlDoc.CreateAttribute("age");
+                //attribute.Value = "42";
+                //userNode.Attributes.Append(attribute);
+          
+
+            }
+            catch { }
+            return xmlDoc;
+        }
+
+
+        private static Alert DeSerializeAlertInfo(XmlDocument xmlDoc)
+        {
+            XmlDocument xmlDoc = new XmlDocument();
+            try
+            {
+                XmlNode rootNode = xmlDoc.CreateElement("AlertInformation");
+                xmlDoc.AppendChild(rootNode);
+
+                XmlNode userNode = xmlDoc.CreateElement("To");
+                userNode.InnerText = "krishna@itechmanage.com";
+                rootNode.AppendChild(userNode);
+
+                //userNode = xmlDoc.CreateElement("user");
+                //attribute = xmlDoc.CreateAttribute("age");
+                //attribute.Value = "39";
+                //userNode.Attributes.Append(attribute);
+                //userNode.InnerText = "Jane Doe";
+                //rootNode.AppendChild(userNode);
+                //XmlAttribute attribute = xmlDoc.CreateAttribute("age");
+                //attribute.Value = "42";
+                //userNode.Attributes.Append(attribute);
+
+
+            }
+            catch { }
+            return xmlDoc;
+        }
+
     
 
     }

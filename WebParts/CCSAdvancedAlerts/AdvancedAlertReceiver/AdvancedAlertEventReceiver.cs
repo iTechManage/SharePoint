@@ -27,13 +27,7 @@ namespace CCSAdvancedAlerts
        //    base.ItemAdding(properties);
        //}
 
-       ///// <summary>
-       ///// An item is being updated.
-       ///// </summary>
-       //public override void ItemUpdating(SPItemEventProperties properties)
-       //{
-       //    base.ItemUpdating(properties);
-       //}
+     
 
        ///// <summary>
        ///// An item is being deleted.
@@ -61,9 +55,9 @@ namespace CCSAdvancedAlerts
        }
 
        /// <summary>
-       /// An item was updated.
+       /// An item is being updated.
        /// </summary>
-       public override void ItemUpdated(SPItemEventProperties properties)
+       public override void ItemUpdating(SPItemEventProperties properties)
        {
            try
            {
@@ -74,9 +68,10 @@ namespace CCSAdvancedAlerts
            {
                LogManager.write("error occured whule executing ItemUpdated event : " + Ex.Message);
            }
-
-           
        }
+
+
+
 
        /// <summary>
        /// An item was deleted.
@@ -95,7 +90,6 @@ namespace CCSAdvancedAlerts
 
        }
 
-
        private void ExecuteReceivedEvent(ReceivedEventType eventType, SPItemEventProperties properties)
        {
            LogManager.write("Entered in to ExecuteReceivedEvent with event type" + eventType);
@@ -104,6 +98,9 @@ namespace CCSAdvancedAlerts
                using (SPWeb web = properties.OpenWeb())
                {
                    //TODO we have to check is feature activated for this site or not
+
+
+
                    IList<Alert> alerts = AlertManager.GetAlertForList(web, eventType);
                    foreach (Alert alert in alerts)
                    {

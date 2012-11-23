@@ -117,6 +117,27 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="MTListHighLightUpdatedFieldsFieldName" xml:space="preserve">
+    <value>HighLightUpdatedFields</value>
+  </data>
+  <data name="MTListInsertAttachmentsFieldName" xml:space="preserve">
+    <value>InsertAttachments</value>
+  </data>
+  <data name="MTListInsertUpdatedFieldsFieldName" xml:space="preserve">
+    <value>InsertUpdatedFields</value>
+  </data>
+  <data name="MTListMailBodyFieldName" xml:space="preserve">
+    <value>MailBody</value>
+  </data>
+  <data name="MTListMailSubjectFieldName" xml:space="preserve">
+    <value>MailSubject</value>
+  </data>
+  <data name="MTListName" xml:space="preserve">
+    <value>CCSAdvancedAlertsMailTemplates</value>
+  </data>
+  <data name="MTListOwnerFieldName" xml:space="preserve">
+    <value>Owner</value>
+  </data>
   <data name="settingsListAlertTypeFieldName" xml:space="preserve">
     <value>AlertType</value>
   </data>

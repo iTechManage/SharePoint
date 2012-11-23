@@ -20,9 +20,7 @@
                 <table width="100%">
                     <tr bgcolor="#3399ff">
                         <td colspan="2">
-                            <h4>
-                                General Settings
-                            </h4>
+                            <b>General Settings </b>
                         </td>
                     </tr>
                     <tr>
@@ -47,7 +45,7 @@
                             List:
                         </td>
                         <td>
-                            <asp:DropDownList ID="ddlList" runat="server" AutoPostBack ="True">
+                            <asp:DropDownList ID="ddlList" runat="server" AutoPostBack="True">
                             </asp:DropDownList>
                         </td>
                     </tr>
@@ -59,9 +57,7 @@
                 <table width="100%">
                     <tr bgcolor="#3399ff">
                         <td>
-                            <h4>
-                                Event Type
-                            </h4>
+                            <b>Event Type </b>
                         </td>
                     </tr>
                     <tr>
@@ -105,28 +101,24 @@
                 </table>
             </td>
         </tr>
-
-
         <tr>
             <td>
-                <table width = "50%">
+                <table width="50%">
                     <tr bgcolor="#3399ff">
                         <td colspan="2">
-                            <h4>
-                                Recipients
-                            </h4>
+                            <b>Recipients </b>
                         </td>
                     </tr>
                     <tr>
-                        <td width= "60px">
+                        <td width="60px">
                             From:
                         </td>
-                        <td align="left" >
+                        <td align="left">
                             <asp:TextBox ID="txtFrom" runat="server" Rows="2" Width="500px" TextMode="MultiLine"></asp:TextBox>
                         </td>
                     </tr>
                     <tr>
-                        <td width= "60px">
+                        <td width="60px">
                             To:
                         </td>
                         <td>
@@ -134,7 +126,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td width= "60px">
+                        <td width="60px">
                             CC:
                         </td>
                         <td>
@@ -142,7 +134,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td width= "60px">
+                        <td width="60px">
                             BCC:
                         </td>
                         <td>
@@ -159,24 +151,29 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <asp:RadioButton ID="rdCurrentUser" Text="Current User" runat="server" GroupName="rgpAddToRecipients"></asp:RadioButton>
+                                        <asp:RadioButton ID="rdCurrentUser" Text="Current User" runat="server" GroupName="rgpAddToRecipients">
+                                        </asp:RadioButton>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <asp:RadioButton ID="rdUsers" Text="Users" runat="server" GroupName="rgpAddToRecipients"></asp:RadioButton>
+                                        <asp:RadioButton ID="rdUsers" Text="Users" runat="server" GroupName="rgpAddToRecipients">
+                                        </asp:RadioButton>
                                         <SharePoint:PeopleEditor ID="additionalUsers" MultiSelect="true" runat="server" PlaceButtonsUnderEntityEditor="false" />
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <asp:RadioButton ID="rdUsersincolumn" Text="Users in column" runat="server" GroupName="rgpAddToRecipients"></asp:RadioButton>
-                                        <asp:DropDownList ID="ddlUsersInColumn" runat="server"></asp:DropDownList>
+                                        <asp:RadioButton ID="rdUsersincolumn" Text="Users in column" runat="server" GroupName="rgpAddToRecipients">
+                                        </asp:RadioButton>
+                                        <asp:DropDownList ID="ddlUsersInColumn" runat="server">
+                                        </asp:DropDownList>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <asp:RadioButton ID="rdEmailAddresses" Text="E-mail addresses" runat="server" GroupName="rgpAddToRecipients"></asp:RadioButton>
+                                        <asp:RadioButton ID="rdEmailAddresses" Text="E-mail addresses" runat="server" GroupName="rgpAddToRecipients">
+                                        </asp:RadioButton>
                                         <asp:TextBox runat="server" ID="txtEmailAddresses" Rows="2" TextMode="MultiLine"></asp:TextBox>
                                     </td>
                                 </tr>
@@ -199,116 +196,130 @@
                 </table>
             </td>
         </tr>
-
-
-
-        <table width="100%">
-            <tr bgcolor="#3399ff">
-                <td>
-                    <h4>
-                When To Send
-            </tr>
-            <tr>
-                <td>
-                    <asp:RadioButton ID="rdImmediately" runat="server" Text="Immediately"></asp:RadioButton>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <asp:RadioButton ID="rdDaily" runat="server" Text="Daily"></asp:RadioButton>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <asp:RadioButton ID="rdWeekly" runat="server" Text="Weekly"></asp:RadioButton>
-                </td>
-            </tr>
-        </table>
-        
         <tr>
-              <table width="100%">
+            <table width="100%">
                 <tr bgcolor="#3399ff">
-                    <td >
-                        <h4>
-                            Mail Templates
-                        </h4>
+                    <td>
+                        <b>When To Send</b>
                     </td>
                 </tr>
-
-               <tr bgcolor="#c0c0c0">
-                  <td>
-                        <table width="60%">
-           
-                          <tr>
-                             <td width= "60px">
-                             Name:
-                            </td>
-                           <td>
-                             <asp:textbox id="txtMailTemplateName" width="400px" runat="server"></asp:textbox>
-                            </td>
-                         </tr>
-
-
-                          <tr>
-                              <td "60px">
-                                Subject:
-                              </td>
-                             <td>
-                              <asp:textbox id="txtMailSubject" width="400px" runat="server"></asp:textbox>
-                             </td>
-                         </tr>
-           
-           
-                        <tr>
-                            <td "60px">
-                                Mail Body:
-                            </td>
-                            <td>
-                                   <SharePoint:InputFormTextBox ID="BodyTextBox" runat="server" TextMode="MultiLine"
-                                            RichTextMode="FullHtml" RichText="true" Rows="10" Width="400%" />
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td colspan="2"></td>
-                        </tr>
-                
-                        <tr>
-                            <td colspan="2">
-                                <asp:checkbox id="chkIncludeUpdatedColumns" text="Include updated columns" runat="server"></asp:checkbox>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td colspan="2">
-                                <asp:checkbox id="chkHighlightUpdatedColumns"  text="Highlight updated columns" runat="server"></asp:checkbox>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td colspan="2">
-                                <asp:checkbox id="chkInsertAttachments"  text="Insert attachments" runat="server"></asp:checkbox>
-                            </td>
-                        </tr>
-
-
-                        <tr>
-                            <td colspan="2">
-                                <asp:button id= "btnTemplateAdd" runat="server" text="Add" width="20%"/>
-                                <asp:button id= "btnTemplateUpdate" runat="server" text="Update" width="20%"/>
-                                <asp:button id= "btnTemplateCancel"  runat="server" text="Cancel" width="20%"/>
-                            </td>
-                        </tr>
-
-                 </table>
-                </td>
-               </tr>
+                <tr>
+                    <td>
+                        <asp:RadioButton ID="rdImmediately" runat="server" Text="Immediately"></asp:RadioButton>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <asp:RadioButton ID="rdDaily" runat="server" Text="Daily"></asp:RadioButton>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <asp:RadioButton ID="rdWeekly" runat="server" Text="Weekly"></asp:RadioButton>
+                    </td>
+                </tr>
             </table>
         </tr>
 
+        <tr>
+        <td>
+        <table>
+            <tr>
+            <td bgcolor="#3399ff" >
+                <asp:CheckBox ID="chkConditions" text ="Conditions" runat="server" Font-Bold="True" />
+            </td>
+            </tr>                
+            <tr>
+             <td>
+              <asp:Panel runat="server" ID="pnlConditions">
+                  <asp:GridView ID="GridView1" runat="server"></asp:GridView>                  
+                  <asp:DropDownList ID="ddlConditionField" runat="server" AutoPostBack="true"></asp:DropDownList>
+                  <asp:DropDownList ID="ddlConditionType" runat="server" AutoPostBack ="true"></asp:DropDownList>
+                  <asp:DropDownList ID="ddlConditionOperator" runat="server" AutoPostBack ="true"></asp:DropDownList>
+                  <asp:TextBox ID="ddlConditionFieldValue" runat="server"></asp:TextBox>
+                  <asp:Button ID="btnConditionAdd" runat="server" Text="Add" />
+              </asp:Panel>
+              </td>
+            </tr>
+        </table>
+        </td>
+        </tr>
 
-
-
+        <tr>
+            <table width="100%">
+                <tr bgcolor="#3399ff">
+                    <td>
+                        <b>Mail Templates </b>
+                    </td>
+                </tr>
+                <tr bgcolor="#c0c0c0">
+                    <td>
+                        <table width="60%">
+                            <tr>
+                                <td width="60px">
+                                    Name:
+                                </td>
+                                <td>
+                                    <asp:TextBox ID="txtMailTemplateName" Width="400px" runat="server"></asp:TextBox>
+                                </td>
+                                <td rowspan="7">
+                                    <asp:ListBox ID="lstPlaceHolders" runat="server" Height="320px" Style="margin-left: 1px"
+                                        Width="200px"></asp:ListBox>
+                                    <asp:Button ID="btnAddToSubject" runat="server" Text="Add to subject" />
+                                    <asp:Button ID="btnCopyToClipBoard" runat="server" Text="Copy to clipboard" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Subject:
+                                </td>
+                                <td>
+                                    <asp:TextBox ID="txtMailSubject" Width="400px" runat="server"></asp:TextBox>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Mail Body:
+                                </td>
+                                <td>
+                                    <SharePoint:InputFormTextBox ID="txtBody" runat="server" TextMode="MultiLine" RichTextMode="FullHtml"
+                                        RichText="true" Rows="10" Width="400%" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <asp:CheckBox ID="chkIncludeUpdatedColumns" Text="Include updated columns" runat="server">
+                                    </asp:CheckBox>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <asp:CheckBox ID="chkHighlightUpdatedColumns" Text="Highlight updated columns" runat="server">
+                                    </asp:CheckBox>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <asp:CheckBox ID="chkInsertAttachments" Text="Insert attachments" runat="server">
+                                    </asp:CheckBox>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <asp:Button ID="btnTemplateAdd" runat="server" Text="Add" Width="20%" />
+                                    <asp:Button ID="btnTemplateUpdate" runat="server" Text="Update" Width="20%" />
+                                    <asp:Button ID="btnTemplateCancel" runat="server" Text="Cancel" Width="20%" />
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </tr>
         <tr>
             <td style="margin-left: 400px" class="style6">
                 <asp:Button ID="btnsave" runat="server" Text="Save" />

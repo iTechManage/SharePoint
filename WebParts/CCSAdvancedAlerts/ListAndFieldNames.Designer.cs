@@ -61,6 +61,69 @@ namespace CCSAdvancedAlerts {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to HighLightUpdatedFields.
+        /// </summary>
+        internal static string MTListHighLightUpdatedFieldsFieldName {
+            get {
+                return ResourceManager.GetString("MTListHighLightUpdatedFieldsFieldName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to InsertAttachments.
+        /// </summary>
+        internal static string MTListInsertAttachmentsFieldName {
+            get {
+                return ResourceManager.GetString("MTListInsertAttachmentsFieldName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to InsertUpdatedFields.
+        /// </summary>
+        internal static string MTListInsertUpdatedFieldsFieldName {
+            get {
+                return ResourceManager.GetString("MTListInsertUpdatedFieldsFieldName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MailBody.
+        /// </summary>
+        internal static string MTListMailBodyFieldName {
+            get {
+                return ResourceManager.GetString("MTListMailBodyFieldName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MailSubject.
+        /// </summary>
+        internal static string MTListMailSubjectFieldName {
+            get {
+                return ResourceManager.GetString("MTListMailSubjectFieldName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CCSAdvancedAlertsMailTemplates.
+        /// </summary>
+        internal static string MTListName {
+            get {
+                return ResourceManager.GetString("MTListName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Owner.
+        /// </summary>
+        internal static string MTListOwnerFieldName {
+            get {
+                return ResourceManager.GetString("MTListOwnerFieldName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to AlertType.
         /// </summary>
         internal static string settingsListAlertTypeFieldName {

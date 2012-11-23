@@ -23,9 +23,35 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             this.btnAddTO.Click += new EventHandler(btnAddTO_Click);
             this.btnAddCC.Click += new EventHandler(btnAddCC_Click);
             this.btnAddBCC.Click += new EventHandler(btnAddBCC_Click);
+
+
+            //Template related
+            this.btnAddToSubject.Click +=new EventHandler(btnAddToSubject_Click);
+            this.btnCopyToClipBoard.Click += new EventHandler(btnCopyToClipBoard_Click);
+
+            this.btnTemplateAdd.Click  +=new EventHandler(btnTemplateAdd_Click);
+            this.btnTemplateUpdate.Click +=new EventHandler(btnTemplateUpdate_Click);
+            this.btnTemplateCancel.Click += new EventHandler(btnTemplateCancel_Click);
+
         
         }
 
+        void btnTemplateCancel_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+        void btnTemplateUpdate_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+        void btnTemplateAdd_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+        
 
 
       
@@ -115,6 +141,8 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                         {
                             ddlUsersInColumn.Items.Add(field.Title);
                         }
+
+                        lstPlaceHolders.Items.Add(field.Title);
                     }
 
                 }
@@ -193,6 +221,26 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             }
         }
 
+
+
+        void btnCopyToClipBoard_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string copyText = lstPlaceHolders.SelectedItem.Text;
+                System.Windows.Forms.Clipboard.SetText(copyText);
+            }
+            catch
+            {
+            }
+            //lstPlaceHolders.SelectedItem.
+        }
+
+        void btnAddToSubject_Click(object sender, EventArgs e)
+        {
+            txtMailSubject.Text += " " + "[" + lstPlaceHolders.SelectedItem.Text + "]";
+        }
+
         void btnsave_Click(object sender, EventArgs e)
         {
             try
@@ -231,8 +279,30 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                 }
             }
             catch
+            {}
+
+
+            try
             {
+                SPList mailTemplateList = SPContext.Current.Site.RootWeb.Lists.TryGetList(ListAndFieldNames.MTListName);
+
+                if (mailTemplateList != null)
+                {
+                    SPListItem listItem = mailTemplateList.AddItem();
+                    listItem[ListAndFieldNames.MTListMailSubjectFieldName] = txtMailSubject.Text;
+                    listItem[ListAndFieldNames.MTListMailBodyFieldName] = txtBody.Text;
+                    listItem[ListAndFieldNames.MTListInsertUpdatedFieldsFieldName] = chkIncludeUpdatedColumns.Checked;
+                    listItem[ListAndFieldNames.MTListInsertAttachmentsFieldName] = chkInsertAttachments.Checked;
+                    listItem[ListAndFieldNames.MTListHighLightUpdatedFieldsFieldName] = chkHighlightUpdatedColumns.Checked;
+                    listItem[ListAndFieldNames.MTListOwnerFieldName] = SPContext.Current.Web.CurrentUser;
+
+                    listItem.Update();
+                }
+
             }
+            catch { }
+
+
         }
 
 
