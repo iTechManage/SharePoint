@@ -17,9 +17,13 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             {
                 PopulateSites();
             }
-            this.btnsave.Click += new EventHandler(btnsave_Click);
+
+            //Alert based events
+            this.btnAlertsave.Click += new EventHandler(btnAlertsave_Click);
             this.ddlSite.SelectedIndexChanged += new EventHandler(ddlSite_SelectedIndexChanged);
             this.ddlList.SelectedIndexChanged += new EventHandler(ddlList_SelectedIndexChanged);
+            
+            //Recipient related
             this.btnAddTO.Click += new EventHandler(btnAddTO_Click);
             this.btnAddCC.Click += new EventHandler(btnAddCC_Click);
             this.btnAddBCC.Click += new EventHandler(btnAddBCC_Click);
@@ -36,27 +40,9 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
         
         }
 
-        void btnTemplateCancel_Click(object sender, EventArgs e)
-        {
-            
-        }
-
-        void btnTemplateUpdate_Click(object sender, EventArgs e)
-        {
-            
-        }
-
-        void btnTemplateAdd_Click(object sender, EventArgs e)
-        {
-            
-        }
-
         
+        #region Aletr related events
 
-
-      
-
-       
         void ddlSite_SelectedIndexChanged(object sender, EventArgs e)
         {
             try
@@ -67,7 +53,6 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             {
             }
         }
-
 
         private void PopulateSites()
         {
@@ -221,6 +206,76 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             }
         }
 
+        void btnAlertsave_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                /// Basic information we are saving for Alert in Alert listing List
+                //Title  Single line of text  
+                //WebID  Single line of text  
+                //ListID  Single line of text  
+                //ItemID  Single line of text  
+                //WhenToSend  Choice  
+                //DetailInfo  Multiple lines of text  
+                //Owner  Person or Group  
+                //EventType  Choice 
+
+                Alert alert = new Alert();
+
+                //Get the General Information
+                alert.Title = txtTitle.Text;
+                alert.WebId = ddlSite.SelectedValue;
+                alert.listId = ddlList.SelectedValue;
+
+                
+                //Get Recipient Section
+                alert.ToAddress = txtTo.Text;
+                alert.FromAdderss = txtFrom.Text;
+                alert.CcAddress = txtCc.Text;
+                alert.BccAddress = txtBcc.Text;
+
+
+                //Event Type
+                if (chkItemAdded.Checked) {
+                    alert.AlertType.Add(AlertEventType.ItemAdded); }
+                if(chkItemDeleted.Checked){
+                    alert.AlertType.Add(AlertEventType.ItemDeleted); }
+                if(chkItemUpdated.Checked){
+                    alert.AlertType.Add(AlertEventType.ItemUpdated); }
+                if(chkDateColumn.Checked){
+                    alert.AlertType.Add(AlertEventType.DateColumn); }
+
+
+                //when To Send
+                if (rdDaily.Checked)
+                { alert.SendType = SendType.Daily; }
+                else if (rdImmediately.Checked)
+                { alert.SendType = SendType.Immediate; }
+                else if(rdWeekly.Checked)
+                { alert.SendType = SendType.Weekely; }
+
+
+                //TODO Conditions
+
+
+                //Create new alert
+                if(AlertManager.AddAlert(SPContext.Current.Site.RootWeb,alert))
+                {
+                    //Successfully added
+                }
+
+            }
+            catch { }
+
+            
+
+
+           
+        }
+        #endregion 
+
+
+        #region Template Related events
 
 
         void btnCopyToClipBoard_Click(object sender, EventArgs e)
@@ -240,48 +295,9 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
         {
             txtMailSubject.Text += " " + "[" + lstPlaceHolders.SelectedItem.Text + "]";
         }
-
-        void btnsave_Click(object sender, EventArgs e)
+        
+        void btnTemplateAdd_Click(object sender, EventArgs e)
         {
-            try
-            {
-                SPList settingslist = SPContext.Current.Site.RootWeb.Lists.TryGetList(ListAndFieldNames.settingsListName);
-                if (settingslist != null)
-                {
-                    SPListItem listItem = settingslist.AddItem();
-                    listItem[ListAndFieldNames.settingsListWebIdFieldName] = ddlSite.SelectedValue;
-                    listItem[ListAndFieldNames.settingsListListIdFieldName] = ddlList.SelectedValue;
-                    listItem[ListAndFieldNames.settingsListMailBpdyFieldName] = "this is sample message";
-                    listItem[ListAndFieldNames.settingsListSubjectFieldName] = "this is sample elert created by CCS";
-                    listItem[ListAndFieldNames.settingsListToAddressFieldName] = txtTo.Text;
-                    listItem[ListAndFieldNames.settingsListFromAddressFieldName] = txtFrom.Text;
-
-                    string eventType;
-                    if (chkItemAdded.Checked)
-                    {
-                        eventType = "itemadded";
-                    }
-                    else if(chkItemDeleted.Checked)
-                    {
-                        eventType = "itemdeleted";
-                    }
-                    else if (chkItemUpdated.Checked)
-                    {
-                        eventType = "itemupdated";
-                    }
-                    else
-                    {
-                        eventType = "custom";
-                    }
-                    listItem[ListAndFieldNames.settingsListAlertTypeFieldName] = eventType;
-                    listItem.Update();
-
-                }
-            }
-            catch
-            {}
-
-
             try
             {
                 SPList mailTemplateList = SPContext.Current.Site.RootWeb.Lists.TryGetList(ListAndFieldNames.MTListName);
@@ -289,6 +305,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                 if (mailTemplateList != null)
                 {
                     SPListItem listItem = mailTemplateList.AddItem();
+                    listItem["Title"] = txtMailTemplateName.Text;
                     listItem[ListAndFieldNames.MTListMailSubjectFieldName] = txtMailSubject.Text;
                     listItem[ListAndFieldNames.MTListMailBodyFieldName] = txtBody.Text;
                     listItem[ListAndFieldNames.MTListInsertUpdatedFieldsFieldName] = chkIncludeUpdatedColumns.Checked;
@@ -296,15 +313,24 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                     listItem[ListAndFieldNames.MTListHighLightUpdatedFieldsFieldName] = chkHighlightUpdatedColumns.Checked;
                     listItem[ListAndFieldNames.MTListOwnerFieldName] = SPContext.Current.Web.CurrentUser;
 
+
                     listItem.Update();
                 }
 
             }
             catch { }
+        }
+        void btnTemplateUpdate_Click(object sender, EventArgs e)
+        {
 
 
         }
+        void btnTemplateCancel_Click(object sender, EventArgs e)
+        {
 
+        }
+       
 
+        #endregion
     }
 }

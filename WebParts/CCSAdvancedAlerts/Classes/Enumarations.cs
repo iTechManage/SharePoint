@@ -5,13 +5,12 @@ using System.Text;
 
 namespace CCSAdvancedAlerts
 {
-    public enum ReceivedEventType
+    public enum AlertEventType
     {
-        ItemAdded = 0,
-        ItemDeleted = 2,
-        ItemUpdated = 1,
-        DateTime=3,
-        Custom = 4
+        ItemAdded,
+        ItemUpdated,
+        ItemDeleted,
+        DateColumn
     }
 
 
@@ -44,10 +43,9 @@ namespace CCSAdvancedAlerts
 
     public enum SendType
     {
-        ImmediatelyAlways =0,
-        ImmediatelyBusinessDays = 0,
-        Daily = 0,
-        Weekely = 0,
+        Immediate,
+        Daily,
+        Weekely
     }
 
     public enum UnionType
@@ -55,7 +53,19 @@ namespace CCSAdvancedAlerts
         And =0,
         Or =1
     }
-    
 
+    public enum Operators
+    {
+        Eq,
+        Neq,
+        Contains,
+        NotContains,
+        Gt,
+        Lt,
+        Geq,
+        Leq,
+        Yes,
+        No
+    }
 
 }

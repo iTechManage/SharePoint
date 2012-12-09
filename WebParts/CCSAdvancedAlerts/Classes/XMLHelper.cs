@@ -17,5 +17,14 @@ namespace CCSAdvancedAlerts
             xNode.InnerText = InnerText;
             return xNode;
         }
+
+        internal static XmlAttribute AppendAttribute(XmlDocument xDoc, string Name, string value)
+        {
+            XmlAttribute xAttribute = xDoc.CreateAttribute(Name);
+            xAttribute.Value = value;
+            return xAttribute;
+
+        }
+
     }
 }

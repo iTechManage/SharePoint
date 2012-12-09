@@ -61,6 +61,51 @@ namespace CCSAdvancedAlerts {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Alert.
+        /// </summary>
+        internal static string DelayedAlertLookupFieldName {
+            get {
+                return ResourceManager.GetString("DelayedAlertLookupFieldName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Body.
+        /// </summary>
+        internal static string DelayedBodyFieldName {
+            get {
+                return ResourceManager.GetString("DelayedBodyFieldName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to EventType.
+        /// </summary>
+        internal static string DelayedEventTypeFieldName {
+            get {
+                return ResourceManager.GetString("DelayedEventTypeFieldName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CCSAdvancedDelayedAlerts.
+        /// </summary>
+        internal static string DelayedListName {
+            get {
+                return ResourceManager.GetString("DelayedListName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Subject.
+        /// </summary>
+        internal static string DelayedSubjectFieldName {
+            get {
+                return ResourceManager.GetString("DelayedSubjectFieldName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to HighLightUpdatedFields.
         /// </summary>
         internal static string MTListHighLightUpdatedFieldsFieldName {
@@ -88,7 +133,7 @@ namespace CCSAdvancedAlerts {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MailBody.
+        ///   Looks up a localized string similar to Body.
         /// </summary>
         internal static string MTListMailBodyFieldName {
             get {
@@ -97,7 +142,7 @@ namespace CCSAdvancedAlerts {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MailSubject.
+        ///   Looks up a localized string similar to Subject.
         /// </summary>
         internal static string MTListMailSubjectFieldName {
             get {
@@ -124,20 +169,83 @@ namespace CCSAdvancedAlerts {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to AlertType.
+        ///   Looks up a localized string similar to Alert.
         /// </summary>
-        internal static string settingsListAlertTypeFieldName {
+        internal static string MTUAlertFieldName {
             get {
-                return ResourceManager.GetString("settingsListAlertTypeFieldName", resourceCulture);
+                return ResourceManager.GetString("MTUAlertFieldName", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to FromAddress.
+        ///   Looks up a localized string similar to EventType.
         /// </summary>
-        internal static string settingsListFromAddressFieldName {
+        internal static string MTUEventTypeFieldName {
             get {
-                return ResourceManager.GetString("settingsListFromAddressFieldName", resourceCulture);
+                return ResourceManager.GetString("MTUEventTypeFieldName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to HighLightUpdatedFields.
+        /// </summary>
+        internal static string MTUHighLightUpdatedFieldsFieldName {
+            get {
+                return ResourceManager.GetString("MTUHighLightUpdatedFieldsFieldName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to InsertAttachments.
+        /// </summary>
+        internal static string MTUInsertAttachmentsFieldName {
+            get {
+                return ResourceManager.GetString("MTUInsertAttachmentsFieldName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to InsertUpdatedFields.
+        /// </summary>
+        internal static string MTUInsertUpdatedFieldsFieldName {
+            get {
+                return ResourceManager.GetString("MTUInsertUpdatedFieldsFieldName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CCSAdvancedTemplateForAlert.
+        /// </summary>
+        internal static string MTUListName {
+            get {
+                return ResourceManager.GetString("MTUListName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template.
+        /// </summary>
+        internal static string MTUTemplateFieldName {
+            get {
+                return ResourceManager.GetString("MTUTemplateFieldName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DetailInfo.
+        /// </summary>
+        internal static string settingsListDetailInfoFieldName {
+            get {
+                return ResourceManager.GetString("settingsListDetailInfoFieldName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to EventType.
+        /// </summary>
+        internal static string settingsListEventTypeFieldName {
+            get {
+                return ResourceManager.GetString("settingsListEventTypeFieldName", resourceCulture);
             }
         }
         
@@ -160,15 +268,6 @@ namespace CCSAdvancedAlerts {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to BodyTemplate.
-        /// </summary>
-        internal static string settingsListMailBpdyFieldName {
-            get {
-                return ResourceManager.GetString("settingsListMailBpdyFieldName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to CCSAdvancedAlertsList.
         /// </summary>
         internal static string settingsListName {
@@ -178,29 +277,20 @@ namespace CCSAdvancedAlerts {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MailSubject.
-        /// </summary>
-        internal static string settingsListSubjectFieldName {
-            get {
-                return ResourceManager.GetString("settingsListSubjectFieldName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to ToAddress.
-        /// </summary>
-        internal static string settingsListToAddressFieldName {
-            get {
-                return ResourceManager.GetString("settingsListToAddressFieldName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to WebID.
         /// </summary>
         internal static string settingsListWebIdFieldName {
             get {
                 return ResourceManager.GetString("settingsListWebIdFieldName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to WhenToSend.
+        /// </summary>
+        internal static string settingsListWhenToSendFieldName {
+            get {
+                return ResourceManager.GetString("settingsListWhenToSendFieldName", resourceCulture);
             }
         }
     }

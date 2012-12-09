@@ -117,82 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="DelayedAlertLookupFieldName" xml:space="preserve">
-    <value>Alert</value>
+  <data name="BccAddress" xml:space="preserve">
+    <value>BccAddress</value>
   </data>
-  <data name="DelayedBodyFieldName" xml:space="preserve">
-    <value>Body</value>
+  <data name="BlockedUsers" xml:space="preserve">
+    <value>IgnoredUsers</value>
   </data>
-  <data name="DelayedEventTypeFieldName" xml:space="preserve">
-    <value>EventType</value>
+  <data name="CcAddress" xml:space="preserve">
+    <value>CcAddress</value>
   </data>
-  <data name="DelayedListName" xml:space="preserve">
-    <value>CCSAdvancedDelayedAlerts</value>
+  <data name="DateColumn" xml:space="preserve">
+    <value>DateColumn</value>
   </data>
-  <data name="DelayedSubjectFieldName" xml:space="preserve">
-    <value>Subject</value>
+  <data name="FromAddress" xml:space="preserve">
+    <value>FromAddress</value>
   </data>
-  <data name="MTListHighLightUpdatedFieldsFieldName" xml:space="preserve">
-    <value>HighLightUpdatedFields</value>
-  </data>
-  <data name="MTListInsertAttachmentsFieldName" xml:space="preserve">
-    <value>InsertAttachments</value>
-  </data>
-  <data name="MTListInsertUpdatedFieldsFieldName" xml:space="preserve">
-    <value>InsertUpdatedFields</value>
-  </data>
-  <data name="MTListMailBodyFieldName" xml:space="preserve">
-    <value>Body</value>
-  </data>
-  <data name="MTListMailSubjectFieldName" xml:space="preserve">
-    <value>Subject</value>
-  </data>
-  <data name="MTListName" xml:space="preserve">
-    <value>CCSAdvancedAlertsMailTemplates</value>
-  </data>
-  <data name="MTListOwnerFieldName" xml:space="preserve">
-    <value>Owner</value>
-  </data>
-  <data name="MTUAlertFieldName" xml:space="preserve">
-    <value>Alert</value>
-  </data>
-  <data name="MTUEventTypeFieldName" xml:space="preserve">
-    <value>EventType</value>
-  </data>
-  <data name="MTUHighLightUpdatedFieldsFieldName" xml:space="preserve">
-    <value>HighLightUpdatedFields</value>
-  </data>
-  <data name="MTUInsertAttachmentsFieldName" xml:space="preserve">
-    <value>InsertAttachments</value>
-  </data>
-  <data name="MTUInsertUpdatedFieldsFieldName" xml:space="preserve">
-    <value>InsertUpdatedFields</value>
-  </data>
-  <data name="MTUListName" xml:space="preserve">
-    <value>CCSAdvancedTemplateForAlert</value>
-  </data>
-  <data name="MTUTemplateFieldName" xml:space="preserve">
-    <value>Template</value>
-  </data>
-  <data name="settingsListDetailInfoFieldName" xml:space="preserve">
-    <value>DetailInfo</value>
-  </data>
-  <data name="settingsListEventTypeFieldName" xml:space="preserve">
-    <value>EventType</value>
-  </data>
-  <data name="settingsListItemIdFieldName" xml:space="preserve">
-    <value>ItemID</value>
-  </data>
-  <data name="settingsListListIdFieldName" xml:space="preserve">
-    <value>ListID</value>
-  </data>
-  <data name="settingsListName" xml:space="preserve">
-    <value>CCSAdvancedAlertsList</value>
-  </data>
-  <data name="settingsListWebIdFieldName" xml:space="preserve">
-    <value>WebID</value>
-  </data>
-  <data name="settingsListWhenToSendFieldName" xml:space="preserve">
-    <value>WhenToSend</value>
+  <data name="ToAddress" xml:space="preserve">
+    <value>ToAddress</value>
   </data>
 </root>

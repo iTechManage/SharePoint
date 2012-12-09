@@ -322,8 +322,8 @@
         </tr>
         <tr>
             <td style="margin-left: 400px" class="style6">
-                <asp:Button ID="btnsave" runat="server" Text="Save" />
-                <asp:Button ID="btncancel" runat="server" Text="Cancel" />
+                <asp:Button ID="btnAlertsave" runat="server" Text="Save" />
+                <asp:Button ID="btnAlertcancel" runat="server" Text="Cancel" />
             </td>
         </tr>
     </table>

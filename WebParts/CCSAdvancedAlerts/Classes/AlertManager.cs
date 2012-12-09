@@ -11,30 +11,98 @@ namespace CCSAdvancedAlerts
 {
     class AlertManager
     {
-        public string rootwebSiteURL;
-        
+        private SPList alertList;
+        private SPList delayedAlertList;
 
-        public  AlertManager( string WebSiteURL)
+        //public string rootwebSiteURL;
+        //public string listID;
+
+        public AlertManager(string siteCollectionURL)
         {
-            rootwebSiteURL = WebSiteURL;
+            using (SPSite site = new SPSite(siteCollectionURL))
+            {
+                using (SPWeb web = site.RootWeb)
+                {
+                    CheckForExistanceOfAlertList(web);
+                }
+            }
+            
+        }
+
+        public AlertManager(SPWeb web)
+        {
+            CheckForExistanceOfAlertList(web);
+        }
+
+        public void CheckForExistanceOfAlertList(SPWeb web)
+        {
+            try
+            {
+                //Get the MailTemplate list from web if exists
+                if (web != null)
+                {
+                    alertList = web.Lists.TryGetList(ListAndFieldNames.settingsListName);
+                    if (alertList == null)
+                    {
+                        //Create new list if not exists
+                    }
+
+                    delayedAlertList = web.Lists.TryGetList(ListAndFieldNames.DelayedListName);
+                    if (delayedAlertList == null)
+                    {
+                        //Create Delayed alert list
+                    }
+                }
+            }
+            catch
+            { }
         }
 
 
-        internal static IList<Alert> GetAlertForList(SPWeb rootWeb, ReceivedEventType eventType)
+        internal IList<Alert> GetAlertForList(SPListItem listItem, AlertEventType eventType, MailTemplateManager mTManager)
         {
             IList<Alert> alerts = new List<Alert>();
             try
             {
-                SPList list = rootWeb.Lists.TryGetList(ListAndFieldNames.settingsListName);
-                if (list != null)
+                if (alertList != null)
                 {
-                    //TOD: write a caml query to get the alerts based onconditions
+                    //TOD: write a caml query to get the alerts based eventtype
+                    StringBuilder stringBuilder = new StringBuilder();
+                    stringBuilder.Append("<Where>");
+                    stringBuilder.AppendFormat(
+                        "<And>"+
+                            "<And>"+
+                                "<And>"+
+                                    "<Eq>"+
+                                        "<FieldRef Name=\"{0}\"/>"+
+                                        "<Value Type=\"Text\">{1}</Value>"+
+                                   "</Eq>"+
+                                   "<Eq>"+
+                                        "<FieldRef Name=\"{2}\"/>"+
+                                        "<Value Type=\"Text\">{3}</Value>"+
+                                   "</Eq>"+
+                                "</And>"+
+                                "<Contains>"+
+                                    "<FieldRef Name=\"{4}\"/>"+
+                                    "<Value Type=\"Choice\">{5}</Value>"+
+                               "</Contains>"+
+                            "</And>"+
+                            "<Eq>"+
+                                "<FieldRef Name=\"{6}\"/>"+
+                                "<Value Type=\"Text\">{7}</Value>"+
+                            "</Eq>"+ 
+                        "</And>", new object[] { "WebID", listItem.ParentList.ParentWeb.ID, "ListID", listItem.ParentList.ID, "EventType", eventType, "ItemID", "0" });
+                    stringBuilder.Append("</Where>");
 
-                    foreach (SPListItem listItem in list.Items)
+                    SPQuery query = new SPQuery();
+                    query.Query = stringBuilder.ToString();
+                    
+                    SPListItemCollection  lItemCollection = alertList.GetItems(query);
+
+                    foreach (SPListItem item in lItemCollection) 
                     {
-                        alerts.Add(new Alert(listItem));
+                        alerts.Add(new Alert(item, mTManager));
                     }
-
                 }
             }
             catch
@@ -45,16 +113,12 @@ namespace CCSAdvancedAlerts
         }
 
 
-        internal static Alert CreateAlertFromItem(SPListItem item)
-        {
-            return (new Alert(item));
-        }
+        //internal static Alert CreateAlertFromItem(SPListItem item)
+        //{
+        //    return (new Alert(item,new MailTemplateManager()));
+        //}
 
-        internal static Alert CreateItemFromalert(SPListItem item)
-        {
-            return (new Alert(item));
-        }
-
+        
         private SPList GetCCSAlertList(SPWeb rootWebSite)
         {
             return rootWebSite.Lists[ListAndFieldNames.settingsListName];
@@ -68,31 +132,78 @@ namespace CCSAdvancedAlerts
             //if not exist the need to create new one
         }
 
-        private static XmlDocument SerializeAlertInfo(Alert alert)
+        #region Save Alert to hidden Alert Listing List
+
+        /// <summary>
+        /// This method take alert object and create item in alert listing list
+        /// if Alert succesfully added to Alert list it will return true
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        /// 
+        internal static bool AddAlert(SPWeb rootweb, Alert alert)
+        {
+            ///Basic information we are saving for Alert in Alert listing List
+            //Title  Single line of text  
+            //WebID  Single line of text  
+            //ListID  Single line of text  
+            //ItemID  Single line of text  
+            //WhenToSend  Choice  
+            //DetailInfo  Multiple lines of text  
+            //Owner  Person or Group  
+            //EventType  Choice 
+
+            SPList settingslist = rootweb.Lists.TryGetList(ListAndFieldNames.settingsListName);
+            if (settingslist != null)
+            {
+                SPListItem listItem = settingslist.AddItem();
+                listItem["Title"] = alert.Title;
+                listItem[ListAndFieldNames.settingsListWebIdFieldName] = alert.WebId;
+                listItem[ListAndFieldNames.settingsListListIdFieldName] = alert.listId;
+                
+                //Event Type Registered
+                foreach(AlertEventType aType in   alert.AlertType )
+                {
+                    listItem[ListAndFieldNames.settingsListEventTypeFieldName] += aType + ";#";
+                }
+
+                //Send type
+                listItem[ListAndFieldNames.settingsListWhenToSendFieldName] = alert.SendType;
+
+                //Other information in xml format
+                listItem[ListAndFieldNames.settingsListDetailInfoFieldName] = SerializeAlertMetaData(alert);
+
+                listItem.Update();
+
+            }
+            return true;
+        }
+                
+        private static string SerializeAlertMetaData(Alert alert)
         {
             XmlDocument xmlDoc = new XmlDocument();
             try
             {
                 XmlNode rootNode = xmlDoc.CreateElement("AlertInformation");
                 xmlDoc.AppendChild(rootNode);
+
                 
                 //General Properties
-                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.ToAddress, alert.toAddress));
-                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.FromAddress, alert.fromAdderss));
-                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.CcAddress, alert.ccAddress));
-                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.BccAddress, alert.bccAddress));
-                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.CombineAlerts , alert.combineAlerts.ToString()));
-                //rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.ToAddress, alert.toAddress));
-                //rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.ToAddress, alert.toAddress));
-                //rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.ToAddress, alert.toAddress));
-                //rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.ToAddress, alert.toAddress));
-                //rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.ToAddress, alert.toAddress));
+                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.ToAddress, alert.ToAddress));
+                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.FromAddress, alert.FromAdderss));
+                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.CcAddress, alert.CcAddress));
+                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.BccAddress, alert.BccAddress));
+              
+               ////Create Conditions
+               // XmlNode xConditions = rootNode.AppendChild(xmlDoc.CreateElement("Conditions"));
+               // foreach (Condition condition in alert.conditions)
+               // {
+               //     XmlNode xCondition =   xConditions.AppendChild(xmlDoc.CreateElement("Condition"));
+               //     xCondition.Attributes.Append(XMLHelper.AppendAttribute(xmlDoc, XMLElementNames.ConditionFieldAttributeName, condition.FieldName));
+               //     xCondition.Attributes.Append(XMLHelper.AppendAttribute(xmlDoc, XMLElementNames.ConditionOperatorAttributeName, condition.OperatorType));
+               //     xCondition.Attributes.Append(XMLHelper.AppendAttribute(xmlDoc, XMLElementNames.ConditionValueAttributeName, condition.FieldValue));
+               // }
 
-               //Create Conditions
-                   
-
-
-               //
 
                 //XmlNode userNode = xmlDoc.CreateElement("To").InnerText="";
                 //userNode.InnerText = "krishna@itechmanage.com";
@@ -111,39 +222,27 @@ namespace CCSAdvancedAlerts
 
             }
             catch { }
-            return xmlDoc;
+            return xmlDoc.InnerXml;
         }
 
-
-        private static Alert DeSerializeAlertInfo(XmlDocument xmlDoc)
+        internal void AddDelayedAlert(DelayedAlert dAlert)
         {
-            XmlDocument xmlDoc = new XmlDocument();
             try
             {
-                XmlNode rootNode = xmlDoc.CreateElement("AlertInformation");
-                xmlDoc.AppendChild(rootNode);
-
-                XmlNode userNode = xmlDoc.CreateElement("To");
-                userNode.InnerText = "krishna@itechmanage.com";
-                rootNode.AppendChild(userNode);
-
-                //userNode = xmlDoc.CreateElement("user");
-                //attribute = xmlDoc.CreateAttribute("age");
-                //attribute.Value = "39";
-                //userNode.Attributes.Append(attribute);
-                //userNode.InnerText = "Jane Doe";
-                //rootNode.AppendChild(userNode);
-                //XmlAttribute attribute = xmlDoc.CreateAttribute("age");
-                //attribute.Value = "42";
-                //userNode.Attributes.Append(attribute);
-
-
+                SPListItem item = delayedAlertList.AddItem();
+                item[ListAndFieldNames.DelayedSubjectFieldName] = dAlert.Subject;
+                item[ListAndFieldNames.DelayedBodyFieldName] = dAlert.Body;
+                item[ListAndFieldNames.DelayedEventTypeFieldName] = dAlert.AlertType;
+                item[ListAndFieldNames.DelayedAlertLookupFieldName] = dAlert.ParentAlertID + ";#" + dAlert.ParentAlertID;
+                
+                item.Update();
             }
             catch { }
-            return xmlDoc;
         }
 
-    
 
+
+
+        #endregion
     }
 }

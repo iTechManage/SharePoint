@@ -5,9 +5,9 @@ using System.Text;
 
 namespace CCSAdvancedAlerts
 {
-    class MailTemplate
+    class MailTemplateUsageObject
     {
-        //Id
+
         string iD;
         public string ID
         {
@@ -15,27 +15,19 @@ namespace CCSAdvancedAlerts
             set { iD = value; }
         }
 
-        string name;
 
-        public string Name
+        MailTemplate template;
+        internal MailTemplate Template
         {
-            get { return name; }
-            set { name = value; }
+            get { return template; }
+            set { template = value; }
         }
 
-
-        string body;
-        public string Body
+        private List<AlertEventType> alertType = new List<AlertEventType>();
+        internal List<AlertEventType> AlertType
         {
-            get { return body; }
-            set { body = value; }
-        }
-
-        string subject;
-        public string Subject
-        {
-            get { return subject; }
-            set { subject = value; }
+            get { return alertType; }
+            set { alertType = value; }
         }
 
         bool highLightUpdatedFields;
