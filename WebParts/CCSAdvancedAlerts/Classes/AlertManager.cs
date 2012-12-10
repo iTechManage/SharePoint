@@ -170,6 +170,9 @@ namespace CCSAdvancedAlerts
                 //Send type
                 listItem[ListAndFieldNames.settingsListWhenToSendFieldName] = alert.SendType;
 
+
+
+
                 //Other information in xml format
                 listItem[ListAndFieldNames.settingsListDetailInfoFieldName] = SerializeAlertMetaData(alert);
 
@@ -193,16 +196,16 @@ namespace CCSAdvancedAlerts
                 rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.FromAddress, alert.FromAdderss));
                 rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.CcAddress, alert.CcAddress));
                 rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.BccAddress, alert.BccAddress));
-              
-               ////Create Conditions
-               // XmlNode xConditions = rootNode.AppendChild(xmlDoc.CreateElement("Conditions"));
-               // foreach (Condition condition in alert.conditions)
-               // {
-               //     XmlNode xCondition =   xConditions.AppendChild(xmlDoc.CreateElement("Condition"));
-               //     xCondition.Attributes.Append(XMLHelper.AppendAttribute(xmlDoc, XMLElementNames.ConditionFieldAttributeName, condition.FieldName));
-               //     xCondition.Attributes.Append(XMLHelper.AppendAttribute(xmlDoc, XMLElementNames.ConditionOperatorAttributeName, condition.OperatorType));
-               //     xCondition.Attributes.Append(XMLHelper.AppendAttribute(xmlDoc, XMLElementNames.ConditionValueAttributeName, condition.FieldValue));
-               // }
+
+                //Create Conditions
+                XmlNode xConditions = rootNode.AppendChild(xmlDoc.CreateElement(XMLElementNames.ConditionsRootNodeName));
+                foreach (Condition condition in alert.Conditions)
+                {
+                    XmlNode xCondition = xConditions.AppendChild(xmlDoc.CreateElement(XMLElementNames.ConditionChildNodeName));
+                    xCondition.Attributes.Append(XMLHelper.AppendAttribute(xmlDoc, XMLElementNames.ConditionFieldTagName, condition.FieldName));
+                    xCondition.Attributes.Append(XMLHelper.AppendAttribute(xmlDoc, XMLElementNames.ConditionOperatorTagName, Convert.ToString(condition.ComparisionOperator)));
+                    xCondition.Attributes.Append(XMLHelper.AppendAttribute(xmlDoc, XMLElementNames.ConditionValueTagName, condition.StrValue));
+                }
 
 
                 //XmlNode userNode = xmlDoc.CreateElement("To").InnerText="";

@@ -13,6 +13,15 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts {
     public partial class AdvancedAlertSettings {
         
         /// <summary>
+        /// Literal1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal Literal1;
+        
+        /// <summary>
         /// txtTitle control.
         /// </summary>
         /// <remarks>
@@ -22,6 +31,15 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts {
         protected global::System.Web.UI.WebControls.TextBox txtTitle;
         
         /// <summary>
+        /// Literal2 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal Literal2;
+        
+        /// <summary>
         /// ddlSite control.
         /// </summary>
         /// <remarks>
@@ -29,6 +47,15 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlSite;
+        
+        /// <summary>
+        /// Literal3 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal Literal3;
         
         /// <summary>
         /// ddlList control.
@@ -157,13 +184,13 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts {
         protected global::System.Web.UI.WebControls.DropDownList DropDownList5;
         
         /// <summary>
-        /// txtFrom control.
+        /// Literal5 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtFrom;
+        protected global::System.Web.UI.WebControls.Literal Literal5;
         
         /// <summary>
         /// txtTo control.
@@ -175,6 +202,15 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts {
         protected global::System.Web.UI.WebControls.TextBox txtTo;
         
         /// <summary>
+        /// Literal6 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal Literal6;
+        
+        /// <summary>
         /// txtCc control.
         /// </summary>
         /// <remarks>
@@ -184,6 +220,15 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts {
         protected global::System.Web.UI.WebControls.TextBox txtCc;
         
         /// <summary>
+        /// Literal7 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal Literal7;
+        
+        /// <summary>
         /// txtBcc control.
         /// </summary>
         /// <remarks>
@@ -191,6 +236,33 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtBcc;
+        
+        /// <summary>
+        /// Literal4 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal Literal4;
+        
+        /// <summary>
+        /// txtFrom control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtFrom;
+        
+        /// <summary>
+        /// Literal8 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal Literal8;
         
         /// <summary>
         /// rdCurrentUser control.
@@ -283,6 +355,15 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts {
         protected global::System.Web.UI.WebControls.Button btnAddBCC;
         
         /// <summary>
+        /// Literal9 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal Literal9;
+        
+        /// <summary>
         /// ppleNeverSendTo control.
         /// </summary>
         /// <remarks>
@@ -319,22 +400,13 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts {
         protected global::System.Web.UI.WebControls.RadioButton rdWeekly;
         
         /// <summary>
-        /// chkConditions control.
+        /// UpdatePanel1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox chkConditions;
-        
-        /// <summary>
-        /// pnlConditions control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlConditions;
+        protected global::System.Web.UI.UpdatePanel UpdatePanel1;
         
         /// <summary>
         /// GridView1 control.
@@ -346,49 +418,31 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts {
         protected global::System.Web.UI.WebControls.GridView GridView1;
         
         /// <summary>
-        /// ddlConditionField control.
+        /// gvConditions control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlConditionField;
+        protected global::Microsoft.SharePoint.WebControls.SPGridView gvConditions;
         
         /// <summary>
-        /// ddlConditionType control.
+        /// Literal14 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlConditionType;
+        protected global::System.Web.UI.WebControls.Literal Literal14;
         
         /// <summary>
-        /// ddlConditionOperator control.
+        /// Literal10 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlConditionOperator;
-        
-        /// <summary>
-        /// ddlConditionFieldValue control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox ddlConditionFieldValue;
-        
-        /// <summary>
-        /// btnConditionAdd control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnConditionAdd;
+        protected global::System.Web.UI.WebControls.Literal Literal10;
         
         /// <summary>
         /// txtMailTemplateName control.
@@ -398,6 +452,15 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtMailTemplateName;
+        
+        /// <summary>
+        /// Literal11 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal Literal11;
         
         /// <summary>
         /// lstPlaceHolders control.
@@ -415,7 +478,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnAddToSubject;
+        protected global::System.Web.UI.WebControls.LinkButton btnAddToSubject;
         
         /// <summary>
         /// btnCopyToClipBoard control.
@@ -424,7 +487,16 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnCopyToClipBoard;
+        protected global::System.Web.UI.WebControls.LinkButton btnCopyToClipBoard;
+        
+        /// <summary>
+        /// Literal12 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal Literal12;
         
         /// <summary>
         /// txtMailSubject control.
@@ -434,6 +506,15 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtMailSubject;
+        
+        /// <summary>
+        /// Literal13 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal Literal13;
         
         /// <summary>
         /// txtBody control.
@@ -506,6 +587,24 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnAlertsave;
+        
+        /// <summary>
+        /// btnUpdateAlert control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnUpdateAlert;
+        
+        /// <summary>
+        /// btnOK control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnOK;
         
         /// <summary>
         /// btnAlertcancel control.

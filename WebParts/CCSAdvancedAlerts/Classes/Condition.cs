@@ -5,13 +5,15 @@ using System.Text;
 using System.Xml;
 using Microsoft.SharePoint;
 
-namespace CCSAdvancedAlerts{
+namespace CCSAdvancedAlerts
+{
+    [Serializable]
     class Condition
     {
         public const string ValueCollectionSeperator = ";";
 
         private string fieldName;
-        internal string FieldName
+        public string FieldName
         {
             get { return fieldName; }
             set { fieldName = value; }
@@ -25,7 +27,7 @@ namespace CCSAdvancedAlerts{
         }
 
         private string strValue;
-        internal string StrValue
+        public string StrValue
         {
             get { return strValue; }
             set { strValue = value; }
@@ -50,10 +52,13 @@ namespace CCSAdvancedAlerts{
 
         public Condition(XmlNode xNode)
         {
-            if(xNode != null)
-            BuildConditionFromXML(xNode as XmlElement );
+            if (xNode != null)
+                BuildConditionFromXML(xNode as XmlElement);
         }
 
+        public Condition()
+        {
+        }
 
         private void BuildConditionFromXML(XmlElement xmlElement)
         {
@@ -63,7 +68,7 @@ namespace CCSAdvancedAlerts{
                 this.comparisionOperator = (Operators)Enum.Parse(typeof(Operators), xmlElement.GetAttribute("Operator"));
                 this.strValue = xmlElement.GetAttribute("Value");
             }
-            catch {  }
+            catch { }
         }
 
 
@@ -72,17 +77,17 @@ namespace CCSAdvancedAlerts{
         internal bool isValid(SPListItem item, AlertEventType eventType)
         {
             SPList list = item.ParentList;
-             if (list == null)
-               return false;
-             SPField field = list.Fields.TryGetFieldByStaticName(this.fieldName);
-             if (field != null)
-             {
-              return   MatchItemValueBasedOnOperatorAndValueType(item[this.fieldName], field.FieldValueType, eventType);
-             }
-             return false;
+            if (list == null)
+                return false;
+            SPField field = list.Fields.TryGetFieldByStaticName(this.fieldName);
+            if (field != null)
+            {
+                return MatchItemValueBasedOnOperatorAndValueType(item[this.fieldName], field.FieldValueType, eventType);
+            }
+            return false;
         }
 
-        public bool MatchItemValueBasedOnOperatorAndValueType(object fieldValue,Type fieldValueType, AlertEventType eventType)
+        public bool MatchItemValueBasedOnOperatorAndValueType(object fieldValue, Type fieldValueType, AlertEventType eventType)
         {
 
             if (fieldValue != null && !string.IsNullOrEmpty(fieldValue.ToString()))
@@ -90,7 +95,7 @@ namespace CCSAdvancedAlerts{
                 if (fieldValueType == (typeof(SPFieldUrlValue)))
                 {
                     SPFieldUrlValue fieldUrlValue = new SPFieldUrlValue(fieldValue.ToString());
-                    bool isDescMatched = CompareValuesBasedOnOperator(fieldUrlValue.Description, this.comparisionOperator,this.strValue);
+                    bool isDescMatched = CompareValuesBasedOnOperator(fieldUrlValue.Description, this.comparisionOperator, this.strValue);
                     bool isUrlMatched = CompareValuesBasedOnOperator(fieldUrlValue.Url, this.comparisionOperator, strValue);
 
                     return isDescMatched || isUrlMatched;

@@ -88,6 +88,51 @@ namespace CCSAdvancedAlerts {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Condition.
+        /// </summary>
+        internal static string ConditionChildNodeName {
+            get {
+                return ResourceManager.GetString("ConditionChildNodeName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Field.
+        /// </summary>
+        internal static string ConditionFieldTagName {
+            get {
+                return ResourceManager.GetString("ConditionFieldTagName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operator.
+        /// </summary>
+        internal static string ConditionOperatorTagName {
+            get {
+                return ResourceManager.GetString("ConditionOperatorTagName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Conditions.
+        /// </summary>
+        internal static string ConditionsRootNodeName {
+            get {
+                return ResourceManager.GetString("ConditionsRootNodeName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value.
+        /// </summary>
+        internal static string ConditionValueTagName {
+            get {
+                return ResourceManager.GetString("ConditionValueTagName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to DateColumn.
         /// </summary>
         internal static string DateColumn {

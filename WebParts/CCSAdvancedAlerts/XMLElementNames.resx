@@ -126,6 +126,21 @@
   <data name="CcAddress" xml:space="preserve">
     <value>CcAddress</value>
   </data>
+  <data name="ConditionChildNodeName" xml:space="preserve">
+    <value>Condition</value>
+  </data>
+  <data name="ConditionFieldTagName" xml:space="preserve">
+    <value>Field</value>
+  </data>
+  <data name="ConditionOperatorTagName" xml:space="preserve">
+    <value>Operator</value>
+  </data>
+  <data name="ConditionsRootNodeName" xml:space="preserve">
+    <value>Conditions</value>
+  </data>
+  <data name="ConditionValueTagName" xml:space="preserve">
+    <value>Value</value>
+  </data>
   <data name="DateColumn" xml:space="preserve">
     <value>DateColumn</value>
   </data>

@@ -31,23 +31,30 @@ namespace CCSAdvancedAlerts
         public override void Execute(Guid targetInstanceId)
         {
             //Get the webapplication on which it is activated
+            //Get all the site collections in web application
             foreach (SPSite site in base.WebApplication.Sites)
             {
-
-                //Get all the site collections in web application
-
                 //Get all the root level sites in the site collections
+                if(site!=null)
+                {
+                  //check do we have Alert pro active for that site collection by checking hidden list if possible feature
+                     
+                  //if yes
 
-                //check do we have Alert pro active for that site collection by checking hidden list if possible feature
+                  //get the alert from the list based on the time 
 
-                //if yes
-
-                //get the alert from the list based on the time 
-
-                // if we get any alerts then validate and prepare for sending email.
+                  // if we get any alerts then validate and prepare for sending email.
+                }
             }
         }
         #endregion
+
+
+        #region
+
+
+        #endregion
+
 
     }
 }
