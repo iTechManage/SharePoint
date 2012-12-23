@@ -8,9 +8,9 @@
         Title="CCS Advanced Alerts"
         Description="Create custom alerts"
         ImageUrl="/_layouts/images/CCSAdvancedAlerts/alarm-icon32x32.png">
-        <UrlAction Url="~site/_layouts/CCSAdvancedAlerts/AdvancedAlertSettings.aspx"/>
+    <UrlAction Url="javascript:window.location= '{SiteUrl}/_layouts/CCSAdvancedAlerts/AdvancedAlertSettings.aspx?Source=' + window.location"/>
   </CustomAction>
-  
+
   <CustomAction
       Id="CrowCanyon.AdvancedAlerts.AlertSettings"
       Location="CommandUI.Ribbon"
@@ -24,21 +24,21 @@
                   CommandType="General"
                   Image16by16="/_layouts/images/CCSAdvancedAlerts/alarm-icon16x16.png"
                   Image32by32="/_layouts/images/CCSAdvancedAlerts/alarm-icon32x32.png"
-                  LabelText="Email Me"
+                  LabelText="Alert Settings"
                   Sequence="1"
                   ToolTipTitle="Customize Alerts"
                   ToolTipDescription="Customize Alerts for the list"
                   TemplateAlias="o2"
                   Command="DisplayAdvancedAlertSettings"/>
         </CommandUIDefinition>
-         </CommandUIDefinitions>
+      </CommandUIDefinitions>
       <CommandUIHandlers>
         <CommandUIHandler
           Command="DisplayAdvancedAlertSettings"
-          CommandAction="~site/_layouts/CCSAdvancedAlerts/AdvancedAlertSettings.aspx?List={ListId}&amp;ID={ItemId}&amp;Type=view"/>
+          CommandAction="~site/_layouts/CCSAdvancedAlerts/AdvancedAlertSettings.aspx?List={ListId}&amp;ID={ItemId}&amp;Type=view" />
         <CommandUIHandler
           Command="SendMailAction"
-          CommandAction="javascript:function openDialog(){var options = {url: '/_layouts/CCSAdvancedAlerts/AdvancedAlertSettings.aspx?List={ListId}&amp;ID=' + SP.ListOperation.Selection.getSelectedItems()[0].id+'&amp;Type=RibbonButton&amp;SiteUrl={SiteUrl}', 
+          CommandAction="javascript:function openDialog(){var options = {url: '/_layouts/CCSAdvancedAlerts/AdvancedAlertSettings.aspx?List={ListId}&amp;ID=' + SP.ListOperation.Selection.getSelectedItems()[0].id+'&amp;Type=RibbonButton&amp;SiteUrl={SiteUrl}&amp;Source=window.location', 
                           title:'Email',allowMaximize: true,showClose: true,width:550};
                           SP.UI.ModalDialog.commonModalDialogOpen(options.url, options, null, null);};
                           openDialog();"
@@ -48,7 +48,4 @@
       </CommandUIHandlers>
     </CommandUIExtension>
   </CustomAction>
-
- 
-
 </Elements>

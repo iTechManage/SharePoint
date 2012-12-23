@@ -14,8 +14,7 @@ namespace CCSAdvancedAlerts
         private SPList alertList;
         private SPList delayedAlertList;
 
-        //public string rootwebSiteURL;
-        //public string listID;
+        #region Constructor
 
         public AlertManager(string siteCollectionURL)
         {
@@ -34,6 +33,15 @@ namespace CCSAdvancedAlerts
             CheckForExistanceOfAlertList(web);
         }
 
+        #endregion
+
+
+        #region Alert Related
+      
+        /// <summary>
+        /// Check Alerts list is existed in the site collection or not
+        /// </summary>
+        /// <param name="web"></param>
         public void CheckForExistanceOfAlertList(SPWeb web)
         {
             try
@@ -58,7 +66,13 @@ namespace CCSAdvancedAlerts
             { }
         }
 
-
+        /// <summary>
+        /// Get the alerts based on event type
+        /// </summary>
+        /// <param name="listItem"></param>
+        /// <param name="eventType"></param>
+        /// <param name="mTManager"></param>
+        /// <returns></returns>
         internal IList<Alert> GetAlertForList(SPListItem listItem, AlertEventType eventType, MailTemplateManager mTManager)
         {
             IList<Alert> alerts = new List<Alert>();
@@ -111,29 +125,7 @@ namespace CCSAdvancedAlerts
             }
             return alerts;
         }
-
-
-        //internal static Alert CreateAlertFromItem(SPListItem item)
-        //{
-        //    return (new Alert(item,new MailTemplateManager()));
-        //}
-
         
-        private SPList GetCCSAlertList(SPWeb rootWebSite)
-        {
-            return rootWebSite.Lists[ListAndFieldNames.settingsListName];
-        }
-
-
-        private void EnsureCCSAlertList(SPWeb rootWebSite)
-        {
-            //We have to check wether ccs alert list is exist or not.
-            //if exist then no need to do anything
-            //if not exist the need to create new one
-        }
-
-        #region Save Alert to hidden Alert Listing List
-
         /// <summary>
         /// This method take alert object and create item in alert listing list
         /// if Alert succesfully added to Alert list it will return true
@@ -159,7 +151,7 @@ namespace CCSAdvancedAlerts
                 SPListItem listItem = settingslist.AddItem();
                 listItem["Title"] = alert.Title;
                 listItem[ListAndFieldNames.settingsListWebIdFieldName] = alert.WebId;
-                listItem[ListAndFieldNames.settingsListListIdFieldName] = alert.listId;
+                listItem[ListAndFieldNames.settingsListListIdFieldName] = alert.ListId;
                 
                 //Event Type Registered
                 foreach(AlertEventType aType in   alert.AlertType )
@@ -181,7 +173,12 @@ namespace CCSAdvancedAlerts
             }
             return true;
         }
-                
+        
+        /// <summary>
+        /// Serialize Alert information into XML format
+        /// </summary>
+        /// <param name="alert"></param>
+        /// <returns></returns>
         private static string SerializeAlertMetaData(Alert alert)
         {
             XmlDocument xmlDoc = new XmlDocument();
@@ -197,6 +194,7 @@ namespace CCSAdvancedAlerts
                 rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.CcAddress, alert.CcAddress));
                 rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.BccAddress, alert.BccAddress));
 
+
                 //Create Conditions
                 XmlNode xConditions = rootNode.AppendChild(xmlDoc.CreateElement(XMLElementNames.ConditionsRootNodeName));
                 foreach (Condition condition in alert.Conditions)
@@ -208,10 +206,52 @@ namespace CCSAdvancedAlerts
                 }
 
 
+                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.BlockedUsers, alert.BlockedUsers));//
+                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.DateColumnName, alert.DateColumnName));//
+                //rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.PQty, alert.PeriodQty.ToString()));//
+                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.PType, alert.PeriodType.ToString()));//
+                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.PPosition, alert.PeriodPosition.ToString()));//
+                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.Repeat, alert.Repeat.ToString()));//
+                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.RInterval, alert.RepeatInterval.ToString()));//
+                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.RType, alert.RepeatType.ToString()));//
+                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.RCount, alert.RepeatCount.ToString()));//
+                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.CombineAlerts, alert.CombineAlerts.ToString())); //
+                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.ImmediateAlways, alert.ImmidiateAlways.ToString()));
+                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.ImmediateBusinessDays, ConvertDaysToString(alert.ImmediateBusinessDays)));//
+                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.ImmediateBusinessHoursStart, alert.BusinessStartHour.ToString()));//
+                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.ImmediateBusinessHoursFinish, alert.BusinessendtHour.ToString()));//
+                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.DailyBusinessDays, ConvertDaysToString(alert.DailyBusinessDays)));//
+                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.SummaryMode, alert.SummaryMode.ToString())); //
+
+                if (alert.PeriodQty > 0)
+                {
+                    rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.PQty, alert.PeriodQty.ToString())); //
+                }
+
+                
+             
+                //SetChildText(rootEl, "PeriodType", this.PeriodType.ToString());
+                //SetChildText(rootEl, "PeriodPosition", this.PeriodPosition.ToString());
+                //SetChildText(rootEl, "Repeat", this.RepeatNotification.ToString());
+                //SetChildText(rootEl, "RepeatInterval", this.RepeatInterval.ToString());
+                //SetChildText(rootEl, "RepeatType", this.RepeatIntervalUnit.ToString());
+                //SetChildText(rootEl, "RepeatCount", this.RepeatCount.ToString());
+                //SetChildText(rootEl, "CombineAlerts", this.ComnbineAlerts.ToString());
+                //SetChildText(rootEl, "ImmediateAlways", this.ImmediateSendAlways.ToString());
+                //SetChildText(rootEl, "ImmediateBusinessDays", this.SerializeBusinessDays(this.ImmediateBusinessDays));
+                //SetChildText(rootEl, "ImmediateBusinessHoursStart", this.ImmediateBusinessHourStart.ToString());
+                //SetChildText(rootEl, "ImmediateBusinessHoursFinish", this.ImmediateBusinessHourFinish.ToString());
+                //SetChildText(rootEl, "DailyBusinessDays", this.SerializeBusinessDays(this.DailyBusinessDays));
+
+                //if (this.PeriodQty >= 0)
+                //{
+                //    SetChildText(rootEl, "PeriodQty", this.PeriodQty.ToString());
+                //}
+
+
                 //XmlNode userNode = xmlDoc.CreateElement("To").InnerText="";
                 //userNode.InnerText = "krishna@itechmanage.com";
                 //rootNode.AppendChild(userNode);
-
                 //userNode = xmlDoc.CreateElement("user");
                 //attribute = xmlDoc.CreateAttribute("age");
                 //attribute.Value = "39";
@@ -228,6 +268,95 @@ namespace CCSAdvancedAlerts
             return xmlDoc.InnerXml;
         }
 
+        private static string ConvertDaysToString(List<WeekDays> days)
+        {
+            string strdays = string.Empty;
+
+            foreach (WeekDays day in days)
+            {
+                if(string.IsNullOrEmpty(strdays))
+                {
+                    strdays = day.ToString();
+                }
+                else
+                {
+                    strdays = strdays + ";" + day.ToString();
+                }
+            }
+            return strdays;
+        }
+
+        /// <summary>
+        /// This will call if we need to get all the alerts in the site collection
+        /// </summary>
+        /// <returns></returns>
+        internal Dictionary<int, Alert> GetAllAlerts()
+        {
+            try
+            {
+                return GetAlertsChangesSince(DateTime.MinValue);
+            }
+            catch
+            { }
+            return new Dictionary<int, Alert>();
+        }
+
+        /// <summary>
+        /// Get the alerts changed after last sync
+        /// </summary>
+        /// <param name="since"></param>
+        /// <returns></returns>
+        internal Dictionary<int, Alert> GetAlertsChangesSince(DateTime since)
+        {
+            Dictionary<int, Alert> modifiedAlerts =   new Dictionary<int, Alert>();
+            try
+            {
+                if (since < alertList.Created)
+                {
+                    since = alertList.Created;
+                }
+                SPChangeToken token = new SPChangeToken(SPChangeCollection.CollectionScope.List, this.alertList.ID, since.ToUniversalTime());
+                //Dictionary<int,Alert> modifiedAlerts = new Dictionary<int,Alert>();
+                foreach (SPChange change in this.alertList.GetChanges(token))
+                {
+                    if (!(change is SPChangeItem))
+                    {
+                        continue;
+                    }
+                    SPChangeItem item = change as SPChangeItem;
+                    if (!modifiedAlerts.ContainsKey(item.Id))
+                    {
+                        //if(item.ChangeType  != 3)
+                        try
+                        {
+                            Alert alert = new Alert(alertList.GetItemById(item.Id), new MailTemplateManager(alertList.ParentWeb));
+                            modifiedAlerts.Add(item.Id, alert);
+                        }
+                        catch
+                        {
+                           //item has been deleted
+                        }
+
+                       
+                    }
+                    //Check if the alert is not immediate and all the stuff which are not eligible for timer based alerts
+                }
+            }
+            catch { }
+            return modifiedAlerts;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dAlert"></param>
+        
+        #endregion
+
+
+        #region Delayed Alert related
+        
+
         internal void AddDelayedAlert(DelayedAlert dAlert)
         {
             try
@@ -243,8 +372,47 @@ namespace CCSAdvancedAlerts
             catch { }
         }
 
-
-
+        internal void SendDelayedMessages(Alert alert)
+        {
+            try
+            {
+                SPQuery query = new SPQuery();
+                query.Query  = string.Format("<Where><Eq><FieldRef Name=\"{0}\" LookupId=\"TRUE\"/><Value Type=\"Lookup\">{1}</Value></Eq></Where>", "Alert", alert.Id);
+                SPListItemCollection items = this.delayedAlertList.GetItems(query);
+                if (items.Count > 0)
+                {
+                    foreach (SPListItem item in items)
+                    {
+                        try
+                        {
+                            try
+                            {
+                                DelayedAlert delayedAlert = new DelayedAlert(item);
+                                //mailSender.SendDelayedAlert(delayedAlert, alert);
+                            }
+                            catch 
+                            {
+                            }
+                            continue;
+                        }
+                        finally
+                        {
+                            try
+                            {
+                                //Delete the delayed alert after completion
+                            }
+                            catch { }
+                        }
+                    }
+                }
+                else
+                {
+                    //No delayed alert found in the Delayed alert list
+                }
+            }
+            catch
+            {  }
+        }
 
         #endregion
     }

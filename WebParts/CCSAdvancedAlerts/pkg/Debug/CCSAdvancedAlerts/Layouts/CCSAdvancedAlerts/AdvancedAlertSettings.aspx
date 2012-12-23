@@ -18,6 +18,20 @@
         <tr>
             <td colspan="2" class="ms-linksectionheader" style="padding-right: 4px; padding-left: 4px;
                 padding-bottom: 4px; padding-top: 4px;" nowrap="nowrap" width="576">
+                <b>Existing Alerts  </b>
+            </td>
+        </tr>
+         <tr>
+            <td>
+               <SharePoint:SPGridView DataKeyNames="ID" ID="gvAlerts" EmptyDataRowStyle-CssClass="ms-vb" AllowPaging="true" PageSize="20" DataSourceID="dsAlerts" AllowSorting="true" OnRowDeleting="gvAlerts_RowDeleting" OnSelectedIndexChanged="gvAlerts_SelectedIndexChanged" AutoGenerateColumns="false" runat="server" EmptyDataText="No Alerts to display">
+
+               </SharePoint:SPGridView>
+            </td>
+          </tr>
+
+        <tr>
+            <td colspan="2" class="ms-linksectionheader" style="padding-right: 4px; padding-left: 4px;
+                padding-bottom: 4px; padding-top: 4px;" nowrap="nowrap" width="576">
                 <b>General Settings </b>
             </td>
         </tr>
@@ -81,22 +95,22 @@
                         <td class="ms-descriptiontext" style="white-space: nowrap; vertical-align: top">
                             <asp:CheckBox ID="chkDateColumn" runat="server" Text="According to date in column" />
                             &nbsp;&nbsp;
-                            <asp:DropDownList ID="Dropdownlist1" runat="server">
+                            <asp:DropDownList ID="ddlDateColumn" runat="server">
                             </asp:DropDownList>
                             <asp:Panel ID="panelDateColumn" runat="server">
-                                &nbsp; &nbsp; &nbsp;<asp:TextBox ID="TextBox1" runat="server"></asp:TextBox>
-                                <asp:DropDownList ID="DropDownList2" runat="server">
+                                &nbsp; &nbsp; &nbsp;<asp:TextBox ID="txtPeriodQty" runat="server"></asp:TextBox>
+                                <asp:DropDownList ID="ddlPeriodType" runat="server">
                                 </asp:DropDownList>
-                                <asp:DropDownList ID="DropDownList3" runat="server">
+                                <asp:DropDownList ID="ddlPeriodPosition" runat="server">
                                 </asp:DropDownList>
                                 <br />
                                 &nbsp;&nbsp;&nbsp;&nbsp;
                                 <asp:CheckBox ID="chkRepeat" runat="server" Text="Repeat every" />
-                                &nbsp;<asp:TextBox ID="TextBox2" runat="server"></asp:TextBox>
-                                <asp:DropDownList ID="DropDownList4" runat="server">
+                                &nbsp;<asp:TextBox ID="txtRepeatInterval" runat="server"></asp:TextBox>
+                                <asp:DropDownList ID="ddlRepeatType" runat="server">
                                 </asp:DropDownList>
-                                <asp:DropDownList ID="DropDownList5" runat="server">
-                                </asp:DropDownList>
+                                <asp:TextBox ID="txtRepeatCount" runat="server"></asp:TextBox>
+                                
                             </asp:Panel>
                         </td>
                     </tr>
@@ -236,17 +250,44 @@
                 <table width="100%">
                     <tr>
                         <td class="ms-descriptiontext">
-                            <asp:RadioButton ID="rdImmediately" runat="server" Text="Immediately"></asp:RadioButton>
+                            <asp:RadioButton ID="rdImmediately" runat="server" Text="Immediately" AutoPostBack="true" GroupName="rdSendType"></asp:RadioButton>
+                            <asp:Panel ID="pnSubImmediately" runat="server" Visible= "false">
+                                &nbsp;&nbsp;<asp:RadioButton ID="rdImmediateAlways" runat="server" Text="Always"  GroupName="rdSubSendTypeAlways"></asp:RadioButton> <br />
+                                &nbsp;&nbsp;<asp:RadioButton ID="rdImmediateBusinessdays" runat="server" AutoPostBack="true" Text="Business days" GroupName="rdSubSendTypeAlways"></asp:RadioButton>
+                                 &nbsp;&nbsp;&nbsp;&nbsp;<asp:Panel ID="pnImmediateBusinessDays" runat="server" Visible="false">
+                                 &nbsp;&nbsp;&nbsp;&nbsp;<asp:CheckBox ID = "chkImmediateSun" runat="server" Text= "Sun" />
+                                 &nbsp;&nbsp;<asp:CheckBox ID = "chkImmediateMon" runat="server" Text= "Mon" />
+                                 &nbsp;&nbsp;<asp:CheckBox ID = "chkImmediateTue" runat="server" Text= "Tue" />
+                                 &nbsp;&nbsp;<asp:CheckBox ID = "chkImmediateWed" runat="server" Text= "Wed" />
+                                 &nbsp;&nbsp;<asp:CheckBox ID = "chkImmediateThu" runat="server" Text= "Thu" />
+                                 &nbsp;&nbsp;<asp:CheckBox ID = "chkImmediateFri" runat="server" Text= "Fri" />
+                                 &nbsp;&nbsp;<asp:CheckBox ID = "chkImmediateSat" runat="server" Text= "Sat" />
+                                 <br />
+                                 &nbsp;&nbsp;&nbsp;&nbsp;<asp:Label ID = "Label1" runat="server" Text = "Start Time: "/>
+                                 &nbsp;&nbsp;<asp:DropDownList ID="ddlImmediateBusinessStartTime" runat="server"/>
+                                 &nbsp;&nbsp;<asp:Label ID = "Label2" runat="server" Text = "End Time: "/>
+                                 &nbsp;&nbsp;<asp:DropDownList ID="ddlImmediateBusinessEndTime" runat="server"/>
+                               </asp:Panel>
+                            </asp:Panel>
                         </td>
                     </tr>
                     <tr>
                         <td class="ms-descriptiontext">
-                            <asp:RadioButton ID="rdDaily" runat="server" Text="Daily"></asp:RadioButton>
+                            <asp:RadioButton ID="rdDaily" runat="server"  Text="Daily" AutoPostBack="true" GroupName="rdSendType"></asp:RadioButton>
+                             <asp:Panel ID="pnSubDaily" runat="server" Visible="false">
+                                 &nbsp;&nbsp;&nbsp;&nbsp;<asp:CheckBox ID = "chkDailySun" runat="server" Text= "Sun" />
+                                 &nbsp;&nbsp;<asp:CheckBox ID = "chkDailyMon" runat="server" Text= "Mon" />
+                                 &nbsp;&nbsp;<asp:CheckBox ID = "chkDailyTue" runat="server" Text= "Tue" />
+                                 &nbsp;&nbsp;<asp:CheckBox ID = "chkDailyWed" runat="server" Text= "Wed" />
+                                 &nbsp;&nbsp;<asp:CheckBox ID = "chkDailyThu" runat="server" Text= "Thu" />
+                                 &nbsp;&nbsp;<asp:CheckBox ID = "chkDailyFri" runat="server" Text= "Fri" />
+                                 &nbsp;&nbsp;<asp:CheckBox ID = "chkDailySat" runat="server" Text= "Sat" />
+                            </asp:Panel>
                         </td>
                     </tr>
                     <tr>
                         <td class="ms-descriptiontext">
-                            <asp:RadioButton ID="rdWeekly" runat="server" Text="Weekly"></asp:RadioButton>
+                            <asp:RadioButton ID="rdWeekly" runat="server" Text="Weekly" AutoPostBack="true" GroupName="rdSendType"></asp:RadioButton>
                         </td>
                     </tr>
                 </table>
@@ -265,8 +306,6 @@
                         <td class="ms-descriptiontext">
                             <asp:UpdatePanel ID="UpdatePanel1" runat="server">
                                 <ContentTemplate>
-                                    <asp:GridView ID="GridView1" runat="server">
-                                    </asp:GridView>
                                     <SharePoint:SPGridView ID="gvConditions" runat="server" AutoGenerateColumns="false"
                                         ShowFooter="true" FooterStyle-CssClass="ms-vb2" CellPadding="1" CellSpacing="0"
                                         OnRowCommand="gvConditions_RowCommand" OnRowCancelingEdit="gvConditions_RowCancelEditing"

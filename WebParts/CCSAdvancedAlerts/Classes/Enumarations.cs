@@ -12,33 +12,43 @@ namespace CCSAdvancedAlerts
         ItemDeleted,
         DateColumn
     }
-
+    public enum WeekDays
+    {
+        sun,
+        mon,
+        tue,
+        wed,
+        thu,
+        fri,
+        sat
+        
+    }
 
     public enum PeriodType
     {
-        Minutes = 0,
-        Hours = 1,
-        Days = 2,
-        Weeks = 3,
-        Months = 4,
-        Years = 5
+        Minutes,
+        Hours,
+        Days,
+        Weeks,
+        Months,
+        Years
     }
 
 
     public enum PeriodPosition
     {
-        Before = 0,
-        After = 1
+        Before,
+        After
     }
 
     public enum RepeatType
     {
-        Minutes = 0,
-        Hours = 1,
-        Days = 2,
-        Weeks = 3,
-        Months = 4,
-        Years = 5
+        Minutes,
+        Hours,
+        Days,
+        Weeks,
+        Months,
+        Years
     }
 
     public enum SendType
@@ -50,8 +60,8 @@ namespace CCSAdvancedAlerts
 
     public enum UnionType
     {
-        And =0,
-        Or =1
+        And,
+        Or
     }
 
     public enum Operators

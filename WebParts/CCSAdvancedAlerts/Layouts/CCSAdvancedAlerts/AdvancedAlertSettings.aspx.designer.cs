@@ -13,6 +13,15 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts {
     public partial class AdvancedAlertSettings {
         
         /// <summary>
+        /// gvAlerts control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Microsoft.SharePoint.WebControls.SPGridView gvAlerts;
+        
+        /// <summary>
         /// Literal1 control.
         /// </summary>
         /// <remarks>
@@ -103,13 +112,13 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts {
         protected global::System.Web.UI.WebControls.CheckBox chkDateColumn;
         
         /// <summary>
-        /// Dropdownlist1 control.
+        /// ddlDateColumn control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList Dropdownlist1;
+        protected global::System.Web.UI.WebControls.DropDownList ddlDateColumn;
         
         /// <summary>
         /// panelDateColumn control.
@@ -121,31 +130,31 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts {
         protected global::System.Web.UI.WebControls.Panel panelDateColumn;
         
         /// <summary>
-        /// TextBox1 control.
+        /// txtPeriodQty control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox TextBox1;
+        protected global::System.Web.UI.WebControls.TextBox txtPeriodQty;
         
         /// <summary>
-        /// DropDownList2 control.
+        /// ddlPeriodType control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList DropDownList2;
+        protected global::System.Web.UI.WebControls.DropDownList ddlPeriodType;
         
         /// <summary>
-        /// DropDownList3 control.
+        /// ddlPeriodPosition control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList DropDownList3;
+        protected global::System.Web.UI.WebControls.DropDownList ddlPeriodPosition;
         
         /// <summary>
         /// chkRepeat control.
@@ -157,31 +166,31 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts {
         protected global::System.Web.UI.WebControls.CheckBox chkRepeat;
         
         /// <summary>
-        /// TextBox2 control.
+        /// txtRepeatInterval control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox TextBox2;
+        protected global::System.Web.UI.WebControls.TextBox txtRepeatInterval;
         
         /// <summary>
-        /// DropDownList4 control.
+        /// ddlRepeatType control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList DropDownList4;
+        protected global::System.Web.UI.WebControls.DropDownList ddlRepeatType;
         
         /// <summary>
-        /// DropDownList5 control.
+        /// txtRepeatCount control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList DropDownList5;
+        protected global::System.Web.UI.WebControls.TextBox txtRepeatCount;
         
         /// <summary>
         /// Literal5 control.
@@ -382,6 +391,141 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts {
         protected global::System.Web.UI.WebControls.RadioButton rdImmediately;
         
         /// <summary>
+        /// pnSubImmediately control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnSubImmediately;
+        
+        /// <summary>
+        /// rdImmediateAlways control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RadioButton rdImmediateAlways;
+        
+        /// <summary>
+        /// rdImmediateBusinessdays control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RadioButton rdImmediateBusinessdays;
+        
+        /// <summary>
+        /// pnImmediateBusinessDays control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnImmediateBusinessDays;
+        
+        /// <summary>
+        /// chkImmediateSun control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox chkImmediateSun;
+        
+        /// <summary>
+        /// chkImmediateMon control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox chkImmediateMon;
+        
+        /// <summary>
+        /// chkImmediateTue control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox chkImmediateTue;
+        
+        /// <summary>
+        /// chkImmediateWed control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox chkImmediateWed;
+        
+        /// <summary>
+        /// chkImmediateThu control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox chkImmediateThu;
+        
+        /// <summary>
+        /// chkImmediateFri control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox chkImmediateFri;
+        
+        /// <summary>
+        /// chkImmediateSat control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox chkImmediateSat;
+        
+        /// <summary>
+        /// Label1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label Label1;
+        
+        /// <summary>
+        /// ddlImmediateBusinessStartTime control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlImmediateBusinessStartTime;
+        
+        /// <summary>
+        /// Label2 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label Label2;
+        
+        /// <summary>
+        /// ddlImmediateBusinessEndTime control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlImmediateBusinessEndTime;
+        
+        /// <summary>
         /// rdDaily control.
         /// </summary>
         /// <remarks>
@@ -389,6 +533,78 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RadioButton rdDaily;
+        
+        /// <summary>
+        /// pnSubDaily control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnSubDaily;
+        
+        /// <summary>
+        /// chkDailySun control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox chkDailySun;
+        
+        /// <summary>
+        /// chkDailyMon control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox chkDailyMon;
+        
+        /// <summary>
+        /// chkDailyTue control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox chkDailyTue;
+        
+        /// <summary>
+        /// chkDailyWed control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox chkDailyWed;
+        
+        /// <summary>
+        /// chkDailyThu control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox chkDailyThu;
+        
+        /// <summary>
+        /// chkDailyFri control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox chkDailyFri;
+        
+        /// <summary>
+        /// chkDailySat control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox chkDailySat;
         
         /// <summary>
         /// rdWeekly control.
@@ -407,15 +623,6 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.UpdatePanel UpdatePanel1;
-        
-        /// <summary>
-        /// GridView1 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView GridView1;
         
         /// <summary>
         /// gvConditions control.

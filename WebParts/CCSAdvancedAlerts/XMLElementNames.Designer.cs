@@ -88,6 +88,15 @@ namespace CCSAdvancedAlerts {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CombineAlerts.
+        /// </summary>
+        internal static string CombineAlerts {
+            get {
+                return ResourceManager.GetString("CombineAlerts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Condition.
         /// </summary>
         internal static string ConditionChildNodeName {
@@ -133,11 +142,20 @@ namespace CCSAdvancedAlerts {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to DailyBusinessDays.
+        /// </summary>
+        internal static string DailyBusinessDays {
+            get {
+                return ResourceManager.GetString("DailyBusinessDays", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to DateColumn.
         /// </summary>
-        internal static string DateColumn {
+        internal static string DateColumnName {
             get {
-                return ResourceManager.GetString("DateColumn", resourceCulture);
+                return ResourceManager.GetString("DateColumnName", resourceCulture);
             }
         }
         
@@ -147,6 +165,114 @@ namespace CCSAdvancedAlerts {
         internal static string FromAddress {
             get {
                 return ResourceManager.GetString("FromAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ImmediateAlways.
+        /// </summary>
+        internal static string ImmediateAlways {
+            get {
+                return ResourceManager.GetString("ImmediateAlways", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ImmediateBusinessDays.
+        /// </summary>
+        internal static string ImmediateBusinessDays {
+            get {
+                return ResourceManager.GetString("ImmediateBusinessDays", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ImmediateBusinessHoursFinish.
+        /// </summary>
+        internal static string ImmediateBusinessHoursFinish {
+            get {
+                return ResourceManager.GetString("ImmediateBusinessHoursFinish", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ImmediateBusinessHoursStart.
+        /// </summary>
+        internal static string ImmediateBusinessHoursStart {
+            get {
+                return ResourceManager.GetString("ImmediateBusinessHoursStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PPosition.
+        /// </summary>
+        internal static string PPosition {
+            get {
+                return ResourceManager.GetString("PPosition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PQty.
+        /// </summary>
+        internal static string PQty {
+            get {
+                return ResourceManager.GetString("PQty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PType.
+        /// </summary>
+        internal static string PType {
+            get {
+                return ResourceManager.GetString("PType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RCount.
+        /// </summary>
+        internal static string RCount {
+            get {
+                return ResourceManager.GetString("RCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Repeat.
+        /// </summary>
+        internal static string Repeat {
+            get {
+                return ResourceManager.GetString("Repeat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RInterval.
+        /// </summary>
+        internal static string RInterval {
+            get {
+                return ResourceManager.GetString("RInterval", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RType.
+        /// </summary>
+        internal static string RType {
+            get {
+                return ResourceManager.GetString("RType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SummaryMode.
+        /// </summary>
+        internal static string SummaryMode {
+            get {
+                return ResourceManager.GetString("SummaryMode", resourceCulture);
             }
         }
         

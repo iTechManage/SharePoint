@@ -12,7 +12,6 @@ namespace CCSAdvancedAlerts
     class Alert
     {
         private List<AlertEventType> alertType = new List<AlertEventType>();
-
         internal List<AlertEventType> AlertType
         {
             get { return alertType; }
@@ -21,7 +20,6 @@ namespace CCSAdvancedAlerts
         
         //General Information
         private string title;
-
         public string Title
         {
             get { return title; }
@@ -29,7 +27,6 @@ namespace CCSAdvancedAlerts
         }
 
         private string id;
-
         public string Id
         {
             get { return id; }
@@ -37,99 +34,102 @@ namespace CCSAdvancedAlerts
         }
 
         private string webId;
-
         internal string WebId
         {
             get { return webId; }
             set { webId = value; }
         }
-        internal string listId;
+
+        private string listId;
+        internal string ListId
+        {
+            get { return listId; }
+            set { listId = value; }
+        }
 
         
         //Address Fields
         private string toAddress;
-
         internal string ToAddress
         {
             get { return toAddress; }
             set { toAddress = value; }
         }
         private string fromAdderss;
-
         internal string FromAdderss
         {
             get { return fromAdderss; }
             set { fromAdderss = value; }
         }
         private string ccAddress;
-
         internal string CcAddress
         {
             get { return ccAddress; }
             set { ccAddress = value; }
         }
         private string bccAddress;
-
         internal string BccAddress
         {
             get { return bccAddress; }
             set { bccAddress = value; }
         }
         private string blockedUsers;
-
         internal string BlockedUsers
         {
             get { return blockedUsers; }
             set { blockedUsers = value; }
         }
 
-        
-        //Date Column fields
-        //TODO later make seperate class for this.
-        private string dateColumn;
-
-        internal string DateColumn
+        private string dateColumnName;
+        internal string DateColumnName
         {
-            get { return dateColumn; }
-            set { dateColumn = value; }
+            get { return dateColumnName; }
+            set { dateColumnName = value; }
         }
-        private PeriodType periodType;
 
+        private int periodQty;
+        public int PeriodQty
+        {
+            get { return periodQty; }
+            set { periodQty = value; }
+        }
+
+        private PeriodType periodType;
         internal PeriodType PeriodType
         {
             get { return periodType; }
             set { periodType = value; }
         }
-        private PeriodType periodPosition;
 
-        internal PeriodType PeriodPosition
+        private PeriodPosition periodPosition;
+        internal PeriodPosition PeriodPosition
         {
             get { return periodPosition; }
             set { periodPosition = value; }
         }
-        private PeriodType repeatType;
-
-        internal PeriodType RepeatType
+    
+        private RepeatType repeatType;
+        internal RepeatType RepeatType
         {
             get { return repeatType; }
             set { repeatType = value; }
         }
-        private bool repeat;
 
+        private bool repeat;
         internal bool Repeat
         {
             get { return repeat; }
             set { repeat = value; }
         }
-        private int repeatInterval;
 
+        private int repeatInterval;
         internal int RepeatInterval
         {
             get { return repeatInterval; }
             set { repeatInterval = value; }
         }
-        private int repeatCount;
 
+        private int repeatCount;
         internal int RepeatCount
         {
             get { return repeatCount; }
@@ -139,42 +139,34 @@ namespace CCSAdvancedAlerts
 
         //WhenToSend
         private SendType sendType;
-
         internal SendType SendType
         {
             get { return sendType; }
             set { sendType = value; }
         }
-        private bool combineAlerts;
 
+        private bool combineAlerts;
         internal bool CombineAlerts
         {
             get { return combineAlerts; }
             set { combineAlerts = value; }
         }
-        private string businessDays;
 
-        internal string BusinessDays
-        {
-            get { return businessDays; }
-            set { businessDays = value; }
-        }
-        private int businessStartHour;
-
+         private int businessStartHour;
         internal int BusinessStartHour
         {
             get { return businessStartHour; }
             set { businessStartHour = value; }
         }
-        private int businessendtHour;
 
+        private int businessendtHour;
         internal int BusinessendtHour
         {
             get { return businessendtHour; }
             set { businessendtHour = value; }
         }
-        private bool summaryMode;
 
+        private bool summaryMode;
         internal bool SummaryMode
         {
             get { return summaryMode; }
@@ -188,6 +180,28 @@ namespace CCSAdvancedAlerts
             set { templateManager = value; }
         }
 
+
+        private bool immidiateAlways;
+        public bool ImmidiateAlways
+        {
+            get { return immidiateAlways; }
+            set { immidiateAlways = value; }
+        }
+
+        private List<WeekDays> immediateBusinessDays;
+        public List<WeekDays> ImmediateBusinessDays
+        {
+            get { return immediateBusinessDays; }
+            set { immediateBusinessDays = value; }
+        }
+
+        private List<WeekDays> dailyBusinessDays;
+        public List<WeekDays> DailyBusinessDays
+        {
+            get { return dailyBusinessDays; }
+            set { dailyBusinessDays = value; }
+        }
+        
 
         private IList<Condition> conditions;
         internal IList<Condition> Conditions
@@ -266,7 +280,7 @@ namespace CCSAdvancedAlerts
                 if (stralerttype.Contains(AlertEventType.DateColumn.ToString()))
                     this.AlertType.Add(AlertEventType.DateColumn);
 
-
+                               
                 if (mailTemplateManager != null)
                 {
                     //Assign Mailtemplate Manager
@@ -306,7 +320,7 @@ namespace CCSAdvancedAlerts
                 this.bccAddress = xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.BccAddress).InnerText;
                 this.fromAdderss = xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.FromAddress).InnerText;
 
-                //xmlDoc.DocumentElement.SelectSingleNode("ToAddress").InnerText
+                
 
                //Get the conditions
                 XmlNodeList xNodes = xmlDoc.DocumentElement.SelectNodes("Conditions/*");
@@ -316,14 +330,71 @@ namespace CCSAdvancedAlerts
                     this.conditions.Add(new Condition(xNode));
                 }
 
+                //General information
+                this.BlockedUsers = xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.BlockedUsers).InnerText;
+
+                this.DateColumnName = xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.DateColumnName).InnerText;
+
+                this.PeriodType = (PeriodType)Enum.Parse(typeof(PeriodType), xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.PType).InnerText);
+
+                this.PeriodPosition = (PeriodPosition)Enum.Parse(typeof(PeriodPosition), xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.PPosition).InnerText); ;
+               
+                this.Repeat =Convert.ToBoolean( xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.Repeat).InnerText);
+
+                this.RepeatInterval =Convert.ToInt32( xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.RInterval).InnerText);
+
+                this.RepeatType = (RepeatType)Enum.Parse(typeof(RepeatType), xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.RType).InnerText);
+
+                this.RepeatCount =Convert.ToInt32( xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.RCount).InnerText);
+
+                this.CombineAlerts = Convert.ToBoolean(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.CombineAlerts).InnerText);
+
+                this.ImmidiateAlways = Convert.ToBoolean( xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.ImmediateAlways).InnerText);
+
+                this.immediateBusinessDays = DesrializeDays(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.ImmediateBusinessDays).InnerText);
+
+                if(!string.IsNullOrEmpty(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.ImmediateBusinessHoursStart).InnerText))
+                {
+                this.BusinessStartHour =  Convert.ToInt32(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.ImmediateBusinessHoursStart).InnerText);
+                }
+
+                if (!string.IsNullOrEmpty(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.ImmediateBusinessHoursFinish).InnerText))
+                {
+                    this.BusinessendtHour = Convert.ToInt32(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.ImmediateBusinessHoursFinish).InnerText);
+                }
+
+                this.DailyBusinessDays = DesrializeDays( xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.DailyBusinessDays).InnerText);
+
+                this.SummaryMode = Convert.ToBoolean(  xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.SummaryMode).InnerText);
+
+                if (!string.IsNullOrEmpty(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.PQty).InnerText))
+                {
+                    this.PeriodQty = Convert.ToInt32(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.PQty).InnerText);
+                }
+
+
             }
             catch { }
 
         }
 
+        private List<WeekDays> DesrializeDays(string serializedDays)
+        {
+            List<WeekDays> days = new List<WeekDays>();
+            if(!string.IsNullOrEmpty(serializedDays))
+            {
+                string[] strdays = serializedDays.Split(new char[] { ';'},StringSplitOptions.RemoveEmptyEntries) ;
+                foreach (string strday in strdays)
+                {
+                  days.Add((WeekDays)Enum.Parse(typeof(WeekDays), strday));
+                }
+            }
+            return days;
+        }
+
+
         internal bool IsValid(SPListItem item, AlertEventType eventType)
         {
-            //return true;
             foreach(Condition condition in this.conditions)
             {
                 if (condition != null)

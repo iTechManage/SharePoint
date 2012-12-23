@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
+using Microsoft.SharePoint;
 
 namespace CCSAdvancedAlerts
 {
@@ -25,6 +25,22 @@ namespace CCSAdvancedAlerts
         //    }
         //}
 
+
+        internal static bool IsAdvancedAlertFeatureEnabledForsite(SPSite site)
+        {
+            try
+            {
+                // get all the features if Advanced Alert feature is activated then return true
+                SPFeature feature = site.Features[new Guid("041d4cb3-e31e-4859-bd3d-51375fb89af4")];
+                if (feature != null)
+                {
+                    return true;
+                }
+            }
+            catch
+            { }
+            return false;
+        }
 
 
         

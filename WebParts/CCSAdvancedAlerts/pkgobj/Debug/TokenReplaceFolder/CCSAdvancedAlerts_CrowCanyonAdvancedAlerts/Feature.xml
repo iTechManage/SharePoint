@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Feature xmlns="http://schemas.microsoft.com/sharepoint/" ImageUrl="CCSAdvancedAlerts\crowcanyonlogo.jpg" Description="CrowCanyon Advanced Alerts" Id="041d4cb3-e31e-4859-bd3d-51375fb89af4" Scope="Site" Title="CrowCanyon Advanced Alerts">
+<Feature xmlns="http://schemas.microsoft.com/sharepoint/" ImageUrl="CCSAdvancedAlerts\crowcanyonlogo.jpg" Description="CrowCanyon Advanced Alerts" Id="041d4cb3-e31e-4859-bd3d-51375fb89af4" ReceiverAssembly="CCSAdvancedAlerts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d0e8c94870369eea" ReceiverClass="CCSAdvancedAlerts.Features.CrowCanyonAdvancedAlerts.CrowCanyonAdvancedAlertsEventReceiver" Scope="Site" Title="CrowCanyon Advanced Alerts">
   <ElementManifests>
     <ElementManifest Location="AdvancedAlertButton\Elements.xml" />
     <ElementManifest Location="AdvancedAlertReceiver\Elements.xml" />

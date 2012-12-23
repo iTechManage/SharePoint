@@ -141,7 +141,7 @@
   <data name="ConditionValueTagName" xml:space="preserve">
     <value>Value</value>
   </data>
-  <data name="DateColumn" xml:space="preserve">
+  <data name="DateColumnName" xml:space="preserve">
     <value>DateColumn</value>
   </data>
   <data name="FromAddress" xml:space="preserve">
@@ -149,5 +149,47 @@
   </data>
   <data name="ToAddress" xml:space="preserve">
     <value>ToAddress</value>
+  </data>
+  <data name="CombineAlerts" xml:space="preserve">
+    <value>CombineAlerts</value>
+  </data>
+  <data name="DailyBusinessDays" xml:space="preserve">
+    <value>DailyBusinessDays</value>
+  </data>
+  <data name="ImmediateAlways" xml:space="preserve">
+    <value>ImmediateAlways</value>
+  </data>
+  <data name="ImmediateBusinessDays" xml:space="preserve">
+    <value>ImmediateBusinessDays</value>
+  </data>
+  <data name="ImmediateBusinessHoursFinish" xml:space="preserve">
+    <value>ImmediateBusinessHoursFinish</value>
+  </data>
+  <data name="ImmediateBusinessHoursStart" xml:space="preserve">
+    <value>ImmediateBusinessHoursStart</value>
+  </data>
+  <data name="PPosition" xml:space="preserve">
+    <value>PPosition</value>
+  </data>
+  <data name="PQty" xml:space="preserve">
+    <value>PQty</value>
+  </data>
+  <data name="PType" xml:space="preserve">
+    <value>PType</value>
+  </data>
+  <data name="RCount" xml:space="preserve">
+    <value>RCount</value>
+  </data>
+  <data name="Repeat" xml:space="preserve">
+    <value>Repeat</value>
+  </data>
+  <data name="RInterval" xml:space="preserve">
+    <value>RInterval</value>
+  </data>
+  <data name="RType" xml:space="preserve">
+    <value>RType</value>
+  </data>
+  <data name="SummaryMode" xml:space="preserve">
+    <value>SummaryMode</value>
   </data>
 </root>

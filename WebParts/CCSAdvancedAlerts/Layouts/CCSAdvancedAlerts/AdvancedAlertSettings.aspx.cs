@@ -38,6 +38,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             if (!this.IsPostBack)
             {
                 PopulateSites();
+                populateStaticDropDowns();
             }
 
             //Alert based events
@@ -58,9 +59,36 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             this.btnTemplateUpdate.Click += new EventHandler(btnTemplateUpdate_Click);
             this.btnTemplateCancel.Click += new EventHandler(btnTemplateCancel_Click);
 
+            //AlertType
+            this.rdImmediately.CheckedChanged += new EventHandler(rdImmediately_CheckedChanged);
+            this.rdImmediateBusinessdays.CheckedChanged += new EventHandler(rdImmediateBusinessdays_CheckedChanged);
+            this.rdDaily.CheckedChanged += new EventHandler(rdDaily_CheckedChanged);
+
             //Navigate Back
             this.btnOK.Click += new EventHandler(btnOK_Click);
             this.btnAlertcancel.Click += new EventHandler(btnAlertcancel_Click);
+        }
+
+        void rdDaily_CheckedChanged(object sender, EventArgs e)
+        {
+            pnSubDaily.Visible = rdDaily.Checked;
+            pnSubImmediately.Visible = !rdDaily.Checked;
+            
+            //pnSubDaily
+        }
+
+        void rdImmediateBusinessdays_CheckedChanged(object sender, EventArgs e)
+        {
+            pnImmediateBusinessDays.Visible = rdImmediateBusinessdays.Checked;
+
+            //pnImmediateBusinessDays
+        }
+
+        void rdImmediately_CheckedChanged(object sender, EventArgs e)
+        {
+             pnSubImmediately.Visible = rdImmediately.Checked;
+             pnSubDaily.Visible = !rdImmediately.Checked;
+            //pnSubImmediately
         }
 
         void btnAlertcancel_Click(object sender, EventArgs e)
@@ -347,8 +375,6 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
 
         void ddlList_SelectedIndexChanged(object sender, EventArgs e)
         {
-
-            //rdUsersincolumn
             ListChanged();
         }
 
@@ -365,6 +391,11 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                         if (field.Type == SPFieldType.User)
                         {
                             ddlUsersInColumn.Items.Add(field.Title);
+                        }
+
+                        if (field.Type == SPFieldType.DateTime)
+                        {
+                            ddlDateColumn.Items.Add(field.Title);
                         }
 
                         lstPlaceHolders.Items.Add(field.Title);
@@ -454,22 +485,12 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
         {
             try
             {
-                /// Basic information we are saving for Alert in Alert listing List
-                //Title  Single line of text  
-                //WebID  Single line of text  
-                //ListID  Single line of text  
-                //ItemID  Single line of text  
-                //WhenToSend  Choice  
-                //DetailInfo  Multiple lines of text  
-                //Owner  Person or Group  
-                //EventType  Choice 
-
                 Alert alert = new Alert();
 
                 //Get the General Information
                 alert.Title = txtTitle.Text;
                 alert.WebId = ddlSite.SelectedValue;
-                alert.listId = ddlList.SelectedValue;
+                alert.ListId = ddlList.SelectedValue;
 
 
                 //Get Recipient Section
@@ -498,6 +519,117 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                 }
 
 
+                //------------------------------------------------------------------
+                //this.BlockedUsers = ;
+                alert.DateColumnName = this.ddlDateColumn.SelectedValue;
+                alert.PeriodType = (PeriodType)Enum.Parse(typeof(PeriodType), ddlPeriodType.SelectedValue);
+                alert.PeriodPosition = (PeriodPosition)Enum.Parse(typeof(PeriodPosition), ddlPeriodPosition.SelectedValue); ;
+                alert.Repeat = Convert.ToBoolean(chkRepeat.Checked);
+                alert.RepeatType = (RepeatType)Enum.Parse(typeof(RepeatType), ddlRepeatType.SelectedValue);
+                alert.ImmidiateAlways = Convert.ToBoolean(rdImmediately.Checked);
+              
+                //alert.BusinessStartHour = Convert.ToInt32(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.ImmediateBusinessHoursStart).InnerText);
+                alert.BusinessStartHour = 10;
+
+                //alert.BusinessendtHour = Convert.ToInt32(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.ImmediateBusinessHoursFinish).InnerText);
+                alert.BusinessendtHour = 18;
+                
+                //alert.DailyBusinessDays = DesrializeDays(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.DailyBusinessDays).InnerText);
+                alert.DailyBusinessDays = new List<WeekDays>();
+                if (chkDailySun.Checked)
+                {
+                    alert.DailyBusinessDays.Add(WeekDays.sun);
+                }
+                if(chkDailyMon.Checked)
+                {
+                    alert.DailyBusinessDays.Add(WeekDays.mon);
+                }
+                if (chkDailyTue.Checked)
+                {
+                    alert.DailyBusinessDays.Add(WeekDays.tue);
+                }
+                if (chkDailyWed.Checked)
+                {
+                    alert.DailyBusinessDays.Add(WeekDays.wed);
+                }
+                if (chkDailyThu.Checked)
+                {
+                    alert.DailyBusinessDays.Add(WeekDays.thu);
+                }
+                if (chkDailyFri.Checked)
+                {
+                    alert.DailyBusinessDays.Add(WeekDays.fri);
+                }
+                if (chkDailySat.Checked)
+                {
+                    alert.DailyBusinessDays.Add(WeekDays.sat);
+                }
+               
+                
+                //alert.ImmediateBusinessDays = DesrializeDays(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.ImmediateBusinessDays).InnerText);
+                alert.ImmediateBusinessDays = new List<WeekDays>();
+                if (chkImmediateSun.Checked)
+                {
+                    alert.ImmediateBusinessDays.Add(WeekDays.sun);
+                }
+                if (chkImmediateMon.Checked)
+                {
+                    alert.ImmediateBusinessDays.Add(WeekDays.mon);
+                }
+                if (chkImmediateThu.Checked)
+                {
+                    alert.ImmediateBusinessDays.Add(WeekDays.tue);
+                }
+                if (chkImmediateWed.Checked)
+                {
+                    alert.ImmediateBusinessDays.Add(WeekDays.wed);
+                }
+                if (chkImmediateThu.Checked)
+                {
+                    alert.ImmediateBusinessDays.Add(WeekDays.thu);
+                }
+                if (chkImmediateFri.Checked)
+                {
+                    alert.ImmediateBusinessDays.Add(WeekDays.fri);
+                }
+                if (chkImmediateSat.Checked)
+                {
+                    alert.ImmediateBusinessDays.Add(WeekDays.sat);
+                }
+                
+                
+                //alert.CombineAlerts = Convert.ToBoolean(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.CombineAlerts).InnerText);
+                alert.CombineAlerts = true;
+
+                //alert.SummaryMode = Convert.ToBoolean(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.SummaryMode).InnerText);
+                alert.SummaryMode = true;
+
+                if (!string.IsNullOrEmpty(txtPeriodQty.Text))
+                {
+                    alert.PeriodQty = Convert.ToInt32(txtPeriodQty.Text);
+                }
+                else
+                {
+                    alert.PeriodQty = 0;
+                }
+                //------------------------------------------------------------------
+                if (!string.IsNullOrEmpty(txtRepeatInterval.Text))
+                {
+                    alert.RepeatInterval = Convert.ToInt32(txtRepeatInterval.Text);
+                }
+                else
+                {
+                    alert.RepeatInterval = 0;
+                }
+
+                if (!string.IsNullOrEmpty(txtRepeatCount.Text))
+                {
+                    alert.RepeatCount = Convert.ToInt32(txtRepeatCount.Text);
+                }
+                else
+                { alert.RepeatCount = 0;  }
+
+
                 //when To Send
                 if (rdDaily.Checked)
                 { alert.SendType = SendType.Daily; }
@@ -519,10 +651,6 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
 
             }
             catch { }
-
-
-
-
 
         }
 
@@ -696,6 +824,42 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
         }
 
         #endregion
+
+        #region OnStartUp
+        
+        void populateStaticDropDowns()
+        {
+            try
+            {
+                ddlPeriodType.Items.Clear();
+                ddlPeriodType.Items.Add(new ListItem(PeriodType.Minutes.ToString(), PeriodType.Minutes.ToString()));
+                ddlPeriodType.Items.Add(new ListItem(PeriodType.Hours.ToString(), PeriodType.Hours.ToString()));
+                ddlPeriodType.Items.Add(new ListItem(PeriodType.Days.ToString(), PeriodType.Days.ToString()));
+                ddlPeriodType.Items.Add(new ListItem(PeriodType.Weeks.ToString(), PeriodType.Weeks.ToString()));
+                ddlPeriodType.Items.Add(new ListItem(PeriodType.Months.ToString(), PeriodType.Months.ToString()));
+                ddlPeriodType.Items.Add(new ListItem(PeriodType.Years.ToString(), PeriodType.Years.ToString()));
+
+                ddlRepeatType.Items.Clear();
+                ddlRepeatType.Items.Add(new ListItem(PeriodType.Minutes.ToString(), PeriodType.Minutes.ToString()));
+                ddlRepeatType.Items.Add(new ListItem(PeriodType.Hours.ToString(), PeriodType.Hours.ToString()));
+                ddlRepeatType.Items.Add(new ListItem(PeriodType.Days.ToString(), PeriodType.Days.ToString()));
+                ddlRepeatType.Items.Add(new ListItem(PeriodType.Weeks.ToString(), PeriodType.Weeks.ToString()));
+                ddlRepeatType.Items.Add(new ListItem(PeriodType.Months.ToString(), PeriodType.Months.ToString()));
+                ddlRepeatType.Items.Add(new ListItem(PeriodType.Years.ToString(), PeriodType.Years.ToString()));
+
+                ddlPeriodPosition.Items.Clear();
+                ddlPeriodPosition.Items.Add(new ListItem(PeriodPosition.After.ToString(), PeriodPosition.After.ToString()));
+                ddlPeriodPosition.Items.Add(new ListItem(PeriodPosition.Before.ToString(), PeriodPosition.Before.ToString()));
+             
+
+                
+            }
+            catch { }
+        }
+
+
+        #endregion
+
 
 
         #region Template Related events

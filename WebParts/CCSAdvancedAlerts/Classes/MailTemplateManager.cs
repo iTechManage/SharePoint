@@ -35,6 +35,8 @@ namespace CCSAdvancedAlerts
 
         #endregion Constructors
 
+        #region CheckForExistanceOfLists
+
         public void CheckForExistanceOfMailTemplateList(SPWeb web)
         {
             try
@@ -52,6 +54,7 @@ namespace CCSAdvancedAlerts
             catch
             { }
         }
+
         public void CheckForExistanceOfMailTemplateUsageList(SPWeb web)
         {
             try
@@ -70,13 +73,14 @@ namespace CCSAdvancedAlerts
             { }
         }
 
+        #endregion
+
+        #region Template Related
 
         public void AddTemplate(MailTemplate template)
         {
             try
             {
-                //SPList mailTemplateList = SPContext.Current.Site.RootWeb.Lists.TryGetList(ListAndFieldNames.MTListName);
-
                 if (mailTemplateList != null)
                 {
                     SPListItem listItem = mailTemplateList.AddItem();
@@ -87,14 +91,32 @@ namespace CCSAdvancedAlerts
                     listItem[ListAndFieldNames.MTListInsertAttachmentsFieldName] = template.InsertAttachments;
                     listItem[ListAndFieldNames.MTListHighLightUpdatedFieldsFieldName] = template.HighLightUpdatedFields;
                     //listItem[ListAndFieldNames.MTListOwnerFieldName] = template.;
-
-
                     listItem.Update();
                 }
 
             }
             catch { }
+
         }
+
+        internal MailTemplate GetMailTemplateFromListItem(SPListItem listItem)
+        {
+            MailTemplate mTempalte = new MailTemplate();
+
+            mTempalte.Name = Convert.ToString(listItem["Title"]);
+            mTempalte.Subject = Convert.ToString(listItem[ListAndFieldNames.MTListMailSubjectFieldName]);
+            mTempalte.Body = Convert.ToString(listItem[ListAndFieldNames.MTListMailBodyFieldName]);
+            mTempalte.InsertUpdatedFields = Convert.ToBoolean(listItem[ListAndFieldNames.MTListInsertUpdatedFieldsFieldName]);
+            mTempalte.InsertAttachments = Convert.ToBoolean(listItem[ListAndFieldNames.MTListInsertAttachmentsFieldName]);
+            mTempalte.HighLightUpdatedFields = Convert.ToBoolean(listItem[ListAndFieldNames.MTListHighLightUpdatedFieldsFieldName]);
+
+            return mTempalte;
+        }
+                
+        #endregion
+
+
+        #region Template Usage Related
 
         public void AddMailTemplateUsageObject(string alertID, MailTemplateUsageObject mObject)
         {
@@ -131,31 +153,10 @@ namespace CCSAdvancedAlerts
             catch { }
         }
 
-
-        internal   MailTemplate GetMailTemplateFromListItem(SPListItem listItem)
-        {
-            MailTemplate mTempalte = new MailTemplate();
-
-            mTempalte.Name = Convert.ToString(listItem["Title"]);
-            mTempalte.Subject =Convert.ToString( listItem[ListAndFieldNames.MTListMailSubjectFieldName]);
-            mTempalte.Body = Convert.ToString(listItem[ListAndFieldNames.MTListMailBodyFieldName]);
-            mTempalte.InsertUpdatedFields = Convert.ToBoolean(listItem[ListAndFieldNames.MTListInsertUpdatedFieldsFieldName]);
-            mTempalte.InsertAttachments = Convert.ToBoolean(listItem[ListAndFieldNames.MTListInsertAttachmentsFieldName]);
-            mTempalte.HighLightUpdatedFields = Convert.ToBoolean(listItem[ListAndFieldNames.MTListHighLightUpdatedFieldsFieldName]);
-
-            return mTempalte;
-        }
-
-
         internal  MailTemplateUsageObject GetMailTemplateUsageObjectFromListItem(SPListItem listItem)
         {
 
             MailTemplateUsageObject mObject = new MailTemplateUsageObject();
-
-           // listItem[ListAndFieldNames.settingsListListIdFieldName] 
-            //get the template for this instance
-            //string strTemplate = Convert.ToString(listItem[ListAndFieldNames.settingsListEventTypeFieldName]);
-            
             SPFieldLookupValue lookupTempalte = new SPFieldLookupValue(listItem[ListAndFieldNames.MTUTemplateFieldName].ToString());
             SPListItem tListItem = mailTemplateList.GetItemById(lookupTempalte.LookupId);
             mObject.Template = GetMailTemplateFromListItem(tListItem);
@@ -186,7 +187,6 @@ namespace CCSAdvancedAlerts
             return mObject;
         }
 
-
         internal MailTemplateUsageObject GetTemplateUsageObjectForAlert(string alertId, AlertEventType eventType)
         {
             MailTemplateUsageObject mObject = null;
@@ -206,7 +206,6 @@ namespace CCSAdvancedAlerts
 
             return mObject;
         }
-
 
         internal List<MailTemplateUsageObject> GetTemplateUsageObjects(string alertID)
         {
@@ -229,5 +228,7 @@ namespace CCSAdvancedAlerts
             catch { }
             return mtuObjects;
         }
+
+        #endregion
     }
 }
