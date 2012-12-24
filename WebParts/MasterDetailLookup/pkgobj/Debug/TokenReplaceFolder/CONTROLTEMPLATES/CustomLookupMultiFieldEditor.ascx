@@ -11,17 +11,17 @@
   <div style="width: 100%; text-align: left; border-width: 0px;">
           <table style="width: 100%; border-width: 0px; border-collapse: collapse;" cellpadding="0" cellspacing="0">
           <tr>
-                <td class="ms-authoringcontrols" style="width: 100%; text-align: left; white-space: nowrap;">
-                  <asp:ListBox ID="LeftBox" runat="server" SelectionMode="Multiple"></asp:ListBox>
+                <td class="ms-authoringcontrols" style="width: 34%; text-align: left; white-space: nowrap;">
+                  <asp:ListBox ID="LeftBox" runat="server" SelectionMode="Multiple" style="width: 100%;"></asp:ListBox>
                 </td>
-                <td class="ms-authoringcontrols" style="width: 100%; text-align: left; white-space: nowrap;">
-                <asp:Button Runat="server" ID="AddButton" Text="Add"></asp:Button>
+                <td class="ms-authoringcontrols" style="width: 32%; text-align: center; white-space: nowrap;">
+                <asp:Button Runat="server" ID="AddButton" Text="Add" style="width: 95%;"></asp:Button>
                 <br />
                 <br />
-                <asp:Button Runat="server" ID="RemoveButton" Text="Remove"></asp:Button>
+                <asp:Button Runat="server" ID="RemoveButton" Text="Remove" style="width: 95%;"></asp:Button>
                 </td>
-                <td class="ms-authoringcontrols" style="width: 100%; text-align: left; white-space: nowrap;">
-                  <asp:ListBox ID="RightBox" runat="server" SelectionMode="Multiple"></asp:ListBox>
+                <td class="ms-authoringcontrols" style="width: 33%; text-align: left; white-space: nowrap;">
+                  <asp:ListBox ID="RightBox" runat="server" SelectionMode="Multiple" style="width: 100%;"></asp:ListBox>
                 </td>
            </tr>
           </table>

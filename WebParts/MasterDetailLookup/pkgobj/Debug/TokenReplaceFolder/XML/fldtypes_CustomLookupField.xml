@@ -4,7 +4,7 @@
     <Field Name="TypeName">CustomDropDownList</Field>
     <Field Name="ParentType">Lookup</Field>
     <Field Name="TypeDisplayName">CustomDropDownList</Field>
-    <Field Name="TypeShortDescription">Customised List</Field>
+    <Field Name="TypeShortDescription">CrowCanyon Advanced Cascaded Lookup</Field>
     <Field Name="UserCreatable">TRUE</Field>
     <Field Name="FieldTypeClass">CustomLookupField.CustomDropDownList,CustomLookupField, Version=1.0.0.0, Culture=neutral, PublicKeyToken=9b7a99f1f2e462c2</Field>
     <Field Name="FieldEditorUserControl">/_controltemplates/CustomLookupFieldEditor.ascx</Field>

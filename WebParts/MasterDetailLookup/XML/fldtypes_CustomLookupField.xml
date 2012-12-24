@@ -4,7 +4,7 @@
     <Field Name="TypeName">CustomDropDownList</Field>
     <Field Name="ParentType">Lookup</Field>
     <Field Name="TypeDisplayName">CustomDropDownList</Field>
-    <Field Name="TypeShortDescription">Customised List</Field>
+    <Field Name="TypeShortDescription">CrowCanyon Advanced Cascaded Lookup</Field>
     <Field Name="UserCreatable">TRUE</Field>
     <Field Name="FieldTypeClass">CustomLookupField.CustomDropDownList,$SharePoint.Project.AssemblyFullName$</Field>
     <Field Name="FieldEditorUserControl">/_controltemplates/CustomLookupFieldEditor.ascx</Field>

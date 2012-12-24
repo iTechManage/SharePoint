@@ -169,33 +169,35 @@
 
 <SharePoint:RenderingTemplate ID="CustomDropDownListControl" runat="server">
 <Template>
-<asp:TextBox ID="auto_complete" runat="server" Visible="false">
+<asp:UpdatePanel ID="UpdatePanel1" runat="server" >
+<ContentTemplate><asp:TextBox ID="auto_complete" runat="server" Visible="false">
 </asp:TextBox>
 <asp:DropDownList ID="customList" runat="server" AppendDataBoundItems="true" Visible="false">
 </asp:DropDownList>
-<br />
-<div style="width: 100%; text-align: left; border-width: 0px;">
-    <table style="width: 100%; border-width: 0px; border-collapse: collapse;" cellpadding="0" cellspacing="0">
+    <table style="width: 570px; border-width: 0px; border-collapse: collapse;" cellpadding="0" cellspacing="0">
         <tr>
-        <td class="ms-authoringcontrols" style="width: 100%; text-align: left; white-space: nowrap;">
-            <asp:ListBox ID="LeftBox" runat="server" SelectionMode="Multiple" Visible="false"></asp:ListBox>
+        <td style="width=210px">
+            <asp:ListBox ID="LeftBox" runat="server" SelectionMode="Multiple" Visible="false" style="width: 205px; min-height: 125px; max-height: 150px;"></asp:ListBox>
         </td>
-        <td class="ms-authoringcontrols" style="width: 100%; text-align: left; white-space: nowrap;">
-            <asp:Button Runat="server" ID="AddButton" Text="Add" Visible="false"></asp:Button>
+        <td style="padding-left: 10px">
+                    </td>
+        <td align="center" valign="middle" style="width=150px;">
+            <asp:Button class="ms-ButtonHeightWidth"  Runat="server" ID="AddButton" Text="Add >" Visible="false"></asp:Button>
             <br />
             <br />
-            <asp:Button Runat="server" ID="RemoveButton" Text="Remove" Visible="false"></asp:Button>
+            <asp:Button class="ms-ButtonHeightWidth" Runat="server" ID="RemoveButton" Text="< Remove" Visible="false"></asp:Button>
         </td>
-        <td class="ms-authoringcontrols" style="width: 100%; text-align: left; white-space: nowrap;">
-            <asp:ListBox ID="RightBox" runat="server" SelectionMode="Multiple" Visible="false"></asp:ListBox>
+        <td style="padding-left: 10px">
+                    </td>
+        <td style="width=210px;">
+            <asp:ListBox ID="RightBox" runat="server" SelectionMode="Multiple" Visible="false" style="width: 205px;  min-height: 125px; max-height: 150px;"></asp:ListBox>
         </td>
         </tr>
     </table>
-</div>
-<br />
 <asp:LinkButton runat="server" ID="lbAddNew" Text="New Element" Visible="false"/> 
 <asp:TextBox runat="server" ID="txtNewEntry" Visible ="false" />
 <asp:LinkButton runat="server" ID="lbAddEntry" Text="Add" Visible ="false"/>
 <asp:LinkButton ID="lbCancel" runat="server" Text="Cancel" Visible="false"/>
+    </ContentTemplate></asp:UpdatePanel>
 </Template>
 </SharePoint:RenderingTemplate>

@@ -25,6 +25,9 @@ namespace CustomLookupField
         TextBox _new_value;
         LinkButton _add_entry;
         LinkButton _cancel_button;
+        HtmlTable _table;
+
+        List<ListItem> _ItemsList_Multi_NoLink = null;
 
         SPFieldLookupValueCollection _fieldVals;
         List<ListItem> _removedItems = null;
@@ -77,6 +80,73 @@ namespace CustomLookupField
                 if (!Page.IsPostBack)
                 {
                     SetValue();
+                }
+                else if (ControlMode == SPControlMode.Edit || ControlMode == SPControlMode.New)
+                {
+                    CustomDropDownList field = base.Field as CustomDropDownList;
+                    bool has_link = Convert.ToString(field.GetCustomProperty(CustomDropDownList.LINK)) == Boolean.TrueString;
+                    if (field.AllowMultipleValues)
+                    {
+                        if (has_link)
+                        {
+                            List<ListItem> FielditemList = GetCurrentLinkedFieldValue();
+                            if (FielditemList != null)
+                            {
+                                foreach (ListItem item in FielditemList)
+                                {
+                                    if (!(left_box.Items.Contains(item) || right_box.Items.Contains(item)))
+                                        left_box.Items.Insert(left_box.Items.Count, item);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (_ItemsList_Multi_NoLink != null)
+                            {
+                                foreach (ListItem item in _ItemsList_Multi_NoLink)
+                                {
+                                    if (!(left_box.Items.Contains(item) || right_box.Items.Contains(item)))
+                                        left_box.Items.Insert(left_box.Items.Count, item);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (!has_link)
+                        {
+                            if (_availableItems != null && _availableItems.Count != 0)
+                            {
+                                foreach (ListItem li in _availableItems)
+                                {
+                                    if (!_customisedList.Items.Contains(li))
+                                    {
+                                        int index = _customisedList.Items.Count;
+                                        _customisedList.Items.Insert(index, li);
+                                        _customisedList.SelectedIndex = index;
+                                        l_SelectedIndexChanged(null, e);
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            List<ListItem> FielditemList = GetCurrentLinkedFieldValue();
+                            if (FielditemList != null)
+                            {
+                                foreach (ListItem li in FielditemList)
+                                {
+                                    if (!_customisedList.Items.Contains(li))
+                                    {
+                                        int index = _customisedList.Items.Count;
+                                        _customisedList.Items.Insert(index, li);
+                                        _customisedList.SelectedIndex = index;
+                                        l_SelectedIndexChanged(null, e);
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -132,7 +202,7 @@ namespace CustomLookupField
                         {
                             query.Query = view_order_query;
                             Items = list.GetItems(query);
-                        }         
+                        }
                     }
                     else
                     {
@@ -141,7 +211,7 @@ namespace CustomLookupField
 
                     _availableItems = new List<ListItem>();
                     foreach (SPListItem item in Items)
-                    {                        
+                    {
                         ListItem newItem = new ListItem(Convert.ToString(item.Fields[new Guid(clist.LookupField)].GetFieldValueAsText(item[new Guid(clist.LookupField)])), item.ID.ToString());
                         if (!this._availableItems.Contains(newItem))
                         {
@@ -173,7 +243,7 @@ namespace CustomLookupField
                         string view_query = view.Query;
                         string view_order_query = string.Empty;
                         SPQuery query = new SPQuery();
-                        query.ViewAttributes = "Scope=\"RecursiveAll\"" ;
+                        query.ViewAttributes = "Scope=\"RecursiveAll\"";
                         bool use_view_order = Convert.ToBoolean(clist.GetCustomProperty(CustomDropDownList.SORT_BY_VIEW));
                         if (use_view_order)
                         {
@@ -189,7 +259,7 @@ namespace CustomLookupField
                             {
                                 view_order_query = node.InnerXml;
                             }
-                            
+
                             view_order_query = string.Format("<OrderBy>{0}</OrderBy>", view_order_query);
                         }
                         if (view_query.Contains("<Where>"))
@@ -200,11 +270,11 @@ namespace CustomLookupField
                             query.Query = "<Where>" + view_query + "</Where>" + view_order_query;
                             Items = list.GetItems(query);
                         }
-                        else 
+                        else
                         {
                             query.Query = view_order_query;
-                            Items = list.GetItems(query);                                                        
-                        }                
+                            Items = list.GetItems(query);
+                        }
                     }
                     else
                     {
@@ -212,19 +282,21 @@ namespace CustomLookupField
                     }
 
                     _availableItems = new List<ListItem>();
-                    
+                    _ItemsList_Multi_NoLink = new List<ListItem>();
                     foreach (SPListItem item in Items)
                     {
                         ListItem newItem = new ListItem(Convert.ToString(item.Fields[new Guid(clist.LookupField)].GetFieldValueAsText(item[new Guid(clist.LookupField)])), item.ID.ToString());
                         if (!this._availableItems.Contains(newItem))
                         {
                             this._availableItems.Add(newItem);
+                            _ItemsList_Multi_NoLink.Add(newItem);
                         }
                     }
                 }
             }
             catch { }
         }
+
         private List<ListItem> get_filtered_items(List<ListItem> item_collection, string text)
         {
             List<ListItem> filtered_item = new List<ListItem>();
@@ -255,6 +327,8 @@ namespace CustomLookupField
                     {
                         if (base.ControlMode == SPControlMode.Edit)
                         {
+                            _table = (HtmlTable)TemplateContainer.FindControl("MultiColumnTable");
+                            _table.Visible = true;
                             //fill_controls();
                             fill_controls_for_multi();
                             left_box = (ListBox)TemplateContainer.FindControl("LeftBox");
@@ -296,6 +370,11 @@ namespace CustomLookupField
                     }
                 }
             }
+        }
+
+        void RenderMethod1(HtmlTextWriter output, object t)
+        {
+            string s = "ss";
         }
 
         void remove_button_Click(object sender, EventArgs e)
@@ -367,7 +446,7 @@ namespace CustomLookupField
 
             bool has_link = Convert.ToString(field.GetCustomProperty(CustomDropDownList.LINK)) == Boolean.TrueString;
 
-            if(has_child(field.Id.ToString()))
+            if (has_child(field.Id.ToString()))
             {
                 _customisedList.SelectedIndexChanged += new EventHandler(l_SelectedIndexChanged);
                 _customisedList.AutoPostBack = true;
@@ -376,11 +455,12 @@ namespace CustomLookupField
             _customisedList.ID = "Lookup";
             _customisedList.ToolTip = string.Format(CultureInfo.InvariantCulture, "{0}", Field.InternalName);
 
-            if (!has_link)
+            if (!has_link || (Convert.ToBoolean(field.GetCustomProperty(CustomDropDownList.SHOW_ALL_VALUES)) && ParentValueNullOREmpty()))
             {
                 Initialize((CustomDropDownList)base.Field);
                 _customisedList.Items.Clear();
-               // _customisedList.AutoPostBack = true;
+                // _customisedList.AutoPostBack = true;
+                if (!Field.Required) _customisedList.Items.Insert(0, new ListItem("(None)", "0"));
                 _customisedList.Items.AddRange(_availableItems.ToArray());
                 _customisedList.SelectedIndex = _customisedList.Items.IndexOf(_customisedList.Items.FindByText(_fieldVal.LookupValue));
                 base.Field.SetCustomProperty("Items", _fieldVal.LookupId);
@@ -399,21 +479,22 @@ namespace CustomLookupField
                     }
                 }
 
-                List<ListItem> item_list = new List<ListItem>();
+                List<ListItem> Items_List = new List<ListItem>();
                 string linked_column = field.GetProperty(CustomDropDownList.LINK_COLUMN);
 
                 foreach (string sel_value in selected_items.Split(':'))
                 {
-                    Helper.get_matched_items(field, sel_value, linked_column, ref item_list);
+                    Helper.get_matched_items(field, sel_value, linked_column, ref Items_List);
                 }
 
                 //Helper.get_matched_items(field, sel_value, linked_column, ref item_list);
 
-                if (item_list != null && item_list.Count != 0)
+                _customisedList.Items.Clear();
+                if (!Field.Required) _customisedList.Items.Insert(0, new ListItem("(None)", "0"));
+                if (Items_List != null && Items_List.Count != 0)
                 {
-                    _customisedList.Items.Clear();
-                    _customisedList.Items.AddRange(item_list.ToArray());
-                 //   _customisedList.AutoPostBack = true;
+                    _customisedList.Items.AddRange(Items_List.ToArray());
+                    //   _customisedList.AutoPostBack = true;
 
                     _customisedList.SelectedIndex = _customisedList.Items.IndexOf(_customisedList.Items.FindByText(_fieldVal.LookupValue));
                 }
@@ -447,7 +528,7 @@ namespace CustomLookupField
                         string url = form.Url;
                         url = weburl + "/" + form.Url;
                         string title = field.InternalName;
-                        _new_element.OnClientClick = "javascript:SP.UI.ModalDialog.showModalDialog({ url: '" + url + "', title: '" + title + "' }); return false";
+                        _new_element.OnClientClick = "javascript:SP.UI.ModalDialog.showModalDialog({ url: '" + url + "', title: '" + title + "', dialogReturnValueCallback: RefreshOnDialogClose});";
                     }
                     else
                     {
@@ -476,6 +557,8 @@ namespace CustomLookupField
 
             }
 
+            _table = (HtmlTable)TemplateContainer.FindControl("MultiColumnTable");
+            _table.Visible = true;
             left_box = (ListBox)TemplateContainer.FindControl("LeftBox");
             left_box.Visible = true;
             right_box = (ListBox)TemplateContainer.FindControl("RightBox");
@@ -492,7 +575,7 @@ namespace CustomLookupField
             //_customisedList.ID = "Lookup";
             left_box.ToolTip = string.Format(CultureInfo.InvariantCulture, "{0}", Field.InternalName);
 
-            if (!has_link)
+            if (!has_link || (Convert.ToBoolean(field.GetCustomProperty(CustomDropDownList.SHOW_ALL_VALUES)) && ParentValueNullOREmpty()))
             {
                 // Initialize_multi_value((CustomDropDownList)base.Field);
                 // BuildAvailableItems(ref left_box);
@@ -524,9 +607,10 @@ namespace CustomLookupField
                 {
                     Helper.get_matched_items(field, sel_value, linked_column, ref item_list);
                 }
+
+                _availableItems.Clear();
                 if (item_list != null && item_list.Count != 0)
                 {
-                    _availableItems.Clear();
                     _availableItems.AddRange(item_list.ToArray());
                     foreach (SPFieldLookupValue i in _fieldVals)
                     {
@@ -588,7 +672,7 @@ namespace CustomLookupField
                         string url = form.Url;
                         url = weburl + "/" + form.Url;
                         string title = field.InternalName;
-                        _new_element.OnClientClick = "javascript:SP.UI.ModalDialog.showModalDialog({ url: '" + url + "', title: '" + title + "' }); return false";
+                        _new_element.OnClientClick = "javascript:SP.UI.ModalDialog.showModalDialog({ url: '" + url + "', title: '" + title + "', dialogReturnValueCallback: RefreshOnDialogClose});";
                     }
                     else
                     {
@@ -633,7 +717,7 @@ namespace CustomLookupField
             {
                 SPWeb w = SPContext.Current.Site.OpenWeb(field.LookupWebId);
                 SPList sourceList = w.Lists[new Guid(field.LookupList)];
-                
+
 
                 _new_value = (TextBox)TemplateContainer.FindControl("txtNewEntry");
 
@@ -642,7 +726,7 @@ namespace CustomLookupField
                     string selected_items = string.Empty;
                     string parent_field_id = Convert.ToString(field.GetCustomProperty(CustomDropDownList.PARENT_COLUMN));
                     Get_parent_selected_values(parent_field_id, ref selected_items);
-                    
+
                     foreach (string s in selected_items.Split(':'))
                     {
                         if (s != "")
@@ -662,7 +746,7 @@ namespace CustomLookupField
                             else
                             {
                                 _customisedList.Items.Insert(_customisedList.Items.Count, new ListItem(_new_value.Text, item.ID.ToString()));
-                            }                           
+                            }
                         }
                     }
                     if (selected_items == string.Empty)
@@ -684,7 +768,7 @@ namespace CustomLookupField
                         else
                         {
                             _customisedList.Items.Insert(_customisedList.Items.Count, new ListItem(_new_value.Text, item.ID.ToString()));
-                        }    
+                        }
                     }
                 }
 
@@ -749,7 +833,7 @@ namespace CustomLookupField
                 if (_availableItems != null && _availableItems.Count != 0)
                 {
                     _customisedList.Items.Clear();
-                //    _customisedList.AutoPostBack = true;
+                    //    _customisedList.AutoPostBack = true;
                     _customisedList.Items.AddRange(_availableItems.ToArray());
                 }
             }
@@ -770,7 +854,7 @@ namespace CustomLookupField
                         string url = form.Url;
                         url = weburl + "/" + form.Url;
                         string title = field.InternalName;
-                        _new_element.OnClientClick = "javascript:SP.UI.ModalDialog.showModalDialog({ url: '" + url + "', title: '" + title + "' }); return false";
+                        _new_element.OnClientClick = "javascript:SP.UI.ModalDialog.showModalDialog({ url: '" + url + "', title: '" + title + "' , dialogReturnValueCallback: RefreshOnDialogClose}); return false";
                     }
                     else
                     {
@@ -795,6 +879,8 @@ namespace CustomLookupField
             string parent_column = Convert.ToString(field.GetCustomProperty(CustomDropDownList.PARENT_COLUMN));
             string link_column = Convert.ToString(field.GetCustomProperty(CustomDropDownList.LINK_COLUMN));
 
+            _table = (HtmlTable)TemplateContainer.FindControl("MultiColumnTable");
+            _table.Visible = true;
             left_box = (ListBox)TemplateContainer.FindControl("LeftBox");
             left_box.Visible = true;
             right_box = (ListBox)TemplateContainer.FindControl("RightBox");
@@ -866,7 +952,7 @@ namespace CustomLookupField
                         string url = form.Url;
                         url = weburl + "/" + form.Url;
                         string title = field.InternalName;
-                        _new_element.OnClientClick = "javascript:SP.UI.ModalDialog.showModalDialog({ url: '" + url + "', title: '" + title + "' }); return false";
+                        _new_element.OnClientClick = "javascript:SP.UI.ModalDialog.showModalDialog({ url: '" + url + "', title: '" + title + "' , dialogReturnValueCallback: RefreshOnDialogClose}); return false";
                     }
                     else
                     {
@@ -1186,7 +1272,8 @@ namespace CustomLookupField
 
                     }
                     base.Field.SetCustomProperty("Items", s);
-                    this.SetAdditionalFields(_customisedList.SelectedItem.Value);
+                    if (_customisedList.SelectedItem != null)
+                        this.SetAdditionalFields(_customisedList.SelectedItem.Value);
                     return _customisedList.SelectedValue;
                 }
             }
@@ -1303,9 +1390,14 @@ namespace CustomLookupField
             CustomDropDownList field = base.Field as CustomDropDownList;
             if (field.AllowMultipleValues)
             {
-                if (_fieldVals != null && _fieldVals.Count > 0)
+                string str = field.GetProperty(CustomDropDownList.PARENT_COLUMN);
+                if (!string.IsNullOrEmpty(str) && Convert.ToString(SPContext.Current.ListItem[new Guid(str)]) == "" && !Convert.ToBoolean(field.GetCustomProperty(CustomDropDownList.SHOW_ALL_VALUES)))
                 {
-                    string s = string.Empty;
+                    return;
+                }
+
+                if (_fieldVals != null && _fieldVals.Count >= 0)
+                {
                     right_box.Items.Clear();
                     foreach (SPFieldLookupValue i in _fieldVals)
                     {
@@ -1314,6 +1406,14 @@ namespace CustomLookupField
                         _availableItems.Remove(item);
                     }
 
+                    left_box.Items.Clear();
+                    foreach (ListItem item in _availableItems)
+                    {
+                        left_box.Items.Add(item);
+                    }
+                }
+                else if (Convert.ToBoolean(field.GetCustomProperty(CustomDropDownList.SHOW_ALL_VALUES)))
+                {
                     left_box.Items.Clear();
                     foreach (ListItem item in _availableItems)
                     {
@@ -1365,6 +1465,7 @@ namespace CustomLookupField
                         {
                             if (list_box_left.Attributes["side"].ToString().Equals("right"))
                             {
+                                list_box_left.Items.Clear();
                                 is_left_box = false;
                             }
                             else
@@ -1448,17 +1549,17 @@ namespace CustomLookupField
                             if (item_list != null && item_list.Count != 0)
                             {
                                 list_box_left.Items.AddRange(item_list.ToArray());
-                              //  list_box_left.AutoPostBack = true;
+                                //  list_box_left.AutoPostBack = true;
                                 list_box_left.Attributes.Add("parent_selected_value", selected_items);
                             }
                             else
                             {
-                                if (Convert.ToBoolean(custddl.GetCustomProperty(CustomDropDownList.SHOW_ALL_VALUES)))
+                                if (Convert.ToBoolean(custddl.GetCustomProperty(CustomDropDownList.SHOW_ALL_VALUES)) && (string.IsNullOrEmpty(parent_field_selected_value) || parent_field_selected_value == "0"))
                                 {
                                     Initialize_multi_value(custddl);
                                     item_list = _availableItems;
                                     list_box_left.Items.AddRange(item_list.ToArray());
-                               //     list_box_left.AutoPostBack = true;
+                                    //     list_box_left.AutoPostBack = true;
                                     list_box_left.Attributes.Add("parent_selected_value", selected_items);
                                 }
                             }
@@ -1502,22 +1603,22 @@ namespace CustomLookupField
                             ddl.Items.Clear();
                             ddl.Items.Insert(0, new ListItem("(None)", "0"));
                             if (item_list != null && item_list.Count != 0)
-                            {           
+                            {
                                 ddl.Items.AddRange(item_list.ToArray());
-                              //  ddl.SelectedIndexChanged += new EventHandler(l_SelectedIndexChanged);
-                             //   ddl.AutoPostBack = true;
+                                //  ddl.SelectedIndexChanged += new EventHandler(l_SelectedIndexChanged);
+                                //   ddl.AutoPostBack = true;
                                 ddl.Attributes.Add("parent_selected_value", selected_items);
                             }
                             else
                             {
-                                if (Convert.ToBoolean(custddl.GetCustomProperty(CustomDropDownList.SHOW_ALL_VALUES)))
+                                if (Convert.ToBoolean(custddl.GetCustomProperty(CustomDropDownList.SHOW_ALL_VALUES)) && (string.IsNullOrEmpty(parent_field_selected_value) || parent_field_selected_value == "0"))
                                 {
                                     Initialize(custddl);
                                     item_list = _availableItems;
-                                    
+
                                     ddl.Items.AddRange(item_list.ToArray());
-                                   // ddl.SelectedIndexChanged += new EventHandler(l_SelectedIndexChanged);
-                                 //   ddl.AutoPostBack = true;
+                                    // ddl.SelectedIndexChanged += new EventHandler(l_SelectedIndexChanged);
+                                    // ddl.AutoPostBack = true;
                                     ddl.Attributes.Add("parent_selected_value", selected_items);
                                 }
                             }
@@ -1612,5 +1713,85 @@ namespace CustomLookupField
             }
             return false;
         }
+
+        public List<ListItem> GetCurrentLinkedFieldValue()
+        {
+            List<ListItem> returnListITems = new List<System.Web.UI.WebControls.ListItem>();
+            CustomDropDownList field = base.Field as CustomDropDownList;
+            string linked_column = field.GetProperty(CustomDropDownList.LINK_COLUMN);
+            bool has_link = Convert.ToString(field.GetCustomProperty(CustomDropDownList.LINK)) == Boolean.TrueString;
+            if (has_link)
+            {
+                string str = field.GetProperty(CustomDropDownList.PARENT_COLUMN);
+                if (!string.IsNullOrEmpty(str))
+                {
+                    SPField fldPArent = SPContext.Current.List.Fields[new Guid(field.GetProperty(CustomDropDownList.PARENT_COLUMN))];
+
+                    //if (fldPArent.FieldRenderingControl.ControlMode == SPControlMode.New)
+                    //{
+                    //    if (fldPArent.TypeAsString == "CustomDropDownList")
+                    //    {
+                    //        CustomDropDownList parentField = fldPArent as CustomDropDownList;
+                    //    }
+                    //}
+
+                    SPFieldLookupValue val = fldPArent.FieldRenderingControl.ItemFieldValue as SPFieldLookupValue;
+
+                    if (val != null)
+                    {
+                        Helper.get_matched_items(field, val.LookupId.ToString(), linked_column, ref returnListITems);
+                    }
+                    else
+                    {
+                        SPFieldLookupValueCollection valColl = fldPArent.FieldRenderingControl.ItemFieldValue as SPFieldLookupValueCollection;
+
+                        if (valColl != null && valColl.Count > 0)
+                        {
+                            foreach (SPFieldLookupValue val1 in valColl)
+                            {
+                                if (val1 != null)
+                                {
+                                    Helper.get_matched_items(field, val1.LookupId.ToString(), linked_column, ref returnListITems);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return returnListITems;
+        }
+
+        Boolean ParentValueNullOREmpty()
+        {
+            CustomDropDownList field = base.Field as CustomDropDownList;
+            string linked_column = field.GetProperty(CustomDropDownList.LINK_COLUMN);
+            bool has_link = Convert.ToString(field.GetCustomProperty(CustomDropDownList.LINK)) == Boolean.TrueString;
+            if (has_link)
+            {
+                string str = field.GetProperty(CustomDropDownList.PARENT_COLUMN);
+                if (!string.IsNullOrEmpty(str))
+                {
+                    SPField fldPArent = SPContext.Current.List.Fields[new Guid(field.GetProperty(CustomDropDownList.PARENT_COLUMN))];
+
+                    SPFieldLookupValue val = fldPArent.FieldRenderingControl.ItemFieldValue as SPFieldLookupValue;
+
+                    if (val != null)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        SPFieldLookupValueCollection valColl = fldPArent.FieldRenderingControl.ItemFieldValue as SPFieldLookupValueCollection;
+                        if (valColl != null && valColl.Count > 0)
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            return true;
+        }
+
     }
 }

@@ -246,6 +246,8 @@ namespace CustomLookupField
                 {
                     left_box.Items.Add(item);
                 }
+
+                right_box.Items.Clear();
             }
         }
         #endregion

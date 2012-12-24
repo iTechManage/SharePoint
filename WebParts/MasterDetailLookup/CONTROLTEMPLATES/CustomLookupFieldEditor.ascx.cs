@@ -72,9 +72,16 @@ namespace CustomLookupField.CONTROLTEMPLATES
                     webId = listTargetWeb.SelectedItem.Value;
                 }
                 else if (!string.IsNullOrEmpty(TargetWebId)) { webId = TargetWebId; }
+
+                
                   SetTargetColumn(webId, listTargetList.SelectedItem.Value);
                // SetTargetListView(webId, listTargetList.SelectedItem.Value);
                   Page.SetFocus(listTargetColumn);
+                  if (listTargetList.SelectedValue == SPContext.Current.ListId.ToString())
+                  {
+                      cbxLinkParent.Checked = false;
+                      cbxLinkParent.Enabled = false;
+                  }
             }
            // InitialParentColumnValues_with_true();
         }
@@ -421,7 +428,7 @@ namespace CustomLookupField.CONTROLTEMPLATES
                 }
 
             }
-            if (listParentColumn.Items.Count == 0)
+            if (listParentColumn.Items.Count == 0 || listTargetList.SelectedValue == SPContext.Current.ListId.ToString())
             {
                 InitialParentColumnValues_with_false();
                 cbxLinkParent.Enabled = false;
@@ -457,7 +464,7 @@ namespace CustomLookupField.CONTROLTEMPLATES
                     });
 
                     SPList curList = SPContext.Current.List;
-                    str.Remove(new ListItem(curList.Title, curList.ID.ToString()));
+                    //str.Remove(new ListItem(curList.Title, curList.ID.ToString()));
                     listTargetList.Items.AddRange(str.ToArray());
 
                     ListItem bitem = null;
@@ -474,6 +481,7 @@ namespace CustomLookupField.CONTROLTEMPLATES
                 }
             }
         }
+
         private void SetTargetWeb()
         {
             listTargetWeb.Items.Clear();
@@ -514,6 +522,10 @@ namespace CustomLookupField.CONTROLTEMPLATES
         {
             if (f.InternalName.Equals("ID") || f.InternalName.Equals("Created") || f.InternalName.Equals("Author") || f.InternalName.Equals("Modified") ||
                 f.InternalName.Equals("Editor") || f.InternalName.Equals("_UIVersionString") || f.InternalName.Equals("Title"))
+            {
+                return true;
+            }
+            else if (this.CanFieldBeDisplayed(f))
             {
                 return true;
             }
@@ -719,7 +731,7 @@ namespace CustomLookupField.CONTROLTEMPLATES
             _f.SetCustomProperty(CustomDropDownList.LINK, cbxLinkParent.Checked);
             _f.SetCustomProperty(CustomDropDownList.ALLOW_MULTIPLE, cbxMultipleValues.Checked);
             _f.SetCustomProperty(CustomDropDownList.SHOW_ALL_VALUES, cbxParentEmpty.Checked);
-            if (cbxLinkParent.Checked)
+            if (cbxLinkParent.Checked && cbxLinkParent.Enabled)
             {
               //  if (listParentColumn.Items.Count != 0)
                 {
