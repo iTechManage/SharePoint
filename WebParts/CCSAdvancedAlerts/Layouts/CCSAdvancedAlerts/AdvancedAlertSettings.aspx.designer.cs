@@ -13,6 +13,24 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts {
     public partial class AdvancedAlertSettings {
         
         /// <summary>
+        /// LitUserID control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal LitUserID;
+        
+        /// <summary>
+        /// ddlUserID control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlUserID;
+        
+        /// <summary>
         /// gvAlerts control.
         /// </summary>
         /// <remarks>
@@ -20,6 +38,24 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::Microsoft.SharePoint.WebControls.SPGridView gvAlerts;
+        
+        /// <summary>
+        /// gvAlertsPager control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Microsoft.SharePoint.WebControls.SPGridViewPager gvAlertsPager;
+        
+        /// <summary>
+        /// dsAlerts control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Microsoft.SharePoint.WebControls.SPDataSource dsAlerts;
         
         /// <summary>
         /// Literal1 control.

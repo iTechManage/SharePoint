@@ -18,17 +18,53 @@
         <tr>
             <td colspan="2" class="ms-linksectionheader" style="padding-right: 4px; padding-left: 4px;
                 padding-bottom: 4px; padding-top: 4px;" nowrap="nowrap" width="576">
-                <b>Existing Alerts  </b>
+                <b>Existing Alerts </b>
             </td>
         </tr>
-         <tr>
+        <tr>
             <td>
-               <SharePoint:SPGridView DataKeyNames="ID" ID="gvAlerts" EmptyDataRowStyle-CssClass="ms-vb" AllowPaging="true" PageSize="20" DataSourceID="dsAlerts" AllowSorting="true" OnRowDeleting="gvAlerts_RowDeleting" OnSelectedIndexChanged="gvAlerts_SelectedIndexChanged" AutoGenerateColumns="false" runat="server" EmptyDataText="No Alerts to display">
-
-               </SharePoint:SPGridView>
+                <asp:Literal ID="LitUserID" runat="server" Text="User:"></asp:Literal>&nbsp;&nbsp;
+                <asp:DropDownList runat="server" ID="ddlUserID" AutoPostBack="true" />
             </td>
-          </tr>
-
+        </tr>
+        <tr>
+            <td>
+                <SharePoint:SPGridView DataKeyNames="ID" ID="gvAlerts" EmptyDataRowStyle-CssClass="ms-vb"
+                    AllowPaging="true" PageSize="20" DataSourceID="dsAlerts" AllowSorting="true"
+                    OnRowDeleting="gvAlerts_RowDeleting" OnSelectedIndexChanged="gvAlerts_SelectedIndexChanged"
+                    AutoGenerateColumns="false" runat="server" EmptyDataText="No Data to show">
+                    <Columns>
+                        <asp:TemplateField ControlStyle-Width="25px">
+                            <ItemTemplate>
+                                <input type="checkbox" name="chkalert" id='alert<%#Eval("Id") %>' />
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <SharePoint:SPBoundField DataField="Title" HeaderText="Title" SortExpression="Title" />
+                        <SharePoint:SPBoundField DataField="Owner" HeaderText="Created by" SortExpression="Owner" />
+                        <asp:TemplateField ShowHeader="False">
+                            <ItemTemplate>
+                                <asp:LinkButton ID="lbDeleteAlert" runat="server" CausesValidation="False" CommandName="Delete"
+                                    Text="<%$Resources:wss,viewedit_delete %>" />
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:CommandField SelectText="<%$Resources:wss,multipages_edit %>" ButtonType="Link"
+                            ShowCancelButton="false" ShowEditButton="false" ShowDeleteButton="false" ShowSelectButton="true" />
+                    </Columns>
+                </SharePoint:SPGridView>
+         
+                 <SharePoint:SPGridViewPager GridViewId="gvAlerts" ID="gvAlertsPager" runat="server"
+                        OnClickNext="gvAlerts_PageIndexChanging" OnClickPrevious="gvAlerts_PageIndexChanging">
+                    </SharePoint:SPGridViewPager>
+                    <SharePoint:SPDataSource UseInternalName="true" DataSourceMode="List" Scope="Default"
+                        runat="server" ID="dsAlerts" SelectCommand="<View><ViewFields><FieldRef Name='ID' /><FieldRef Name='Title' /><FieldRef Name='Owner' /></ViewFields><Query><Where><Eq><FieldRef Name='Owner' LookupId='TRUE'/><Value Type='User'>{UserID}</Value></Eq></Where></Query></View>">
+                        <selectparameters>
+                          <asp:Parameter Name="WebID" DefaultValue="RootWeb" />
+                          <asp:Parameter Name="ListName" DefaultValue="CCSAdvancedAlertsList" />
+                          <asp:ControlParameter ControlID="ddlUserID" Name="UserID" PropertyName="SelectedValue" />
+                       </selectparameters>
+                 </SharePoint:SPDataSource>
+            </td>
+        </tr>
         <tr>
             <td colspan="2" class="ms-linksectionheader" style="padding-right: 4px; padding-left: 4px;
                 padding-bottom: 4px; padding-top: 4px;" nowrap="nowrap" width="576">
@@ -110,7 +146,6 @@
                                 <asp:DropDownList ID="ddlRepeatType" runat="server">
                                 </asp:DropDownList>
                                 <asp:TextBox ID="txtRepeatCount" runat="server"></asp:TextBox>
-                                
                             </asp:Panel>
                         </td>
                     </tr>
@@ -250,44 +285,50 @@
                 <table width="100%">
                     <tr>
                         <td class="ms-descriptiontext">
-                            <asp:RadioButton ID="rdImmediately" runat="server" Text="Immediately" AutoPostBack="true" GroupName="rdSendType"></asp:RadioButton>
-                            <asp:Panel ID="pnSubImmediately" runat="server" Visible= "false">
-                                &nbsp;&nbsp;<asp:RadioButton ID="rdImmediateAlways" runat="server" Text="Always"  GroupName="rdSubSendTypeAlways"></asp:RadioButton> <br />
-                                &nbsp;&nbsp;<asp:RadioButton ID="rdImmediateBusinessdays" runat="server" AutoPostBack="true" Text="Business days" GroupName="rdSubSendTypeAlways"></asp:RadioButton>
-                                 &nbsp;&nbsp;&nbsp;&nbsp;<asp:Panel ID="pnImmediateBusinessDays" runat="server" Visible="false">
-                                 &nbsp;&nbsp;&nbsp;&nbsp;<asp:CheckBox ID = "chkImmediateSun" runat="server" Text= "Sun" />
-                                 &nbsp;&nbsp;<asp:CheckBox ID = "chkImmediateMon" runat="server" Text= "Mon" />
-                                 &nbsp;&nbsp;<asp:CheckBox ID = "chkImmediateTue" runat="server" Text= "Tue" />
-                                 &nbsp;&nbsp;<asp:CheckBox ID = "chkImmediateWed" runat="server" Text= "Wed" />
-                                 &nbsp;&nbsp;<asp:CheckBox ID = "chkImmediateThu" runat="server" Text= "Thu" />
-                                 &nbsp;&nbsp;<asp:CheckBox ID = "chkImmediateFri" runat="server" Text= "Fri" />
-                                 &nbsp;&nbsp;<asp:CheckBox ID = "chkImmediateSat" runat="server" Text= "Sat" />
-                                 <br />
-                                 &nbsp;&nbsp;&nbsp;&nbsp;<asp:Label ID = "Label1" runat="server" Text = "Start Time: "/>
-                                 &nbsp;&nbsp;<asp:DropDownList ID="ddlImmediateBusinessStartTime" runat="server"/>
-                                 &nbsp;&nbsp;<asp:Label ID = "Label2" runat="server" Text = "End Time: "/>
-                                 &nbsp;&nbsp;<asp:DropDownList ID="ddlImmediateBusinessEndTime" runat="server"/>
-                               </asp:Panel>
+                            <asp:RadioButton ID="rdImmediately" runat="server" Text="Immediately" AutoPostBack="true"
+                                GroupName="rdSendType"></asp:RadioButton>
+                            <asp:Panel ID="pnSubImmediately" runat="server" Visible="false">
+                                &nbsp;&nbsp;<asp:RadioButton ID="rdImmediateAlways" runat="server" Text="Always"
+                                    GroupName="rdSubSendTypeAlways"></asp:RadioButton>
+                                <br />
+                                &nbsp;&nbsp;<asp:RadioButton ID="rdImmediateBusinessdays" runat="server" AutoPostBack="true"
+                                    Text="Business days" GroupName="rdSubSendTypeAlways"></asp:RadioButton>
+                                &nbsp;&nbsp;&nbsp;&nbsp;<asp:Panel ID="pnImmediateBusinessDays" runat="server" Visible="false">
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<asp:CheckBox ID="chkImmediateSun" runat="server" Text="Sun" />
+                                    &nbsp;&nbsp;<asp:CheckBox ID="chkImmediateMon" runat="server" Text="Mon" />
+                                    &nbsp;&nbsp;<asp:CheckBox ID="chkImmediateTue" runat="server" Text="Tue" />
+                                    &nbsp;&nbsp;<asp:CheckBox ID="chkImmediateWed" runat="server" Text="Wed" />
+                                    &nbsp;&nbsp;<asp:CheckBox ID="chkImmediateThu" runat="server" Text="Thu" />
+                                    &nbsp;&nbsp;<asp:CheckBox ID="chkImmediateFri" runat="server" Text="Fri" />
+                                    &nbsp;&nbsp;<asp:CheckBox ID="chkImmediateSat" runat="server" Text="Sat" />
+                                    <br />
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<asp:Label ID="Label1" runat="server" Text="Start Time: " />
+                                    &nbsp;&nbsp;<asp:DropDownList ID="ddlImmediateBusinessStartTime" runat="server" />
+                                    &nbsp;&nbsp;<asp:Label ID="Label2" runat="server" Text="End Time: " />
+                                    &nbsp;&nbsp;<asp:DropDownList ID="ddlImmediateBusinessEndTime" runat="server" />
+                                </asp:Panel>
                             </asp:Panel>
                         </td>
                     </tr>
                     <tr>
                         <td class="ms-descriptiontext">
-                            <asp:RadioButton ID="rdDaily" runat="server"  Text="Daily" AutoPostBack="true" GroupName="rdSendType"></asp:RadioButton>
-                             <asp:Panel ID="pnSubDaily" runat="server" Visible="false">
-                                 &nbsp;&nbsp;&nbsp;&nbsp;<asp:CheckBox ID = "chkDailySun" runat="server" Text= "Sun" />
-                                 &nbsp;&nbsp;<asp:CheckBox ID = "chkDailyMon" runat="server" Text= "Mon" />
-                                 &nbsp;&nbsp;<asp:CheckBox ID = "chkDailyTue" runat="server" Text= "Tue" />
-                                 &nbsp;&nbsp;<asp:CheckBox ID = "chkDailyWed" runat="server" Text= "Wed" />
-                                 &nbsp;&nbsp;<asp:CheckBox ID = "chkDailyThu" runat="server" Text= "Thu" />
-                                 &nbsp;&nbsp;<asp:CheckBox ID = "chkDailyFri" runat="server" Text= "Fri" />
-                                 &nbsp;&nbsp;<asp:CheckBox ID = "chkDailySat" runat="server" Text= "Sat" />
+                            <asp:RadioButton ID="rdDaily" runat="server" Text="Daily" AutoPostBack="true" GroupName="rdSendType">
+                            </asp:RadioButton>
+                            <asp:Panel ID="pnSubDaily" runat="server" Visible="false">
+                                &nbsp;&nbsp;&nbsp;&nbsp;<asp:CheckBox ID="chkDailySun" runat="server" Text="Sun" />
+                                &nbsp;&nbsp;<asp:CheckBox ID="chkDailyMon" runat="server" Text="Mon" />
+                                &nbsp;&nbsp;<asp:CheckBox ID="chkDailyTue" runat="server" Text="Tue" />
+                                &nbsp;&nbsp;<asp:CheckBox ID="chkDailyWed" runat="server" Text="Wed" />
+                                &nbsp;&nbsp;<asp:CheckBox ID="chkDailyThu" runat="server" Text="Thu" />
+                                &nbsp;&nbsp;<asp:CheckBox ID="chkDailyFri" runat="server" Text="Fri" />
+                                &nbsp;&nbsp;<asp:CheckBox ID="chkDailySat" runat="server" Text="Sat" />
                             </asp:Panel>
                         </td>
                     </tr>
                     <tr>
                         <td class="ms-descriptiontext">
-                            <asp:RadioButton ID="rdWeekly" runat="server" Text="Weekly" AutoPostBack="true" GroupName="rdSendType"></asp:RadioButton>
+                            <asp:RadioButton ID="rdWeekly" runat="server" Text="Weekly" AutoPostBack="true" GroupName="rdSendType">
+                            </asp:RadioButton>
                         </td>
                     </tr>
                 </table>

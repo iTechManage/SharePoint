@@ -415,5 +415,37 @@ namespace CCSAdvancedAlerts
         }
 
         #endregion
+
+
+        #region Common methods
+
+        internal Dictionary<string,string> GetAlertOwners()
+        {
+            Dictionary<string, string> allOwners = new Dictionary<string, string>();
+            try
+            {
+                //Iterate througu all the alerts for the owners
+                foreach (SPListItem item in alertList.Items)
+                {
+                    //Push them to Dict
+                    if (item[""] != null)
+                    {
+                        SPUser user = new SPFieldUserValue(SPContext.Current.Web, item["Owner"].ToString()).User;
+                        if(!allOwners.ContainsKey(user.ID.ToString()))
+                        {
+                            allOwners.Add(user.ID.ToString(), user.Name);
+                        }
+                    }
+                }
+            }
+            catch
+            {
+               //Error occured while getting all the owners of the alerts
+            }
+            return allOwners;
+        }
+
+
+        #endregion
     }
 }

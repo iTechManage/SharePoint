@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.SharePoint.Administration;
 using Microsoft.SharePoint;
+using Microsoft.SharePoint.Utilities;
 
 
 namespace CCSAdvancedAlerts
@@ -123,10 +124,32 @@ namespace CCSAdvancedAlerts
             {
                 if (web != null && list != null)
                 {
-                    DateTime executionTime;
-                    DateTime currentTime;
-                }
+                    DateTime executionTime = DateTime.Now.AddMinutes(-30) ;
+                    DateTime currentTime = DateTime.Now;
+                    //We need to get all alerts which are fall
+                    SPQuery query = new SPQuery();
+                    //query.Query(string.Format("<Where>\r\n <And>\r\n        <Gt>\r\n            <FieldRef Name=\"{0}\" />\r\n            <Value Type=\"DateTime\" IncludeTimeValue=\"TRUE\">{1}</Value>\r\n        </Gt>\r\n        <Leq>\r\n            <FieldRef Name=\"{0}\" />\r\n            <Value Type=\"DateTime\" IncludeTimeValue=\"TRUE\">{2}</Value>\r\n        </Leq>\r\n    </And>\r\n</Where>", new object[] { alert.DateColumnName, SPUtility.CreateISO8601DateTimeFromSystemDateTime(executionTime), SPUtility.CreateISO8601DateTimeFromSystemDateTime(currentTime)}));
+                    SPListItemCollection items = list.GetItems(query);
+                    if (items.Count> 0)
+                    {
+                        foreach (SPListItem item in items)
+                        {
+                            if (alert.IsValid(item,AlertEventType.DateColumn))
+                            {
+                                //mailSender.SendAlert(alert, ChangeTypes.DateColumn, item2, null);
 
+                            }
+                            else
+                            {
+                                //Some conditions are not passthrough
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //No items returned as part of Query
+                    }
+                }
             }
             catch
             {

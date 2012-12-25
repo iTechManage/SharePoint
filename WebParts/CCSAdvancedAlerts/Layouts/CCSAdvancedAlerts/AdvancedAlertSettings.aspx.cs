@@ -16,6 +16,26 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
         private const string alertSettingsListName = "CCSAdvancedAlertsList";
         private SPList list = null;
         private bool resetControls;
+        private AlertManager alertMngr;
+
+        private AlertManager AlertMngr
+        {
+            get
+            {
+                try
+                {
+                    if (this.alertMngr == null)
+                    {
+                        this.alertMngr = new AlertManager(SPContext.Current.Site.Url);
+                    }
+                }
+                catch 
+                {
+                    throw;
+                }
+                return alertMngr;
+            }
+        }
 
         //protected DataTable PropertyCollection = new DataTable();
         //public AdvancedAlertSettings()
@@ -39,6 +59,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             {
                 PopulateSites();
                 populateStaticDropDowns();
+                FillddlUserID();
             }
 
             //Alert based events
@@ -857,6 +878,69 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             catch { }
         }
 
+
+        #endregion
+
+        #region Grid to show All Alerts for the user
+        protected void FillddlUserID()
+        {
+            SPUser currentUser = SPContext.Current.Web.CurrentUser;
+            this.ddlUserID.Items.Add(new ListItem(currentUser.Name, currentUser.ID.ToString()));
+            if (currentUser.IsSiteAdmin)
+            {
+                Dictionary<string, string> allAlerOwners = new Dictionary<string, string>();
+                foreach (string key in allAlerOwners.Keys)
+                {
+                    if (key != currentUser.ID.ToString())
+                    {
+                        this.ddlUserID.Items.Add(new ListItem(key, allAlerOwners[key]));
+                    }
+                }
+            }
+        }
+
+        protected void ddlUserID_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                this.gvAlerts.SelectedIndex = -1;
+                this.gvAlerts.DataBind();
+            }
+            catch 
+            {
+               //Error ocurred getting elerts for the user
+            }
+        }
+
+        protected void gvAlerts_PageIndexChanging(object sender, EventArgs e)
+        {
+            try
+            {
+                this.gvAlerts.SelectedIndex = -1;
+                this.gvAlerts.DataBind();
+            }
+            catch 
+            {  }
+        }
+
+        protected void gvAlerts_RowDeleting(object sender, GridViewDeleteEventArgs e)
+        {
+            try
+            {
+                e.Cancel = true;
+                int alertId = Convert.ToInt32(this.gvAlerts.DataKeys[e.RowIndex][0]);
+                //this.alertMngr.DeleteAlert(alertId, this.TemplateDal);
+                this.dsAlerts.DataBind();
+                this.gvAlerts.DataBind();
+            }
+            catch 
+            {
+            }
+        }
+
+        protected void gvAlerts_SelectedIndexChanged(object sender, EventArgs e)
+        {
+        }
 
         #endregion
 
