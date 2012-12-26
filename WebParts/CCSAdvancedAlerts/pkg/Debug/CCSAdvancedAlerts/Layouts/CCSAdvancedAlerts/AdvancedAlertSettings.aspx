@@ -51,18 +51,17 @@
                             ShowCancelButton="false" ShowEditButton="false" ShowDeleteButton="false" ShowSelectButton="true" />
                     </Columns>
                 </SharePoint:SPGridView>
-         
-                 <SharePoint:SPGridViewPager GridViewId="gvAlerts" ID="gvAlertsPager" runat="server"
-                        OnClickNext="gvAlerts_PageIndexChanging" OnClickPrevious="gvAlerts_PageIndexChanging">
-                    </SharePoint:SPGridViewPager>
-                    <SharePoint:SPDataSource UseInternalName="true" DataSourceMode="List" Scope="Default"
-                        runat="server" ID="dsAlerts" SelectCommand="<View><ViewFields><FieldRef Name='ID' /><FieldRef Name='Title' /><FieldRef Name='Owner' /></ViewFields><Query><Where><Eq><FieldRef Name='Owner' LookupId='TRUE'/><Value Type='User'>{UserID}</Value></Eq></Where></Query></View>">
-                        <selectparameters>
-                          <asp:Parameter Name="WebID" DefaultValue="RootWeb" />
-                          <asp:Parameter Name="ListName" DefaultValue="CCSAdvancedAlertsList" />
-                          <asp:ControlParameter ControlID="ddlUserID" Name="UserID" PropertyName="SelectedValue" />
-                       </selectparameters>
-                 </SharePoint:SPDataSource>
+                <SharePoint:SPGridViewPager GridViewId="gvAlerts" ID="gvAlertsPager" runat="server"
+                    OnClickNext="gvAlerts_PageIndexChanging" OnClickPrevious="gvAlerts_PageIndexChanging">
+                </SharePoint:SPGridViewPager>
+                <SharePoint:SPDataSource UseInternalName="true" DataSourceMode="List" Scope="Default"
+                    runat="server" ID="dsAlerts" SelectCommand="<View><ViewFields><FieldRef Name='ID' /><FieldRef Name='Title' /><FieldRef Name='Owner' /></ViewFields><Query><Where><Eq><FieldRef Name='Owner' LookupId='TRUE'/><Value Type='User'>{UserID}</Value></Eq></Where></Query></View>">
+                    <SelectParameters>
+                        <asp:Parameter Name="WebID" DefaultValue="RootWeb" />
+                        <asp:Parameter Name="ListName" DefaultValue="CCSAdvancedAlertsList" />
+                        <asp:ControlParameter ControlID="ddlUserID" Name="UserID" PropertyName="SelectedValue" />
+                    </SelectParameters>
+                </SharePoint:SPDataSource>
             </td>
         </tr>
         <tr>
@@ -453,6 +452,71 @@
         <tr>
             <td>
                 <table width="100%" class="ms-authoringcontrols" cellpadding="4" cellspacing="0">
+                    <tr>
+                        <td>
+                            <table cellpadding="2" cellspacing="2">
+                                <tr>
+                                    <td>
+                                        <asp:Literal ID="litItemAdded" runat="server" Text="Item Added"></asp:Literal>
+                                    </td>
+                                    <td>
+                                        <asp:DropDownList ID="ddlItemAdded" runat="server" />
+                                    </td>
+                                    <td>
+                                        <asp:LinkButton ID="lnkItemAddedEdit" runat="server" Text="Edit" CssClass="ms-addnew" />
+                                    </td>
+                                    <td>
+                                        <asp:LinkButton ID="lnkItemAddedDelete" runat="server" Text="Delete" CssClass="ms-addnew" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <asp:Literal ID="litItemUpdated" runat="server" Text="Item Update"></asp:Literal>
+                                    </td>
+                                    <td>
+                                        <asp:DropDownList ID="ddlItemUpdate" runat="server" />
+                                    </td>
+                                    <td>
+                                        <asp:LinkButton ID="lnkItemUpdateEdit" runat="server" Text="Edit" CssClass="ms-addnew" />
+                                    </td>
+                                    <td>
+                                        <asp:LinkButton ID="lnkItemUpdateDelete" runat="server" Text="Delete" CssClass="ms-addnew" />
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <asp:Literal ID="litItemDelted" runat="server" Text="Item Delete"></asp:Literal>
+                                    </td>
+                                    <td>
+                                        <asp:DropDownList ID="ddlItemDelete" runat="server" />
+                                    </td>
+                                    <td>
+                                        <asp:LinkButton ID="lnkItemDeleteEdit" runat="server" Text="Edit" CssClass="ms-addnew" />
+                                    </td>
+                                    <td>
+                                        <asp:LinkButton ID="lnkItemDeleteDelete" runat="server" Text="Delete" CssClass="ms-addnew" />
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <asp:Literal ID="litDateTime" runat="server" Text="Date"></asp:Literal>
+                                    </td>
+                                    <td>
+                                        <asp:DropDownList ID="ddlDateTime" runat="server" />
+                                    </td>
+                                    <td>
+                                        <asp:LinkButton ID="linkDateTimeEdit" runat="server" Text="Edit" CssClass="ms-addnew" />
+                                    </td>
+                                    <td>
+                                        <asp:LinkButton ID="linkDateTimeDelete" runat="server" Text="Delete" CssClass="ms-addnew" />
+                                    </td>
+                                </tr>
+
+                            </table>
+                        </td>
+                    </tr>
                     <tr>
                         <td>
                             <table cellpadding="2" cellspacing="2">

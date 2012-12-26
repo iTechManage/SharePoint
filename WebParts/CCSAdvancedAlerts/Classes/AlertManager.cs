@@ -350,7 +350,58 @@ namespace CCSAdvancedAlerts
         /// 
         /// </summary>
         /// <param name="dAlert"></param>
-        
+        internal void DeleteAlerts(string alertID, MailTemplateManager mtManager)
+        {
+            try
+            {
+                SPListItem alertItem = null;
+                //Delete the alert 
+                if(!string.IsNullOrEmpty(alertID))
+                {
+                    alertItem = this.alertList.GetItemById(Convert.ToInt32(alertID));
+                    if (alertItem != null)
+                    {
+                        try
+                        {
+                            alertItem.Delete();
+                            //Delte the template objects for the alerts
+                            mtManager.DeleteTemplateUsageObjects(alertID);
+
+                        }
+                        catch
+                        {
+                            //error occured while deleting alert
+                        }
+                    }
+                }
+                else
+                {
+                    //Alert Id is null or empty
+                }
+                
+            }
+            catch 
+            {
+                //Error occured while deleting alert
+            }
+        }
+
+        internal Alert GetAlertFromID(string alertId,MailTemplateManager mtManager)
+        {
+            Alert alert = null;
+            try
+            {
+               SPListItem item = this.alertList.GetItemById(Convert.ToInt32(alertId));
+               alert = new Alert(item, mtManager);
+            }
+            catch 
+            { 
+                //error occured while entering
+            }
+            return alert;
+        }
+
+
         #endregion
 
 
@@ -428,7 +479,7 @@ namespace CCSAdvancedAlerts
                 foreach (SPListItem item in alertList.Items)
                 {
                     //Push them to Dict
-                    if (item[""] != null)
+                    if (item["Owner"] != null)
                     {
                         SPUser user = new SPFieldUserValue(SPContext.Current.Web, item["Owner"].ToString()).User;
                         if(!allOwners.ContainsKey(user.ID.ToString()))

@@ -16,9 +16,9 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
         private const string alertSettingsListName = "CCSAdvancedAlertsList";
         private SPList list = null;
         private bool resetControls;
-        private AlertManager alertMngr;
 
-        private AlertManager AlertMngr
+        private AlertManager alertMngr;
+        internal AlertManager AlertMngr
         {
             get
             {
@@ -31,19 +31,31 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                 }
                 catch 
                 {
-                    throw;
+                    //Error occured while creating Alert manager
                 }
                 return alertMngr;
             }
         }
 
-        //protected DataTable PropertyCollection = new DataTable();
-        //public AdvancedAlertSettings()
-        //{
-        //    PropertyCollection.Columns.Add("FieldName", typeof(string));
-        //    PropertyCollection.Columns.Add("ComparisionOperator", typeof(string));
-        //    PropertyCollection.Columns.Add("StrValue", typeof(string));
-        //}
+        private MailTemplateManager  mtManager;
+        internal MailTemplateManager MTManager
+        {
+            get
+            {
+                try
+                {
+                    if (this.mtManager == null)
+                    {
+                        this.mtManager = new  MailTemplateManager(SPContext.Current.Site.Url);
+                    }
+                }
+                catch
+                {
+                    //Error occured while creating mail template manager
+                }
+                return mtManager;
+            }
+        }
 
         protected override void CreateChildControls()
         {
@@ -193,7 +205,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                 this.gvConditions.DataBind();
                 this.EnsureConditionInsertRow();
             }
-            catch (Exception exception)
+            catch
             {
             }
         }
@@ -252,7 +264,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                     this.gvConditions_RowCancelEditing(null, null);
                 }
             }
-            catch (Exception exception)
+            catch 
             {
             }
         }
@@ -274,7 +286,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                 ddlOps.SelectedValue = this.Conditions[e.NewEditIndex].ComparisionOperator.ToString();
                 //list3.SelectedValue = this.Conditions[e.NewEditIndex].OnChange ? "AfterChange" : "Always";
             }
-            catch (Exception exception)
+            catch 
             {
             }
         }
@@ -287,7 +299,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                 this.AddUpdateCondition(row.FindControl("ddlConditionField") as DropDownList, row.FindControl("ddlConditionOperator") as DropDownList, row.FindControl("txtConditionFieldValue") as TextBox, this.gvConditions.EditIndex);
                 this.gvConditions_RowCancelEditing(sender, null);
             }
-            catch (Exception exception)
+            catch 
             {
             }
         }
@@ -884,11 +896,13 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
         #region Grid to show All Alerts for the user
         protected void FillddlUserID()
         {
+            
             SPUser currentUser = SPContext.Current.Web.CurrentUser;
             this.ddlUserID.Items.Add(new ListItem(currentUser.Name, currentUser.ID.ToString()));
+            return;
             if (currentUser.IsSiteAdmin)
             {
-                Dictionary<string, string> allAlerOwners = new Dictionary<string, string>();
+                Dictionary<string, string> allAlerOwners = alertMngr.GetAlertOwners();
                 foreach (string key in allAlerOwners.Keys)
                 {
                     if (key != currentUser.ID.ToString())
@@ -929,7 +943,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             {
                 e.Cancel = true;
                 int alertId = Convert.ToInt32(this.gvAlerts.DataKeys[e.RowIndex][0]);
-                //this.alertMngr.DeleteAlert(alertId, this.TemplateDal);
+                this.alertMngr.DeleteAlerts(alertId.ToString(), MTManager);
                 this.dsAlerts.DataBind();
                 this.gvAlerts.DataBind();
             }
@@ -940,7 +954,119 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
 
         protected void gvAlerts_SelectedIndexChanged(object sender, EventArgs e)
         {
+            try
+            {
+                //Edit the existing alert
+                int alertID = Convert.ToInt32(this.gvAlerts.DataKeys[this.gvAlerts.SelectedIndex][0]);
+                this.PopulateAlert(Convert.ToString(alertID));
+            }
+            catch { }
         }
+
+        protected void PopulateAlert(string alertID)
+        {
+                //Populate Alert 
+                try
+                {
+                    Alert alert = alertMngr.GetAlertFromID(alertID,MTManager);
+
+                    //Get the General Information
+                    txtTitle.Text = alert.Title;
+                    ddlSite.SelectedValue = alert.WebId;
+                    ddlList.SelectedValue = alert.ListId;
+
+
+                    //Get Recipient Section
+                    txtTo.Text = alert.ToAddress;
+                    txtFrom.Text =alert.FromAdderss ;
+                    txtCc.Text = alert.CcAddress;
+                    txtBcc.Text = alert.BccAddress;
+
+
+                    //Event Type
+                    chkItemAdded.Checked = alert.AlertType.Contains(AlertEventType.ItemAdded);
+                    chkItemDeleted.Checked = alert.AlertType.Contains(AlertEventType.ItemDeleted);
+                    chkItemUpdated.Checked = alert.AlertType.Contains(AlertEventType.ItemUpdated);
+                    chkDateColumn.Checked = alert.AlertType.Contains(AlertEventType.DateColumn);
+                    
+
+                    //------------------------------------------------------------------
+                    //this.BlockedUsers = ;
+                    this.ddlDateColumn.SelectedValue = alert.DateColumnName;
+                    ddlPeriodType.SelectedValue = Convert.ToString(alert.PeriodType);
+                    this.ddlPeriodPosition.SelectedValue = Convert.ToString(alert.PeriodPosition);
+                    chkRepeat.Checked = alert.Repeat;
+                    ddlRepeatType.SelectedValue = Convert.ToString(alert.RepeatType);
+                    rdImmediately.Checked = alert.ImmidiateAlways;
+
+                    //alert.BusinessStartHour = Convert.ToInt32(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.ImmediateBusinessHoursStart).InnerText);
+                    alert.BusinessStartHour = 10;
+
+                    //alert.BusinessendtHour = Convert.ToInt32(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.ImmediateBusinessHoursFinish).InnerText);
+                    alert.BusinessendtHour = 18;
+
+                    //alert.DailyBusinessDays = DesrializeDays(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.DailyBusinessDays).InnerText);
+                    chkDailySun.Checked = alert.DailyBusinessDays.Contains(WeekDays.sun);
+                    chkDailyMon.Checked = alert.DailyBusinessDays.Contains(WeekDays.mon);
+                    chkDailyTue.Checked = alert.DailyBusinessDays.Contains(WeekDays.tue);
+                    chkDailyWed.Checked = alert.DailyBusinessDays.Contains(WeekDays.wed);
+                    chkDailyFri.Checked = alert.DailyBusinessDays.Contains(WeekDays.fri);
+                    chkDailySat.Checked = alert.DailyBusinessDays.Contains(WeekDays.sat);
+                    
+
+                    //alert.ImmediateBusinessDays = DesrializeDays(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.ImmediateBusinessDays).InnerText);
+                    chkImmediateSun.Checked = alert.ImmediateBusinessDays.Contains(WeekDays.sun);
+                    chkImmediateMon.Checked = alert.ImmediateBusinessDays.Contains(WeekDays.mon);
+                    chkImmediateTue.Checked = alert.ImmediateBusinessDays.Contains(WeekDays.tue);
+                    chkImmediateWed.Checked = alert.ImmediateBusinessDays.Contains(WeekDays.wed);
+                    chkImmediateThu.Checked = alert.ImmediateBusinessDays.Contains(WeekDays.thu);
+                    chkImmediateFri.Checked = alert.ImmediateBusinessDays.Contains(WeekDays.fri);
+                    chkImmediateSat.Checked = alert.ImmediateBusinessDays.Contains(WeekDays.sat);
+
+                    
+                    //alert.CombineAlerts = true;
+                    
+                    //alert.SummaryMode = true;
+
+                    txtPeriodQty.Text = Convert.ToString(alert.PeriodQty);
+
+                    txtRepeatInterval.Text = Convert.ToString(alert.RepeatInterval);
+
+                    txtRepeatCount.Text = Convert.ToString(alert.RepeatCount);
+                    
+                    //when To Send
+                    rdDaily.Checked = (alert.SendType == SendType.Daily);
+                    rdImmediately.Checked = (alert.SendType == SendType.Immediate);
+                    rdWeekly.Checked = (alert.SendType == SendType.Weekely);
+                    
+                    //Conditions
+                    this.Conditions = alert.Conditions as List<Condition>;
+
+                    //Populate Mail Templates
+
+             
+                }
+                catch { }
+
+        }
+
+        private void PopulateTemplates()
+        {
+            
+            //Get all the templated for the current user
+            Dictionary<string,string> templatesByUser  = MTManager.GetTemplatesByUser(Convert.ToInt32(this.ddlUserID.SelectedItem.Text));
+
+            //r e
+
+            //ListItem li = new ListItem(
+            
+            //ddlItemAdded.Items.Add(
+            //ddlItemUpdate
+            //ddlItemDelete
+            //ddlDateTime
+        }
+
+
 
         #endregion
 

@@ -57,6 +57,7 @@
     <Compile Include="AdvancedAlertTimerJob\AlertJobdefinition.cs" />
     <Compile Include="AdvancedAlertReceiver\AdvancedAlertEventReceiver.cs" />
     <Compile Include="AdvancedAlertTimerJob\AlertsCache.cs" />
+    <Compile Include="AdvancedAlertTimerJob\TimerJobHelper.cs" />
     <Compile Include="Classes\Alert.cs" />
     <Compile Include="Classes\AlertManager.cs" />
     <Compile Include="Classes\Column.cs" />

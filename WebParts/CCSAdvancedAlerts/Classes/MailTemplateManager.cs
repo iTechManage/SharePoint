@@ -112,9 +112,35 @@ namespace CCSAdvancedAlerts
 
             return mTempalte;
         }
+
+        internal Dictionary<string, string> GetTemplatesByUser(int userID)
+        {
+            Dictionary<string, string> templatesByUser = new Dictionary<string, string>();
+            try
+            {
+                //Iterate througu all the alerts for the owners
+                foreach (SPListItem item in mailTemplateList.Items)
+                {
+                    //Push them to Dict
+                    if (item["Owner"] != null)
+                    {
+                        SPUser user = new SPFieldUserValue(SPContext.Current.Web, item["Owner"].ToString()).User;
+                        if (user.ID != userID)
+                        {
+                            templatesByUser.Add(Convert.ToString(item.ID), Convert.ToString(item["Title"]));
+                        }
+                        
+                    }
+                }
+            }
+            catch
+            {
+                //Error occured while getting all the owners of the alerts
+            }
+            return templatesByUser;
+        }
                 
         #endregion
-
 
         #region Template Usage Related
 
@@ -227,6 +253,27 @@ namespace CCSAdvancedAlerts
             }
             catch { }
             return mtuObjects;
+        }
+
+        internal void DeleteTemplateUsageObjects(string alertid)
+        {
+            try
+            {
+                //We need to get all the instances which are related alert id
+                SPQuery query = new SPQuery();
+                query.Query  = string.Format("<Where><Eq><FieldRef Name=\"Alert\" LookupId=\"TRUE\"/><Value Type=\"Lookup\">{0}</Value></Eq></Where>", alertid);
+                SPListItemCollection items = this.mailTemlateUsageList.GetItems(query);
+                for (int i = 0; i < items.Count; i++)
+                {
+                    this.mailTemlateUsageList.ParentWeb.AllowUnsafeUpdates = true;
+                    items[i].Delete();
+                    this.mailTemlateUsageList.ParentWeb.AllowUnsafeUpdates = false;
+                }
+            }
+            catch
+            {
+                //error occured while deleting the template usage object
+            }
         }
 
         #endregion
