@@ -26,5 +26,15 @@ namespace CCSAdvancedAlerts
 
         }
 
+        internal static string GetChildValue(XmlDocument xmlDoc, string nodeName)
+        {
+            string strValue = string.Empty;
+            if(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.BlockedUsers) != null)
+            {
+                strValue = xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.BlockedUsers).InnerText;
+            }
+            return strValue;
+        }
+
     }
 }

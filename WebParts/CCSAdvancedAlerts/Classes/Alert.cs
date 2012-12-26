@@ -331,52 +331,49 @@ namespace CCSAdvancedAlerts
                 }
 
                 //General information
-                this.BlockedUsers = xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.BlockedUsers).InnerText;
+                //this.BlockedUsers = xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.BlockedUsers).InnerText;
+                this.BlockedUsers =  XMLHelper.GetChildValue(xmlDoc , XMLElementNames.BlockedUsers);
+                
+                this.DateColumnName =  XMLHelper.GetChildValue(xmlDoc, XMLElementNames.DateColumnName);
 
-                this.DateColumnName = xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.DateColumnName).InnerText;
+                if(!string.IsNullOrEmpty(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.PType)))
+                this.PeriodType = (PeriodType)Enum.Parse(typeof(PeriodType), XMLHelper.GetChildValue(xmlDoc, XMLElementNames.PType));
 
-                this.PeriodType = (PeriodType)Enum.Parse(typeof(PeriodType), xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.PType).InnerText);
-
-                this.PeriodPosition = (PeriodPosition)Enum.Parse(typeof(PeriodPosition), xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.PPosition).InnerText); ;
+                if (!string.IsNullOrEmpty(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.PPosition)))
+                this.PeriodPosition = (PeriodPosition)Enum.Parse(typeof(PeriodPosition), XMLHelper.GetChildValue(xmlDoc, XMLElementNames.PPosition));
                
-                this.Repeat =Convert.ToBoolean( xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.Repeat).InnerText);
+                this.Repeat = Utilities.ParseToBool(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.Repeat));
+              
+                this.RepeatInterval = Utilities.ParseToInt(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.RInterval));
 
-                this.RepeatInterval =Convert.ToInt32( xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.RInterval).InnerText);
+                if (!string.IsNullOrEmpty(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.RType)))
+                this.RepeatType = (RepeatType)Enum.Parse(typeof(RepeatType), XMLHelper.GetChildValue(xmlDoc, XMLElementNames.RType));
 
-                this.RepeatType = (RepeatType)Enum.Parse(typeof(RepeatType), xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.RType).InnerText);
+                this.RepeatCount = Utilities.ParseToInt(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.RCount));
+                
+                this.CombineAlerts =  Utilities.ParseToBool( XMLHelper.GetChildValue(xmlDoc, XMLElementNames.CombineAlerts));
 
-                this.RepeatCount =Convert.ToInt32( xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.RCount).InnerText);
+                this.ImmidiateAlways = Utilities.ParseToBool(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.ImmediateAlways));
 
-                this.CombineAlerts = Convert.ToBoolean(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.CombineAlerts).InnerText);
+                this.immediateBusinessDays = DesrializeDays(XMLHelper.GetChildValue(xmlDoc,  XMLElementNames.ImmediateBusinessDays));
 
-                this.ImmidiateAlways = Convert.ToBoolean( xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.ImmediateAlways).InnerText);
+                this.BusinessStartHour = Utilities.ParseToInt(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.ImmediateBusinessHoursStart));
 
-                this.immediateBusinessDays = DesrializeDays(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.ImmediateBusinessDays).InnerText);
+                this.BusinessendtHour = Utilities.ParseToInt(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.ImmediateBusinessHoursFinish));
 
-                if(!string.IsNullOrEmpty(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.ImmediateBusinessHoursStart).InnerText))
-                {
-                this.BusinessStartHour =  Convert.ToInt32(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.ImmediateBusinessHoursStart).InnerText);
-                }
+                this.DailyBusinessDays = DesrializeDays(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.DailyBusinessDays));
 
-                if (!string.IsNullOrEmpty(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.ImmediateBusinessHoursFinish).InnerText))
-                {
-                    this.BusinessendtHour = Convert.ToInt32(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.ImmediateBusinessHoursFinish).InnerText);
-                }
+                this.SummaryMode = Convert.ToBoolean( XMLHelper.GetChildValue(xmlDoc,  XMLElementNames.SummaryMode));
 
-                this.DailyBusinessDays = DesrializeDays( xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.DailyBusinessDays).InnerText);
-
-                this.SummaryMode = Convert.ToBoolean(  xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.SummaryMode).InnerText);
-
-                if (!string.IsNullOrEmpty(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.PQty).InnerText))
-                {
-                    this.PeriodQty = Convert.ToInt32(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.PQty).InnerText);
-                }
-
-
+                this.PeriodQty = Utilities.ParseToInt(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.PQty));
             }
-            catch { }
+            catch 
+            {
+                //Error occured while DeSerializeMetaData
+            }
 
         }
+       
 
         private List<WeekDays> DesrializeDays(string serializedDays)
         {

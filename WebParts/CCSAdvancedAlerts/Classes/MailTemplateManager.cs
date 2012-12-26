@@ -125,7 +125,7 @@ namespace CCSAdvancedAlerts
                     if (item["Owner"] != null)
                     {
                         SPUser user = new SPFieldUserValue(SPContext.Current.Web, item["Owner"].ToString()).User;
-                        if (user.ID != userID)
+                        if (user.ID == userID)
                         {
                             templatesByUser.Add(Convert.ToString(item.ID), Convert.ToString(item["Title"]));
                         }
@@ -139,7 +139,36 @@ namespace CCSAdvancedAlerts
             }
             return templatesByUser;
         }
-                
+
+        internal MailTemplate GetMailtemplateByID(string templateID)
+        {
+            MailTemplate mTemplate = null;
+            try
+            {
+                SPListItem item = this.mailTemplateList.GetItemById(Convert.ToInt32(templateID));
+                mTemplate = this.GetMailTemplateFromListItem(item);
+            }
+            catch { //Error occured while getting template by its id
+            }
+            return mTemplate;
+        }
+
+        internal void DeleteTemplateByID(string templateID)
+        {
+            try
+            {
+                SPListItem item = this.mailTemplateList.GetItemById(Convert.ToInt32(templateID));
+                if (item != null)
+                {
+                    item.ParentList.ParentWeb.AllowUnsafeUpdates = true;
+                    item.Delete();
+                    item.ParentList.ParentWeb.AllowUnsafeUpdates = false;
+                }
+            }
+            catch { //Errror occured while deleting template
+            }
+        }
+
         #endregion
 
         #region Template Usage Related

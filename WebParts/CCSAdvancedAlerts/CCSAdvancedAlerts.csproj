@@ -64,7 +64,6 @@
     <Compile Include="Classes\DelayedAlert.cs" />
     <Compile Include="Classes\Notifications.cs" />
     <Compile Include="Classes\Condition.cs" />
-    <Compile Include="Classes\ConditionsManager.cs" />
     <Compile Include="Classes\Enumarations.cs" />
     <Compile Include="Classes\MailTemplate.cs" />
     <Compile Include="Classes\MailTemplateManager.cs" />

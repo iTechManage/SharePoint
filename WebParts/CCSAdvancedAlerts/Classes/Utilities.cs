@@ -43,7 +43,19 @@ namespace CCSAdvancedAlerts
         }
 
 
-        
+        internal static bool ParseToBool(string value)
+        {
+            bool boolTemp = false;
+            Boolean.TryParse(value, out boolTemp);
+            return boolTemp;
+        }
+
+        internal static int ParseToInt(string value)
+        {
+            int intTemp = 0;
+            int.TryParse(value, out intTemp);
+            return intTemp;
+        }
 
     }
 }

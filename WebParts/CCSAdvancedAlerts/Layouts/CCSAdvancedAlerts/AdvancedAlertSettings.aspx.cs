@@ -72,6 +72,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                 PopulateSites();
                 populateStaticDropDowns();
                 FillddlUserID();
+                PopulateTemplates();
             }
 
             //Alert based events
@@ -92,6 +93,21 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             this.btnTemplateUpdate.Click += new EventHandler(btnTemplateUpdate_Click);
             this.btnTemplateCancel.Click += new EventHandler(btnTemplateCancel_Click);
 
+
+            //Template Related
+                this.lnkItemAddedEdit.Click +=new EventHandler(lnkItemAddedEdit_Click);
+                this.lnkItemAddedDelete.Click +=new EventHandler(lnkItemAddedDelete_Click);
+
+                this.lnkItemUpdateEdit.Click +=new EventHandler(lnkItemUpdateEdit_Click);
+                this.lnkItemUpdateDelete.Click += new EventHandler(lnkItemUpdateDelete_Click);
+
+                this.lnkItemDeleteEdit.Click +=new EventHandler(lnkItemDeleteEdit_Click);
+                this.lnkItemDeleteDelete.Click +=new EventHandler(lnkItemDeleteDelete_Click);
+
+                this.linkDateTimeEdit.Click +=new EventHandler(linkDateTimeEdit_Click);
+                this.linkDateTimeDelete.Click += new EventHandler(linkDateTimeDelete_Click);
+
+
             //AlertType
             this.rdImmediately.CheckedChanged += new EventHandler(rdImmediately_CheckedChanged);
             this.rdImmediateBusinessdays.CheckedChanged += new EventHandler(rdImmediateBusinessdays_CheckedChanged);
@@ -102,6 +118,11 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             this.btnAlertcancel.Click += new EventHandler(btnAlertcancel_Click);
         }
 
+       
+
+
+
+        //====================================================================
         void rdDaily_CheckedChanged(object sender, EventArgs e)
         {
             pnSubDaily.Visible = rdDaily.Checked;
@@ -896,13 +917,11 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
         #region Grid to show All Alerts for the user
         protected void FillddlUserID()
         {
-            
             SPUser currentUser = SPContext.Current.Web.CurrentUser;
             this.ddlUserID.Items.Add(new ListItem(currentUser.Name, currentUser.ID.ToString()));
-            return;
             if (currentUser.IsSiteAdmin)
             {
-                Dictionary<string, string> allAlerOwners = alertMngr.GetAlertOwners();
+                Dictionary<string, string> allAlerOwners = AlertMngr.GetAlertOwners();
                 foreach (string key in allAlerOwners.Keys)
                 {
                     if (key != currentUser.ID.ToString())
@@ -919,6 +938,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             {
                 this.gvAlerts.SelectedIndex = -1;
                 this.gvAlerts.DataBind();
+                PopulateTemplates();
             }
             catch 
             {
@@ -943,7 +963,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             {
                 e.Cancel = true;
                 int alertId = Convert.ToInt32(this.gvAlerts.DataKeys[e.RowIndex][0]);
-                this.alertMngr.DeleteAlerts(alertId.ToString(), MTManager);
+                this.AlertMngr.DeleteAlerts(alertId.ToString(), MTManager);
                 this.dsAlerts.DataBind();
                 this.gvAlerts.DataBind();
             }
@@ -958,17 +978,17 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             {
                 //Edit the existing alert
                 int alertID = Convert.ToInt32(this.gvAlerts.DataKeys[this.gvAlerts.SelectedIndex][0]);
-                this.PopulateAlert(Convert.ToString(alertID));
+                this.FillAlert(Convert.ToString(alertID));
             }
             catch { }
         }
 
-        protected void PopulateAlert(string alertID)
+        protected void FillAlert(string alertID)
         {
                 //Populate Alert 
                 try
                 {
-                    Alert alert = alertMngr.GetAlertFromID(alertID,MTManager);
+                    Alert alert = AlertMngr.GetAlertFromID(alertID,MTManager);
 
                     //Get the General Information
                     txtTitle.Text = alert.Title;
@@ -1052,20 +1072,86 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
 
         private void PopulateTemplates()
         {
-            
+
             //Get all the templated for the current user
-            Dictionary<string,string> templatesByUser  = MTManager.GetTemplatesByUser(Convert.ToInt32(this.ddlUserID.SelectedItem.Text));
+            Dictionary<string, string> templatesByUser = MTManager.GetTemplatesByUser(Convert.ToInt32(this.ddlUserID.SelectedItem.Value));
+            ddlItemAdded.Items.Clear();
+            ddlItemUpdate.Items.Clear();
+            ddlItemDelete.Items.Clear();
+            ddlDateTime.Items.Clear();
+            foreach (string keyId in templatesByUser.Keys)
+            {
 
-            //r e
-
-            //ListItem li = new ListItem(
-            
-            //ddlItemAdded.Items.Add(
-            //ddlItemUpdate
-            //ddlItemDelete
-            //ddlDateTime
+                ListItem li = new ListItem(templatesByUser[keyId],keyId);
+                ddlItemAdded.Items.Add(li);
+                ddlItemUpdate.Items.Add(li);
+                ddlItemDelete.Items.Add(li);
+                ddlDateTime.Items.Add(li);
+            }
         }
 
+
+        private void FillTemplate(string templateID)
+        {
+            //Get the template by its id
+            MailTemplate mTemplate = MTManager.GetMailtemplateByID(templateID);
+
+            //fill those values in to form
+            txtMailTemplateName.Text = mTemplate.Name;
+            txtMailSubject.Text = mTemplate.Subject ;
+            txtBody.Text = mTemplate.Body;
+            chkIncludeUpdatedColumns.Checked = mTemplate.InsertUpdatedFields ;
+            chkInsertAttachments.Checked = mTemplate.InsertAttachments;
+            chkHighlightUpdatedColumns.Checked = mTemplate.HighLightUpdatedFields;
+            
+        }
+
+        private void DeleteTemplate(string templateID)
+        {
+            MTManager.DeleteTemplateByID(templateID);
+            PopulateTemplates();
+        }
+
+        void linkDateTimeDelete_Click(object sender, EventArgs e)
+        {
+            this.DeleteTemplate(this.ddlDateTime.SelectedValue);
+        }
+
+        void linkDateTimeEdit_Click(object sender, EventArgs e)
+        {
+            this.FillTemplate(this.ddlDateTime.SelectedValue);
+        }
+
+        void lnkItemDeleteDelete_Click(object sender, EventArgs e)
+        {
+
+            this.DeleteTemplate(this.ddlItemDelete.SelectedValue);
+        }
+
+        void lnkItemDeleteEdit_Click(object sender, EventArgs e)
+        {
+            this.FillTemplate(this.ddlItemDelete.SelectedValue);
+        }
+
+        void lnkItemUpdateDelete_Click(object sender, EventArgs e)
+        {
+            this.DeleteTemplate(this.ddlItemUpdate.SelectedValue);
+        }
+
+        void lnkItemUpdateEdit_Click(object sender, EventArgs e)
+        {
+            this.FillTemplate(this.ddlItemUpdate.SelectedValue);
+        }
+
+        void lnkItemAddedDelete_Click(object sender, EventArgs e)
+        {
+            this.DeleteTemplate(this.ddlItemAdded.SelectedValue);
+        }
+
+        void lnkItemAddedEdit_Click(object sender, EventArgs e)
+        {
+            this.FillTemplate(this.ddlItemAdded.SelectedValue);
+        }
 
 
         #endregion
