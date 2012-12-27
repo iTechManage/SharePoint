@@ -395,10 +395,27 @@ namespace CustomLookupField
 
             SPList list = SPContext.Current.List;
             SPFieldCollection fields = list.Fields;
-            ListItemCollection parent_field_right_box_items = right_box.Items;
-            string parent_field_selected_value = string.Empty;
+            //ListItemCollection parent_field_right_box_items = right_box.Items;
+            //string parent_field_selected_value = string.Empty;
 
-            Update_child_controls(fields, base.Field, parent_field_right_box_items, parent_field_selected_value, list_box_controls, dropdownlist_controls);
+            List<Control> PossibleControls = new List<Control>();
+            FindControlRecursive(this.Page, typeof(CustomLookupField.CustomDropDownListControl), ref PossibleControls);
+
+            List<string> SelectValues = new List<string>();
+            if (right_box.Items != null && right_box.Items.Count > 0)
+            {
+                foreach (ListItem li in right_box.Items)
+                {
+                    SelectValues.Add(li.Value);
+                }
+            }
+            else
+            {
+                SelectValues = null;
+            }
+
+            UpdateChildLinkedControl(base.Field, SelectValues, ref PossibleControls);
+            //Update_child_controls(fields, base.Field, parent_field_right_box_items, parent_field_selected_value, list_box_controls, dropdownlist_controls);
             //l_SelectedIndexChanged(sender, e);
         }
 
@@ -413,18 +430,36 @@ namespace CustomLookupField
                     left_box.Items.Remove(item);
                 }
             }
-            List<Control> list_box_controls = new List<Control>();
-            List<Control> dropdownlist_controls = new List<Control>();
-            FindControlRecursive(this.Page, typeof(ListBox), ref list_box_controls);
-            FindControlRecursive(this.Page, typeof(DropDownList), ref dropdownlist_controls);
+            //List<Control> list_box_controls = new List<Control>();
+            //List<Control> dropdownlist_controls = new List<Control>();
+            //FindControlRecursive(this.Page, typeof(ListBox), ref list_box_controls);
+            //FindControlRecursive(this.Page, typeof(DropDownList), ref dropdownlist_controls);
 
-            SPList list = SPContext.Current.List;
-            SPFieldCollection fields = list.Fields;
-            ListItemCollection parent_field_right_box_items = right_box.Items;
-            string parent_field_selected_value = string.Empty;
+            //SPList list = SPContext.Current.List;
+            //SPFieldCollection fields = list.Fields;
+            //ListItemCollection parent_field_right_box_items = right_box.Items;
+            //string parent_field_selected_value = string.Empty;
 
-            Update_child_controls(fields, base.Field, parent_field_right_box_items, parent_field_selected_value, list_box_controls, dropdownlist_controls);
+            //Update_child_controls(fields, base.Field, parent_field_right_box_items, parent_field_selected_value, list_box_controls, dropdownlist_controls);
             //l_SelectedIndexChanged(sender, e);
+
+            List<Control> PossibleControls = new List<Control>();
+            FindControlRecursive(this.Page, typeof(CustomLookupField.CustomDropDownListControl), ref PossibleControls);
+
+            List<string> SelectValues = new List<string>();
+            if (right_box.Items != null && right_box.Items.Count > 0)
+            {
+                foreach (ListItem li in right_box.Items)
+                {
+                    SelectValues.Add(li.Value);
+                }
+            }
+            else
+            {
+                SelectValues = null;
+            }
+
+            UpdateChildLinkedControl(base.Field, SelectValues, ref PossibleControls);
         }
 
         private void fill_controls()
@@ -1000,19 +1035,29 @@ namespace CustomLookupField
                 _auto_completion_box.Text = _customisedList.SelectedItem.Text;
             }
 
-            CustomDropDownList field = base.Field as CustomDropDownList;
-            SPList list = SPContext.Current.List;
-            SPFieldCollection fields = list.Fields;
+            //CustomDropDownList field = base.Field as CustomDropDownList;
+            //SPList list = SPContext.Current.List;
+            //SPFieldCollection fields = list.Fields;
 
-            List<Control> list_box_controls = new List<Control>();
-            List<Control> dropdownlist_controls = new List<Control>();
-            FindControlRecursive(this.Page, typeof(ListBox), ref list_box_controls);
-            FindControlRecursive(this.Page, typeof(DropDownList), ref dropdownlist_controls);
+            //List<Control> list_box_controls = new List<Control>();
+            //List<Control> dropdownlist_controls = new List<Control>();
+            //FindControlRecursive(this.Page, typeof(ListBox), ref list_box_controls);
+            //FindControlRecursive(this.Page, typeof(DropDownList), ref dropdownlist_controls);
 
-            ListItemCollection parent_field_right_box_items = null;
-            string parent_field_selected_value = _customisedList.SelectedItem.Value;
+            //ListItemCollection parent_field_right_box_items = null;
+            //string parent_field_selected_value = _customisedList.SelectedItem.Value;
 
-            Update_child_controls(fields, base.Field, parent_field_right_box_items, parent_field_selected_value, list_box_controls, dropdownlist_controls);
+            //Update_child_controls(fields, base.Field, parent_field_right_box_items, parent_field_selected_value, list_box_controls, dropdownlist_controls);
+
+            //
+
+            List<Control> PossibleControls = new List<Control>();
+            FindControlRecursive(this.Page, typeof(CustomLookupField.CustomDropDownListControl), ref PossibleControls);
+
+            string SelectValue = _customisedList.SelectedItem.Value;
+            
+            UpdateChildLinkedControl(base.Field, SelectValue, ref PossibleControls);
+            
             /*
             List<Control> control_list = new List<Control>();
 
@@ -1722,42 +1767,88 @@ namespace CustomLookupField
             bool has_link = Convert.ToString(field.GetCustomProperty(CustomDropDownList.LINK)) == Boolean.TrueString;
             if (has_link)
             {
-                string str = field.GetProperty(CustomDropDownList.PARENT_COLUMN);
-                if (!string.IsNullOrEmpty(str))
+                //---------------------------
+                //Iterate Controls
+                List<Control> Collect = new List<Control>();
+                FindControlRecursive(this.Page, typeof(CustomLookupField.CustomDropDownListControl), ref Collect);
+
+                if (Collect.Count > 0)
                 {
-                    SPField fldPArent = SPContext.Current.List.Fields[new Guid(field.GetProperty(CustomDropDownList.PARENT_COLUMN))];
+                    CustomDropDownList field11 = base.Field as CustomDropDownList;
+                    string str = field11.GetProperty(CustomDropDownList.PARENT_COLUMN);
 
-                    //if (fldPArent.FieldRenderingControl.ControlMode == SPControlMode.New)
-                    //{
-                    //    if (fldPArent.TypeAsString == "CustomDropDownList")
-                    //    {
-                    //        CustomDropDownList parentField = fldPArent as CustomDropDownList;
-                    //    }
-                    //}
-
-                    SPFieldLookupValue val = fldPArent.FieldRenderingControl.ItemFieldValue as SPFieldLookupValue;
-
-                    if (val != null)
+                    if (!string.IsNullOrEmpty(str))
                     {
-                        Helper.get_matched_items(field, val.LookupId.ToString(), linked_column, ref returnListITems);
-                    }
-                    else
-                    {
-                        SPFieldLookupValueCollection valColl = fldPArent.FieldRenderingControl.ItemFieldValue as SPFieldLookupValueCollection;
-
-                        if (valColl != null && valColl.Count > 0)
+                        SPField fldPArent = SPContext.Current.List.Fields[new Guid(field11.GetProperty(CustomDropDownList.PARENT_COLUMN))];
+                        if (fldPArent.FieldRenderingControl.ControlMode == SPControlMode.Edit && fldPArent != null && fldPArent.FieldRenderingControl != null)
                         {
-                            foreach (SPFieldLookupValue val1 in valColl)
+                            foreach (Control ctrl in Collect)
                             {
-                                if (val1 != null)
+                                CustomDropDownListControl LookupFieldControl = ctrl as CustomDropDownListControl;
+                                if (LookupFieldControl != null && LookupFieldControl.FieldName == fldPArent.FieldRenderingControl.FieldName)
                                 {
-                                    Helper.get_matched_items(field, val1.LookupId.ToString(), linked_column, ref returnListITems);
+                                    SPFieldLookupValue val = LookupFieldControl.Value as SPFieldLookupValue;
+
+                                    if (val != null)
+                                    {
+                                        Helper.get_matched_items(field, val.LookupId.ToString(), linked_column, ref returnListITems);
+                                    }
+                                    else
+                                    {
+                                        SPFieldLookupValueCollection valColl = LookupFieldControl.Value as SPFieldLookupValueCollection;
+
+                                        if (valColl != null && valColl.Count > 0)
+                                        {
+                                            foreach (SPFieldLookupValue val1 in valColl)
+                                            {
+                                                if (val1 != null)
+                                                {
+                                                    Helper.get_matched_items(field, val1.LookupId.ToString(), linked_column, ref returnListITems);
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+            //--------------------------------------------------------------------
+            //List<ListItem> returnListITems = new List<System.Web.UI.WebControls.ListItem>();
+            //CustomDropDownList field = base.Field as CustomDropDownList;
+            //string linked_column = field.GetProperty(CustomDropDownList.LINK_COLUMN);
+            //bool has_link = Convert.ToString(field.GetCustomProperty(CustomDropDownList.LINK)) == Boolean.TrueString;
+            //if (has_link)
+            //{
+            //    string str = field.GetProperty(CustomDropDownList.PARENT_COLUMN);
+            //    if (!string.IsNullOrEmpty(str))
+            //    {
+            //        SPField fldPArent = SPContext.Current.List.Fields[new Guid(field.GetProperty(CustomDropDownList.PARENT_COLUMN))];
+
+            //        SPFieldLookupValue val = fldPArent.FieldRenderingControl.ItemFieldValue as SPFieldLookupValue;
+
+            //        if (val != null)
+            //        {
+            //            Helper.get_matched_items(field, val.LookupId.ToString(), linked_column, ref returnListITems);
+            //        }
+            //        else
+            //        {
+            //            SPFieldLookupValueCollection valColl = fldPArent.FieldRenderingControl.ItemFieldValue as SPFieldLookupValueCollection;
+
+            //            if (valColl != null && valColl.Count > 0)
+            //            {
+            //                foreach (SPFieldLookupValue val1 in valColl)
+            //                {
+            //                    if (val1 != null)
+            //                    {
+            //                        Helper.get_matched_items(field, val1.LookupId.ToString(), linked_column, ref returnListITems);
+            //                    }
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
             return returnListITems;
         }
 
@@ -1791,6 +1882,150 @@ namespace CustomLookupField
             }
 
             return true;
+        }
+
+        public void UpdateChildLinkedControl(SPField CurrentField, Object CurrentControlValue, ref List<Control> AllPossibleControls)
+        {
+            Object childCtrlValue = null;
+            foreach (Control ctrl in AllPossibleControls)
+            {
+                CustomDropDownListControl ChildControl = ctrl as CustomDropDownListControl;
+                if (ChildControl != null)
+                {
+                    if (CurrentField.Id.ToString() == ChildControl.Field.GetProperty(CustomDropDownList.PARENT_COLUMN))
+                    {
+                        CustomDropDownList field = ChildControl.Field as CustomDropDownList;
+                        if (field != null)
+                        {
+                            string linked_column = field.GetProperty(CustomDropDownList.LINK_COLUMN);
+                            List<ListItem> poplateItemsList = new List<ListItem>();
+                            if (CurrentControlValue != null && CurrentControlValue.ToString() != "")
+                            {
+                                if (CurrentControlValue is string)
+                                {
+                                    Helper.FetchMatchedValuesFromList(field, CurrentControlValue.ToString(), ref poplateItemsList);
+                                }
+                                else if (CurrentControlValue is List<string>)                                
+                                {
+                                    List<string> listItems = CurrentControlValue as List<string>;
+                                    if (listItems.Count > 0)
+                                    {
+                                        foreach (string val in CurrentControlValue as List<string>)
+                                        {
+                                            Helper.FetchMatchedValuesFromList(field, val, ref poplateItemsList);
+                                        }
+                                    }
+                                    else if (Convert.ToBoolean(field.GetCustomProperty(CustomDropDownList.SHOW_ALL_VALUES)))
+                                    {
+                                        Helper.FetchAllValueFromLinkedList(field, ref poplateItemsList);
+                                    }
+                                }
+                            }
+                            else if (Convert.ToBoolean(field.GetCustomProperty(CustomDropDownList.SHOW_ALL_VALUES)))
+                            {
+                                Helper.FetchAllValueFromLinkedList(field, ref poplateItemsList);
+                            }
+
+                            //Set Child control Values
+                            List<Control> ChildControls = new List<Control>();
+                            if (field.AllowMultipleValues)
+                            {
+                                FindControlRecursive(ctrl, typeof(ListBox), ref ChildControls);
+                                if (ChildControls != null)
+                                {
+                                    ListBox rightListBox = null;
+                                    ListBox leftListBox = null;
+
+                                    foreach (ListBox childListBox in ChildControls)
+                                    {
+                                        if (childListBox.Attributes["side"] != null && childListBox.Attributes["side"].ToString().Equals("right"))
+                                        {
+                                            rightListBox = childListBox;
+                                        }
+                                        else
+                                        {
+                                            leftListBox = childListBox;
+                                        }
+                                    }
+
+                                    if (poplateItemsList != null && poplateItemsList.Count > 0)
+                                    {
+                                        //childListBox.Items.AddRange(poplateItemsList.ToArray());
+                                        if (rightListBox.Items != null && rightListBox.Items.Count > 0)
+                                        {
+                                            List<string> vals = new List<string>();
+                                            for(int i = rightListBox.Items.Count - 1; i >= 0; i--)
+                                            {
+                                                if (!CheckListItemExistandRemove(rightListBox.Items[i], ref poplateItemsList))
+                                                {
+                                                    rightListBox.Items.RemoveAt(i);
+                                                }
+                                                else
+                                                {
+                                                    vals.Add(rightListBox.Items[i].Value);
+                                                }
+                                            }
+
+                                            if (vals.Count > 0) childCtrlValue = vals;
+
+                                            for (int i = leftListBox.Items.Count - 1; i >= 0; i--)
+                                            {
+                                                if (!CheckListItemExistandRemove(leftListBox.Items[i], ref poplateItemsList))
+                                                {
+                                                    leftListBox.Items.RemoveAt(i);
+                                                }
+                                            }
+
+                                            leftListBox.Items.AddRange(poplateItemsList.ToArray());
+                                        }
+                                    }
+                                    else
+                                    {
+                                        rightListBox.Items.Clear();
+                                        leftListBox.Items.Clear();
+                                    }
+
+                                }
+                            }
+                            else
+                            {
+                                FindControlRecursive(ctrl, typeof(DropDownList), ref ChildControls);
+                                if (ChildControls != null)
+                                {
+                                    foreach (DropDownList childListBox in ChildControls)
+                                    {
+                                        childListBox.Items.Clear();
+                                        if (!Field.Required) childListBox.Items.Insert(0, new ListItem("(None)", "0"));
+                                        if(poplateItemsList != null && poplateItemsList.Count > 0)
+                                            childListBox.Items.AddRange(poplateItemsList.ToArray());
+                                        childListBox.SelectedIndex = 0;
+                                    }
+                                }
+                            }
+
+                            //Reset nested child controls Value
+                            UpdateChildLinkedControl(field, childCtrlValue, ref AllPossibleControls);
+                        }
+                    }                
+                }
+            }
+        }
+
+        bool CheckListItemExistandRemove(ListItem li, ref List<ListItem> Items)
+        {
+            if (Items != null && Items.Count > 0)
+            {
+                for (int i = Items.Count - 1; i >= 0; i--)
+                {
+                    if (Items[i].Value == li.Value)
+                    {
+                        Items.RemoveAt(i);
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
     }
