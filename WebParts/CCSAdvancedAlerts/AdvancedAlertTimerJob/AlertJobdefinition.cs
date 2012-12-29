@@ -48,6 +48,10 @@ namespace CCSAdvancedAlerts
                         //Group alerts by web so that no need to create web object again and again
                         Dictionary<string, List<Alert>> siteAlertByWeb = TimerJobHelper.GroupAlertsByWeb(siteAlerts);
 
+                        // get the current time
+                        DateTime dtNow = DateTime.Now;
+                        AlertManager alertManager = null;
+                        
                         try
                         {
                             // if we get any alerts then validate and prepare for sending email.
@@ -61,6 +65,7 @@ namespace CCSAdvancedAlerts
                                         //iterate all the alerts for this web
                                         foreach (Alert alert in siteAlertByWeb[webId])
                                         {
+                                            DateTime dtWebTime = web.RegionalSettings.TimeZone.UTCToLocalTime(dtNow.ToUniversalTime());
                                             //1. Handling Timer based alerts
                                             if (alert.AlertType.Contains(AlertEventType.DateColumn))
                                             {
@@ -77,15 +82,30 @@ namespace CCSAdvancedAlerts
                                             }
 
                                             //2. Handling Delayed alerts for daily bu specific time and send as single message
-                                            //if (alert.AlertType!= SendType.Immediate)
+                                            //if (alert.AlertType != SendType.Immediate)
+                                            if(alert.SendType != SendType.Immediate)
                                             {
+                                               //if (((info2.SendHour == time2.Hour) && (time2.Minute < 30)) && (((info2.Timing == SendTiming.Daily) && info2.DailyBusinessDays.Contains(time2.DayOfWeek)) || (info2.SendWeekday == time2.DayOfWeek)))
+                                               //  {
+                                                
+                                                //if((alert.SendHour == dtWebTime.Hour) && ( 
+                                                // based on time
+                                                if (alertManager == null)
+                                                {
+                                                    alertManager = new AlertManager(site.Url);
+                                                }
+                                                alertManager.SendDelayedMessages(alert);
+
+
 
                                             }
 
                                             //3. Handling Delayed alerts based on weekdays and all the stuff
-                                            {
+                                            //if(!alert.ImmidiateAlways)
+                                            //{
+                                            //    //Based on week days
 
-                                            }
+                                            //}
 
                                         }
                                     }
@@ -136,8 +156,10 @@ namespace CCSAdvancedAlerts
                         {
                             if (alert.IsValid(item,AlertEventType.DateColumn))
                             {
+                                Notifications mailSender = new Notifications();
                                 //mailSender.SendAlert(alert, ChangeTypes.DateColumn, item2, null);
-
+                                mailSender.SendMail(alert, AlertEventType.DateColumn, item);
+                                
                             }
                             else
                             {

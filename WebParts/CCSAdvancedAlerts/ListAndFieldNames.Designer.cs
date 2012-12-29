@@ -277,6 +277,15 @@ namespace CCSAdvancedAlerts {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Owner.
+        /// </summary>
+        internal static string settingsListOwner {
+            get {
+                return ResourceManager.GetString("settingsListOwner", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to WebID.
         /// </summary>
         internal static string settingsListWebIdFieldName {

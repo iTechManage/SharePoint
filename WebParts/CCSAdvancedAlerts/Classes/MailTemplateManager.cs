@@ -104,6 +104,7 @@ namespace CCSAdvancedAlerts
             MailTemplate mTempalte = new MailTemplate();
 
             mTempalte.Name = Convert.ToString(listItem["Title"]);
+            mTempalte.ID = Convert.ToString(listItem.ID);
             mTempalte.Subject = Convert.ToString(listItem[ListAndFieldNames.MTListMailSubjectFieldName]);
             mTempalte.Body = Convert.ToString(listItem[ListAndFieldNames.MTListMailBodyFieldName]);
             mTempalte.InsertUpdatedFields = Convert.ToBoolean(listItem[ListAndFieldNames.MTListInsertUpdatedFieldsFieldName]);

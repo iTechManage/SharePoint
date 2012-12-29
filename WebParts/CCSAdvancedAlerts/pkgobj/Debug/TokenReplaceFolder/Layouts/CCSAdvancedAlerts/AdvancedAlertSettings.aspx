@@ -14,8 +14,27 @@
 <asp:Content ID="PageHead" ContentPlaceHolderID="PlaceHolderAdditionalPageHead" runat="server">
 </asp:Content>
 <asp:Content ID="Main" ContentPlaceHolderID="PlaceHolderMain" runat="server">
+<script type="text/javascript">
+    function CopyToClipboard(controlId) {
+        var control = document.getElementById(controlId);
+        if (control == null && controlId != null) {
+            control = document.getElementById(controlId.id);
+        }
+
+        if (control != null) {
+            //determine the value of the control
+            var controlValue = control.value;
+            //copy to clipboard
+            window.clipboardData.setData("Text", "[" + controlValue + "]");
+        }
+    }
+</script>
     <table style="width: 600px">
         <tr>
+          
+           <asp:TextBox Style="display: none" runat="server" ID="hiddenAlertID" />
+           <asp:TextBox Style="display: none" runat="server" ID="hiddenTemplateID" />
+
             <td colspan="2" class="ms-linksectionheader" style="padding-right: 4px; padding-left: 4px;
                 padding-bottom: 4px; padding-top: 4px;" nowrap="nowrap" width="576">
                 <b>Existing Alerts </b>
@@ -34,11 +53,11 @@
                     OnRowDeleting="gvAlerts_RowDeleting" OnSelectedIndexChanged="gvAlerts_SelectedIndexChanged"
                     AutoGenerateColumns="false" runat="server" EmptyDataText="No Data to show">
                     <Columns>
-                        <asp:TemplateField ControlStyle-Width="25px">
+                       <%-- <asp:TemplateField ControlStyle-Width="25px">
                             <ItemTemplate>
                                 <input type="checkbox" name="chkalert" id='alert<%#Eval("Id") %>' />
                             </ItemTemplate>
-                        </asp:TemplateField>
+                        </asp:TemplateField>--%>
                         <SharePoint:SPBoundField DataField="Title" HeaderText="Title" SortExpression="Title" />
                         <SharePoint:SPBoundField DataField="Owner" HeaderText="Created by" SortExpression="Owner" />
                         <asp:TemplateField ShowHeader="False">

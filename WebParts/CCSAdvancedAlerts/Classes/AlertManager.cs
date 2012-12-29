@@ -133,7 +133,7 @@ namespace CCSAdvancedAlerts
         /// <param name="item"></param>
         /// <returns></returns>
         /// 
-        internal static bool AddAlert(SPWeb rootweb, Alert alert)
+        internal static int AddAlert(SPWeb rootweb, Alert alert)
         {
             ///Basic information we are saving for Alert in Alert listing List
             //Title  Single line of text  
@@ -146,9 +146,21 @@ namespace CCSAdvancedAlerts
             //EventType  Choice 
 
             SPList settingslist = rootweb.Lists.TryGetList(ListAndFieldNames.settingsListName);
+            int alertID = 0;
             if (settingslist != null)
             {
-                SPListItem listItem = settingslist.AddItem();
+                SPListItem listItem = null;
+
+                if (alert.Id != "0")
+                {
+                    listItem = settingslist.GetItemById(Convert.ToInt32(alert.Id));
+                    
+                }
+                if(listItem ==null)
+                {
+                    listItem = settingslist.AddItem();
+                }
+                
                 listItem["Title"] = alert.Title;
                 listItem[ListAndFieldNames.settingsListWebIdFieldName] = alert.WebId;
                 listItem[ListAndFieldNames.settingsListListIdFieldName] = alert.ListId;
@@ -162,7 +174,8 @@ namespace CCSAdvancedAlerts
                 //Send type
                 listItem[ListAndFieldNames.settingsListWhenToSendFieldName] = alert.SendType;
 
-
+               //Alert owner
+                listItem[ListAndFieldNames.settingsListOwner] = alert.Owner;
 
 
                 //Other information in xml format
@@ -170,8 +183,10 @@ namespace CCSAdvancedAlerts
 
                 listItem.Update();
 
+                alertID = listItem.ID;
+
             }
-            return true;
+            return alertID;
         }
         
         /// <summary>
@@ -439,6 +454,8 @@ namespace CCSAdvancedAlerts
                             try
                             {
                                 DelayedAlert delayedAlert = new DelayedAlert(item);
+                                Notifications notificationSender = new Notifications();
+                                //notificationSender.se
                                 //mailSender.SendDelayedAlert(delayedAlert, alert);
                             }
                             catch 

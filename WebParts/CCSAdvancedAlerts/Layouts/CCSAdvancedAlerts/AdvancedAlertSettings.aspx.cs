@@ -75,6 +75,8 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                 PopulateTemplates();
             }
 
+            this.btnCopyToClipBoard.OnClientClick = "CopyToClipboard(" + this.lstPlaceHolders.ClientID + ")";
+
             //Alert based events
             this.btnAlertsave.Click += new EventHandler(btnAlertsave_Click);
             this.ddlSite.SelectedIndexChanged += new EventHandler(ddlSite_SelectedIndexChanged);
@@ -87,7 +89,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
 
             //Template related
             this.btnAddToSubject.Click += new EventHandler(btnAddToSubject_Click);
-            this.btnCopyToClipBoard.Click += new EventHandler(btnCopyToClipBoard_Click);
+            //this.btnCopyToClipBoard.Click += new EventHandler(btnCopyToClipBoard_Click);
 
             this.btnTemplateAdd.Click += new EventHandler(btnTemplateAdd_Click);
             this.btnTemplateUpdate.Click += new EventHandler(btnTemplateUpdate_Click);
@@ -116,7 +118,13 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             //Navigate Back
             this.btnOK.Click += new EventHandler(btnOK_Click);
             this.btnAlertcancel.Click += new EventHandler(btnAlertcancel_Click);
+
+            this.btnUpdateAlert.Click += new EventHandler(btnUpdateAlert_Click);
+            this.btnTemplateUpdate.Click +=new EventHandler(btnTemplateUpdate_Click);
+
         }
+
+  
 
        
 
@@ -524,14 +532,21 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
 
                 else if (rdUsersincolumn.Checked)
                 {
-
+                    emailAddresses = ddlUsersInColumn.SelectedValue;
                 }
                 else if (rdEmailAddresses.Checked)
                 {
-                    emailAddresses = emailAddresses + "," + txtEmailAddresses;
+                    emailAddresses =  txtEmailAddresses.Text;
                 }
 
-                txtAddressBox.Text += emailAddresses;
+                if (!string.IsNullOrEmpty(txtAddressBox.Text))
+                {
+                    txtAddressBox.Text += "," + emailAddresses;
+                }
+                else
+                {
+                    txtAddressBox.Text += emailAddresses;
+                }
             }
         }
 
@@ -539,8 +554,25 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
         {
             try
             {
-                Alert alert = new Alert();
+                
+                PrepareAlert("0");
+            }
+            catch{}
+        }
 
+
+        void btnUpdateAlert_Click(object sender, EventArgs e)
+        {
+            PrepareAlert(this.hiddenAlertID.Text);
+        }
+
+        private  Alert PrepareAlert( string alertId)
+        {
+            Alert alert = new Alert();
+            try
+            {
+                alert.Id = alertId;
+        
                 //Get the General Information
                 alert.Title = txtTitle.Text;
                 alert.WebId = ddlSite.SelectedValue;
@@ -587,70 +619,89 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
 
                 //alert.BusinessendtHour = Convert.ToInt32(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.ImmediateBusinessHoursFinish).InnerText);
                 alert.BusinessendtHour = 18;
-                
+
+                // TODO
+                alert.SendDay = 4;
+
+                //TODO
+                alert.SendHour = 10;
+
+                //when To Send
+                if (rdImmediately.Checked)
+                 { alert.SendType = SendType.Immediate; }
+                else if (rdDaily.Checked)
+                 { alert.SendType = SendType.Daily; }
+                else if (rdWeekly.Checked)
+                 { alert.SendType = SendType.Weekely; }
+
+
                 //alert.DailyBusinessDays = DesrializeDays(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.DailyBusinessDays).InnerText);
                 alert.DailyBusinessDays = new List<WeekDays>();
-                if (chkDailySun.Checked)
+                if (alert.SendType == SendType.Daily)
                 {
-                    alert.DailyBusinessDays.Add(WeekDays.sun);
+                    if (chkDailySun.Checked)
+                    {
+                        alert.DailyBusinessDays.Add(WeekDays.sun);
+                    }
+                    if (chkDailyMon.Checked)
+                    {
+                        alert.DailyBusinessDays.Add(WeekDays.mon);
+                    }
+                    if (chkDailyTue.Checked)
+                    {
+                        alert.DailyBusinessDays.Add(WeekDays.tue);
+                    }
+                    if (chkDailyWed.Checked)
+                    {
+                        alert.DailyBusinessDays.Add(WeekDays.wed);
+                    }
+                    if (chkDailyThu.Checked)
+                    {
+                        alert.DailyBusinessDays.Add(WeekDays.thu);
+                    }
+                    if (chkDailyFri.Checked)
+                    {
+                        alert.DailyBusinessDays.Add(WeekDays.fri);
+                    }
+                    if (chkDailySat.Checked)
+                    {
+                        alert.DailyBusinessDays.Add(WeekDays.sat);
+                    }
                 }
-                if(chkDailyMon.Checked)
-                {
-                    alert.DailyBusinessDays.Add(WeekDays.mon);
-                }
-                if (chkDailyTue.Checked)
-                {
-                    alert.DailyBusinessDays.Add(WeekDays.tue);
-                }
-                if (chkDailyWed.Checked)
-                {
-                    alert.DailyBusinessDays.Add(WeekDays.wed);
-                }
-                if (chkDailyThu.Checked)
-                {
-                    alert.DailyBusinessDays.Add(WeekDays.thu);
-                }
-                if (chkDailyFri.Checked)
-                {
-                    alert.DailyBusinessDays.Add(WeekDays.fri);
-                }
-                if (chkDailySat.Checked)
-                {
-                    alert.DailyBusinessDays.Add(WeekDays.sat);
-                }
-               
                 
                 //alert.ImmediateBusinessDays = DesrializeDays(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.ImmediateBusinessDays).InnerText);
                 alert.ImmediateBusinessDays = new List<WeekDays>();
-                if (chkImmediateSun.Checked)
+                if (alert.SendType == SendType.Immediate)
                 {
-                    alert.ImmediateBusinessDays.Add(WeekDays.sun);
+                    if (chkImmediateSun.Checked)
+                    {
+                        alert.ImmediateBusinessDays.Add(WeekDays.sun);
+                    }
+                    if (chkImmediateMon.Checked)
+                    {
+                        alert.ImmediateBusinessDays.Add(WeekDays.mon);
+                    }
+                    if (chkImmediateThu.Checked)
+                    {
+                        alert.ImmediateBusinessDays.Add(WeekDays.tue);
+                    }
+                    if (chkImmediateWed.Checked)
+                    {
+                        alert.ImmediateBusinessDays.Add(WeekDays.wed);
+                    }
+                    if (chkImmediateThu.Checked)
+                    {
+                        alert.ImmediateBusinessDays.Add(WeekDays.thu);
+                    }
+                    if (chkImmediateFri.Checked)
+                    {
+                        alert.ImmediateBusinessDays.Add(WeekDays.fri);
+                    }
+                    if (chkImmediateSat.Checked)
+                    {
+                        alert.ImmediateBusinessDays.Add(WeekDays.sat);
+                    }
                 }
-                if (chkImmediateMon.Checked)
-                {
-                    alert.ImmediateBusinessDays.Add(WeekDays.mon);
-                }
-                if (chkImmediateThu.Checked)
-                {
-                    alert.ImmediateBusinessDays.Add(WeekDays.tue);
-                }
-                if (chkImmediateWed.Checked)
-                {
-                    alert.ImmediateBusinessDays.Add(WeekDays.wed);
-                }
-                if (chkImmediateThu.Checked)
-                {
-                    alert.ImmediateBusinessDays.Add(WeekDays.thu);
-                }
-                if (chkImmediateFri.Checked)
-                {
-                    alert.ImmediateBusinessDays.Add(WeekDays.fri);
-                }
-                if (chkImmediateSat.Checked)
-                {
-                    alert.ImmediateBusinessDays.Add(WeekDays.sat);
-                }
-                
                 
                 //alert.CombineAlerts = Convert.ToBoolean(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.CombineAlerts).InnerText);
                 alert.CombineAlerts = true;
@@ -684,29 +735,67 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                 { alert.RepeatCount = 0;  }
 
 
-                //when To Send
-                if (rdDaily.Checked)
-                { alert.SendType = SendType.Daily; }
-                else if (rdImmediately.Checked)
-                { alert.SendType = SendType.Immediate; }
-                else if (rdWeekly.Checked)
-                { alert.SendType = SendType.Weekely; }
+               
 
 
                 //Conditions
                 alert.Conditions = this.Conditions;
 
-
+                //Add alert owner
+                 alert.Owner =  SPContext.Current.Web.CurrentUser;
+                                
                 //Create new alert
-                if (AlertManager.AddAlert(SPContext.Current.Site.RootWeb, alert))
-                {
-                    //Successfully added
-                }
+                 int alertID = AlertManager.AddAlert(SPContext.Current.Site.RootWeb, alert);
+                
+                //Create mail template instances
+                 CreateMailTemplateUsageObjects(alertID);
+
 
             }
             catch { }
 
+            return alert;
         }
+
+        private void CreateMailTemplateUsageObjects(int alertID)
+        {
+            try
+            {
+                //Delete existing usage objects and create new
+                MTManager.DeleteTemplateUsageObjects(alertID.ToString());
+
+                string[] templateIDs = new string[] { ddlItemAdded.SelectedValue, ddlItemUpdate.SelectedValue, ddlItemDelete.SelectedValue, ddlDateTime .SelectedValue};
+                Dictionary<string, List<AlertEventType>> dictUsage = new Dictionary<string, List<AlertEventType>>();
+                foreach (string templateID in templateIDs)
+                {
+                    if (!dictUsage.ContainsKey(templateID))
+                    {
+                        dictUsage.Add(templateID,new List<AlertEventType>());
+                    }
+
+                }
+
+                dictUsage[ddlItemAdded.SelectedValue].Add(AlertEventType.ItemAdded);
+                dictUsage[ddlItemUpdate.SelectedValue].Add(AlertEventType.ItemUpdated);
+                dictUsage[ddlItemDelete.SelectedValue].Add(AlertEventType.ItemDeleted);
+                dictUsage[ddlDateTime.SelectedValue].Add(AlertEventType.DateColumn);
+
+                foreach(string key in dictUsage.Keys)
+                {
+                   MailTemplateUsageObject mtObject = new MailTemplateUsageObject();
+                   mtObject.AlertType  = dictUsage[key];
+                   MailTemplate mTemplate =  MTManager.GetMailtemplateByID(key);
+                   mtObject.Template = mTemplate;
+                   mtObject.HighLightUpdatedFields = true;
+                   mtObject.InsertAttachments = true;
+                   mtObject.InsertUpdatedFields = true;
+                   MTManager.AddMailTemplateUsageObject(Convert.ToString(alertID), mtObject); 
+                }
+
+            }
+            catch { }
+        }
+
 
         private void EnsureConditionInsertRow()
         {
@@ -988,6 +1077,8 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                 //Populate Alert 
                 try
                 {
+                    this.hiddenAlertID.Text = alertID;
+                    
                     Alert alert = AlertMngr.GetAlertFromID(alertID,MTManager);
 
                     //Get the General Information
@@ -1120,6 +1211,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
         void linkDateTimeEdit_Click(object sender, EventArgs e)
         {
             this.FillTemplate(this.ddlDateTime.SelectedValue);
+            this.hiddenTemplateID.Text = this.ddlDateTime.SelectedValue;
         }
 
         void lnkItemDeleteDelete_Click(object sender, EventArgs e)
@@ -1131,6 +1223,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
         void lnkItemDeleteEdit_Click(object sender, EventArgs e)
         {
             this.FillTemplate(this.ddlItemDelete.SelectedValue);
+            this.hiddenTemplateID.Text = this.ddlItemDelete.SelectedValue;
         }
 
         void lnkItemUpdateDelete_Click(object sender, EventArgs e)
@@ -1141,6 +1234,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
         void lnkItemUpdateEdit_Click(object sender, EventArgs e)
         {
             this.FillTemplate(this.ddlItemUpdate.SelectedValue);
+            this.hiddenTemplateID.Text = this.ddlItemUpdate.SelectedValue;
         }
 
         void lnkItemAddedDelete_Click(object sender, EventArgs e)
@@ -1151,12 +1245,11 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
         void lnkItemAddedEdit_Click(object sender, EventArgs e)
         {
             this.FillTemplate(this.ddlItemAdded.SelectedValue);
+            this.hiddenTemplateID.Text = this.ddlItemAdded.SelectedValue;
         }
 
 
         #endregion
-
-
 
         #region Template Related events
 
@@ -1164,8 +1257,8 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
         {
             try
             {
-                string copyText = lstPlaceHolders.SelectedItem.Text;
-                System.Windows.Forms.Clipboard.SetText(copyText);
+                //string copyText = lstPlaceHolders.SelectedItem.Text;
+                //System.Windows.Forms.Clipboard.SetText(copyText);
             }
             catch
             {
@@ -1183,11 +1276,40 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
         {
             try
             {
+
+                AddUpdateTemplate("0");
+            }
+            catch { }
+        }
+
+        void btnTemplateUpdate_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                AddUpdateTemplate(this.hiddenTemplateID.Text);
+            }
+            catch { }
+
+        }
+
+        private void AddUpdateTemplate(string templateID)
+        {
+            try
+            {
                 SPList mailTemplateList = SPContext.Current.Site.RootWeb.Lists.TryGetList(ListAndFieldNames.MTListName);
 
                 if (mailTemplateList != null)
                 {
-                    SPListItem listItem = mailTemplateList.AddItem();
+                    SPListItem listItem = null;
+                    if (templateID != "0")
+                    {
+                        listItem = mailTemplateList.GetItemById(Convert.ToInt32(templateID));
+                    }
+                    if(listItem==null)
+                    {
+                        listItem = mailTemplateList.AddItem();
+                    }
+
                     listItem["Title"] = txtMailTemplateName.Text;
                     listItem[ListAndFieldNames.MTListMailSubjectFieldName] = txtMailSubject.Text;
                     listItem[ListAndFieldNames.MTListMailBodyFieldName] = txtBody.Text;
@@ -1198,20 +1320,19 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
 
 
                     listItem.Update();
+                    PopulateTemplates();
                 }
-
             }
             catch { }
         }
-        void btnTemplateUpdate_Click(object sender, EventArgs e)
-        {
 
 
-        }
         void btnTemplateCancel_Click(object sender, EventArgs e)
         {
 
         }
+
+       
 
         #endregion
     }

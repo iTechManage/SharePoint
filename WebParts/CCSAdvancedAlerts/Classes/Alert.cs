@@ -47,6 +47,14 @@ namespace CCSAdvancedAlerts
             set { listId = value; }
         }
 
+
+        private SPUser owner;
+        public SPUser Owner
+        {
+            get { return owner; }
+            set { owner = value; }
+        }
+
         
         //Address Fields
         private string toAddress;
@@ -201,7 +209,21 @@ namespace CCSAdvancedAlerts
             get { return dailyBusinessDays; }
             set { dailyBusinessDays = value; }
         }
-        
+
+        private int sendDay;
+        public int SendDay
+        {
+            get { return sendDay; }
+            set { sendDay = value; }
+        }
+
+        private int sendHour;
+        public int SendHour
+        {
+            get { return sendHour; }
+            set { sendHour = value; }
+        }
+
 
         private IList<Condition> conditions;
         internal IList<Condition> Conditions
@@ -331,7 +353,6 @@ namespace CCSAdvancedAlerts
                 }
 
                 //General information
-                //this.BlockedUsers = xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.BlockedUsers).InnerText;
                 this.BlockedUsers =  XMLHelper.GetChildValue(xmlDoc , XMLElementNames.BlockedUsers);
                 
                 this.DateColumnName =  XMLHelper.GetChildValue(xmlDoc, XMLElementNames.DateColumnName);

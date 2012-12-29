@@ -13,33 +13,56 @@ namespace CCSAdvancedAlerts
         //EventType  Choice  
         //Alert  
         private string subject;
-
         public string Subject
         {
             get { return subject; }
             set { subject = value; }
         }
-        private string body;
 
+        private string body;
         public string Body
         {
             get { return body; }
             set { body = value; }
         }
-        AlertEventType alertType;
 
+        AlertEventType alertType;
         public AlertEventType AlertType
         {
             get { return alertType; }
             set { alertType = value; }
         }
-        string parentAlertID;
 
+        string parentAlertID;
         public string ParentAlertID
         {
             get { return parentAlertID; }
             set { parentAlertID = value; }
         }
+
+        private List<SPFile> files;
+        internal List<SPFile> Files
+        {
+            get
+            {
+                return this.files;
+            }
+        }
+
+        private string id;
+        public string Id
+        {
+            get { return id; }
+            set { id = value; }
+        }
+
+        private SPListItem item;
+        public SPListItem Item
+        {
+            get { return item; }
+            set { item = value; }
+        }
+
 
 
         public DelayedAlert(string subject,string body,string parentAlertId, AlertEventType eventType)

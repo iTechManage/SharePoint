@@ -13,6 +13,24 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts {
     public partial class AdvancedAlertSettings {
         
         /// <summary>
+        /// hiddenAlertID control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox hiddenAlertID;
+        
+        /// <summary>
+        /// hiddenTemplateID control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox hiddenTemplateID;
+        
+        /// <summary>
         /// LitUserID control.
         /// </summary>
         /// <remarks>

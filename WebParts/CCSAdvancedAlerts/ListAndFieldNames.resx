@@ -189,6 +189,9 @@
   <data name="settingsListName" xml:space="preserve">
     <value>CCSAdvancedAlertsList</value>
   </data>
+  <data name="settingsListOwner" xml:space="preserve">
+    <value>Owner</value>
+  </data>
   <data name="settingsListWebIdFieldName" xml:space="preserve">
     <value>WebID</value>
   </data>

@@ -76,7 +76,7 @@ namespace CCSAdvancedAlerts
        /// <summary>
        /// An item was deleted.
        /// </summary>
-       public override void ItemDeleted(SPItemEventProperties properties)
+       public override void ItemDeleting(SPItemEventProperties properties)
        {
            try
            {
