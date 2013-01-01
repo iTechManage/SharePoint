@@ -554,8 +554,8 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
         {
             try
             {
-                
                 PrepareAlert("0");
+                this.gvAlerts.DataBind();
             }
             catch{}
         }
@@ -1103,7 +1103,10 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
 
                     //------------------------------------------------------------------
                     //this.BlockedUsers = ;
-                    this.ddlDateColumn.SelectedValue = alert.DateColumnName;
+                    if (this.ddlDateColumn.Items.FindByText(alert.DateColumnName) != null)
+                    {
+                        this.ddlDateColumn.SelectedIndex = this.ddlDateColumn.Items.IndexOf(this.ddlDateColumn.Items.FindByText(alert.DateColumnName));
+                    }
                     ddlPeriodType.SelectedValue = Convert.ToString(alert.PeriodType);
                     this.ddlPeriodPosition.SelectedValue = Convert.ToString(alert.PeriodPosition);
                     chkRepeat.Checked = alert.Repeat;

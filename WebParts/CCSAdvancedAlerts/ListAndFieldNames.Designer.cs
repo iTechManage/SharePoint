@@ -97,6 +97,15 @@ namespace CCSAdvancedAlerts {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ItemID.
+        /// </summary>
+        internal static string DelayedParentItemID {
+            get {
+                return ResourceManager.GetString("DelayedParentItemID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Subject.
         /// </summary>
         internal static string DelayedSubjectFieldName {

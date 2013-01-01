@@ -57,5 +57,47 @@ namespace CCSAdvancedAlerts
             return intTemp;
         }
 
+
+        internal static bool ContainsDay(List<WeekDays> days, int day)
+        {
+            bool isValid = false;
+            foreach (WeekDays weekDay in days)
+            {
+                if (weekDay == WeekDays.sun && day == 0)
+                {
+                    return true;
+                }
+                else if (weekDay == WeekDays.mon && day == 1)
+                {
+                    return true;
+                }
+                else if (weekDay == WeekDays.tue && day == 2)
+                {
+                    return true;
+                }
+                else if (weekDay == WeekDays.wed && day == 3)
+                {
+                    return true;
+                }
+                else if (weekDay == WeekDays.thu && day == 4)
+                {
+                    return true;
+                }
+                else if (weekDay == WeekDays.fri && day == 5)
+                {
+                    return true;
+                }
+                else if (weekDay == WeekDays.sat && day == 6)
+                {
+                    return true;
+                }
+
+            }
+
+
+            return isValid;
+
+        }
+
     }
 }

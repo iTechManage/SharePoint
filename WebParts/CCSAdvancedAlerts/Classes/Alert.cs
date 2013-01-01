@@ -387,6 +387,10 @@ namespace CCSAdvancedAlerts
                 this.SummaryMode = Convert.ToBoolean( XMLHelper.GetChildValue(xmlDoc,  XMLElementNames.SummaryMode));
 
                 this.PeriodQty = Utilities.ParseToInt(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.PQty));
+
+                this.sendDay = 3;
+
+                this.SendHour = 12;
             }
             catch 
             {

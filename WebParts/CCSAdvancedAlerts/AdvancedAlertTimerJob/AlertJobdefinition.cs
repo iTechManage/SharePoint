@@ -7,7 +7,7 @@ using Microsoft.SharePoint.Utilities;
 
 namespace CCSAdvancedAlerts
 {
-    class AlertJobdefinition: SPJobDefinition
+    class AlertJobdefinition : SPJobDefinition
     {
         #region Constructors( SpjobDefinition Implements 3 Constructors)
 
@@ -34,9 +34,9 @@ namespace CCSAdvancedAlerts
             foreach (SPSite site in base.WebApplication.Sites)
             {
                 //Get all the root level sites in the site collections
-                if(site!=null)
+                if (site != null)
                 {
-                  //check do we have Alert pro active for that site collection by checking hidden list if possible feature
+                    //check do we have Alert pro active for that site collection by checking hidden list if possible feature
                     if (Utilities.IsAdvancedAlertFeatureEnabledForsite(site))
                     {
                         //Sync the alerts for the site collection
@@ -51,7 +51,7 @@ namespace CCSAdvancedAlerts
                         // get the current time
                         DateTime dtNow = DateTime.Now;
                         AlertManager alertManager = null;
-                        
+
                         try
                         {
                             // if we get any alerts then validate and prepare for sending email.
@@ -60,7 +60,7 @@ namespace CCSAdvancedAlerts
                                 try
                                 {
                                     //create web object 
-                                    using (SPWeb web = site.OpenWeb(webId))
+                                    using (SPWeb web = site.OpenWeb(new Guid(webId)))
                                     {
                                         //iterate all the alerts for this web
                                         foreach (Alert alert in siteAlertByWeb[webId])
@@ -73,50 +73,60 @@ namespace CCSAdvancedAlerts
                                                 SPList list = null;
                                                 try
                                                 {
-                                                    list = web.Lists[alert.ListId];
+                                                    list = web.Lists[new Guid(alert.ListId)];
                                                 }
                                                 catch
-                                                { continue;  }
+                                                { continue; }
 
-                                                this.ExecuteTimerAlert( web, list, alert);
+                                                this.ExecuteTimerAlert(web, list, alert);
                                             }
 
                                             //2. Handling Delayed alerts for daily bu specific time and send as single message
                                             //if (alert.AlertType != SendType.Immediate)
-                                            if(alert.SendType != SendType.Immediate)
+                                            if (alert.SendType != SendType.Immediate)
                                             {
-                                               //if (((info2.SendHour == time2.Hour) && (time2.Minute < 30)) && (((info2.Timing == SendTiming.Daily) && info2.DailyBusinessDays.Contains(time2.DayOfWeek)) || (info2.SendWeekday == time2.DayOfWeek)))
-                                               //  {
-                                                
-                                                //if((alert.SendHour == dtWebTime.Hour) && ( 
-                                                // based on time
-                                                if (alertManager == null)
-                                                {
-                                                    alertManager = new AlertManager(site.Url);
-                                                }
-                                                alertManager.SendDelayedMessages(alert);
+                                                //if (((info2.SendHour == time2.Hour) && (time2.Minute < 30)) && (((info2.Timing == SendTiming.Daily) && info2.DailyBusinessDays.Contains(time2.DayOfWeek)) || (info2.SendWeekday == time2.DayOfWeek)))
+                                                //  {
 
+                                                //if ((alert.SendHour == dtWebTime.Hour) && (((alert.SendType == SendType.Daily) && alert.DailyBusinessDays.Contains(dtWebTime.DayOfWeek)) || (alert.SendDay == dtWebTime.DayOfWeek)))
+                                                if ((alert.SendHour == dtWebTime.Hour) && (((alert.SendType == SendType.Daily) && Utilities.ContainsDay(alert.DailyBusinessDays, Convert.ToInt32(dtWebTime.DayOfWeek))) || (alert.SendDay == Convert.ToInt32(dtWebTime.DayOfWeek))))
+                                                {
+                                                    if (alertManager == null)
+                                                    {
+                                                        alertManager = new AlertManager(site.Url);
+                                                    }
+                                                    alertManager.ExecuteDelayedMessages(alert);
+                                                }
 
 
                                             }
 
                                             //3. Handling Delayed alerts based on weekdays and all the stuff
-                                            //if(!alert.ImmidiateAlways)
-                                            //{
-                                            //    //Based on week days
+                                            else if (!alert.ImmidiateAlways)
+                                            {
+                                                //Based on week days
+                                                //if ((alert.ImmediateBusinessDays.Contains(web.RegionalSettings.TimeZone.UTCToLocalTime(DateTime.UtcNow.DayOfWeek)) && (alert.BusinessStartHour <= web.RegionalSettings.TimeZone.UTCToLocalTime(DateTime.UtcNow).Hour)) && (alert.BusinessendtHour > web.RegionalSettings.TimeZone.UTCToLocalTime(DateTime.UtcNow).Hour))
+                                                if ((Utilities.ContainsDay(alert.ImmediateBusinessDays, Convert.ToInt32(web.RegionalSettings.TimeZone.UTCToLocalTime(DateTime.UtcNow).DayOfWeek))) && (alert.BusinessStartHour <= web.RegionalSettings.TimeZone.UTCToLocalTime(DateTime.UtcNow).Hour) && (alert.BusinessendtHour > web.RegionalSettings.TimeZone.UTCToLocalTime(DateTime.UtcNow).Hour))
+                                                {
+                                                    if (alertManager == null)
+                                                    {
+                                                        alertManager = new AlertManager(site.Url);
+                                                    }
+                                                    alertManager.ExecuteDelayedMessages(alert);
 
-                                            //}
+                                                }
+                                            }
 
                                         }
                                     }
                                 }
                                 catch
-                                { 
+                                {
                                     //Error occured while creating web application etc
                                 }
                             }
                         }
-                        catch 
+                        catch
                         {
                             //Error occured while processing 
                         }
@@ -130,36 +140,59 @@ namespace CCSAdvancedAlerts
         }
 
 
-       
+
         #endregion
 
 
         #region private methods
 
-      
 
-        private void ExecuteTimerAlert(SPWeb web,SPList list, Alert alert)
+
+        private void ExecuteTimerAlert(SPWeb web, SPList list, Alert alert)
         {
             try
             {
                 if (web != null && list != null)
                 {
-                    DateTime executionTime = DateTime.Now.AddMinutes(-30) ;
-                    DateTime currentTime = DateTime.Now;
+                    DateTime executionTime;
+                    DateTime currentTime;
+                    if (alert.PeriodPosition == PeriodPosition.After)
+                    {
+                        executionTime = DateTime.Now.AddMinutes(-30  * alert.PeriodQty);
+                        currentTime = DateTime.Now;
+                    }
+                    else
+                    {
+                        executionTime = DateTime.Now;
+                        currentTime = DateTime.Now.AddMinutes(30 * alert.PeriodQty);
+                    }
+                    
                     //We need to get all alerts which are fall
                     SPQuery query = new SPQuery();
-                    //query.Query(string.Format("<Where>\r\n <And>\r\n        <Gt>\r\n            <FieldRef Name=\"{0}\" />\r\n            <Value Type=\"DateTime\" IncludeTimeValue=\"TRUE\">{1}</Value>\r\n        </Gt>\r\n        <Leq>\r\n            <FieldRef Name=\"{0}\" />\r\n            <Value Type=\"DateTime\" IncludeTimeValue=\"TRUE\">{2}</Value>\r\n        </Leq>\r\n    </And>\r\n</Where>", new object[] { alert.DateColumnName, SPUtility.CreateISO8601DateTimeFromSystemDateTime(executionTime), SPUtility.CreateISO8601DateTimeFromSystemDateTime(currentTime)}));
+                    query.Query = string.Format("<Where>" +
+                                                  "<And>" +
+                                                   "<Gt>" +
+                                                    "<FieldRef Name=\"{0}\" />" +
+                                                      "<Value Type=\"DateTime\" IncludeTimeValue=\"TRUE\">{1}</Value>" +
+                                                    "</Gt>" +
+                                                    "<Leq>" +
+                                                      "<FieldRef Name=\"{0}\" />" +
+                                                      "<Value Type=\"DateTime\" IncludeTimeValue=\"TRUE\">{2}</Value>" +
+                                                    "</Leq>" +
+                                                   "</And>" +
+                                                   "</Where>",
+                                                    new object[] { alert.DateColumnName, SPUtility.CreateISO8601DateTimeFromSystemDateTime(executionTime), SPUtility.CreateISO8601DateTimeFromSystemDateTime(currentTime) });
                     SPListItemCollection items = list.GetItems(query);
-                    if (items.Count> 0)
+                    if (items.Count > 0)
                     {
                         foreach (SPListItem item in items)
                         {
-                            if (alert.IsValid(item,AlertEventType.DateColumn))
+                            if (alert.IsValid(item, AlertEventType.DateColumn))
                             {
                                 Notifications mailSender = new Notifications();
                                 //mailSender.SendAlert(alert, ChangeTypes.DateColumn, item2, null);
                                 mailSender.SendMail(alert, AlertEventType.DateColumn, item);
-                                
+
                             }
                             else
                             {
@@ -175,21 +208,13 @@ namespace CCSAdvancedAlerts
             }
             catch
             {
-               //Error occured while executing timer alerts
+                //Error occured while executing timer alerts
             }
         }
 
-        private void ExecuteDelayedAlert()
-        {
-            try
-            {
 
-            }
-            catch 
-            { 
-                //error occured while executing delayed alerts
-            }
-        }
+
+
         #endregion
 
 

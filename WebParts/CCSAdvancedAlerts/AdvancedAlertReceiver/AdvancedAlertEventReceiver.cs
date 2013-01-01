@@ -142,7 +142,8 @@ namespace CCSAdvancedAlerts
                MailTemplateUsageObject mtObject = alert.GetMailTemplateUsageObjectForEventType(eventType);
                string subject = mtObject.Template.Subject;
                string body = mtObject.Template.Body;
-               DelayedAlert dAlert = new DelayedAlert(subject, body, alert.Id, eventType);
+               string parentItemId = Convert.ToString(properties.ListItem.ID);
+               DelayedAlert dAlert = new DelayedAlert(subject, body, alert.Id, parentItemId, eventType);
                alertManager.AddDelayedAlert(dAlert);
            }
            catch { }

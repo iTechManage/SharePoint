@@ -129,6 +129,9 @@
   <data name="DelayedListName" xml:space="preserve">
     <value>CCSAdvancedDelayedAlerts</value>
   </data>
+  <data name="DelayedParentItemID" xml:space="preserve">
+    <value>ItemID</value>
+  </data>
   <data name="DelayedSubjectFieldName" xml:space="preserve">
     <value>Subject</value>
   </data>

@@ -56,6 +56,13 @@ namespace CCSAdvancedAlerts
             set { id = value; }
         }
 
+        private string parentItemID;
+        public string ParentItemID
+        {
+            get { return parentItemID; }
+            set { parentItemID = value; }
+        }
+
         private SPListItem item;
         public SPListItem Item
         {
@@ -65,12 +72,13 @@ namespace CCSAdvancedAlerts
 
 
 
-        public DelayedAlert(string subject,string body,string parentAlertId, AlertEventType eventType)
+        public DelayedAlert(string subject,string body,string parentAlertId,string parentItemId, AlertEventType eventType)
         {
             this.subject = subject;
             this.body = body;
             this.parentAlertID = parentAlertId;
             this.alertType = eventType;
+            this.parentItemID = parentItemId;
         }
 
         public DelayedAlert(SPListItem item)
@@ -80,6 +88,9 @@ namespace CCSAdvancedAlerts
             SPFieldLookupValue lookupValue = (SPFieldLookupValue) item[ListAndFieldNames.DelayedAlertLookupFieldName];
             this.parentAlertID = Convert.ToString(lookupValue.LookupId);
             this.alertType = (AlertEventType)Enum.Parse(typeof(AlertEventType), Convert.ToString(item[ListAndFieldNames.DelayedEventTypeFieldName]));
+            this.item = item;
+            this.id = Convert.ToString(item.ID);
+            this.parentItemID = Convert.ToString(item[ListAndFieldNames.DelayedParentItemID]);
         }
 
 

@@ -341,18 +341,20 @@ namespace CCSAdvancedAlerts
                     SPChangeItem item = change as SPChangeItem;
                     if (!modifiedAlerts.ContainsKey(item.Id))
                     {
+                        Alert alert = null;
                         //if(item.ChangeType  != 3)
                         try
                         {
-                            Alert alert = new Alert(alertList.GetItemById(item.Id), new MailTemplateManager(alertList.ParentWeb));
-                            modifiedAlerts.Add(item.Id, alert);
+                            alert = new Alert(alertList.GetItemById(item.Id), new MailTemplateManager(alertList.ParentWeb));
+                           
                         }
                         catch
                         {
                            //item has been deleted
+
                         }
 
-                       
+                        modifiedAlerts.Add(item.Id, alert);
                     }
                     //Check if the alert is not immediate and all the stuff which are not eligible for timer based alerts
                 }
@@ -432,13 +434,13 @@ namespace CCSAdvancedAlerts
                 item[ListAndFieldNames.DelayedBodyFieldName] = dAlert.Body;
                 item[ListAndFieldNames.DelayedEventTypeFieldName] = dAlert.AlertType;
                 item[ListAndFieldNames.DelayedAlertLookupFieldName] = dAlert.ParentAlertID + ";#" + dAlert.ParentAlertID;
-                
+                item[ListAndFieldNames.DelayedParentItemID] = dAlert.ParentItemID;
                 item.Update();
             }
             catch { }
         }
 
-        internal void SendDelayedMessages(Alert alert)
+        internal void ExecuteDelayedMessages(Alert alert)
         {
             try
             {
@@ -455,8 +457,7 @@ namespace CCSAdvancedAlerts
                             {
                                 DelayedAlert delayedAlert = new DelayedAlert(item);
                                 Notifications notificationSender = new Notifications();
-                                //notificationSender.se
-                                //mailSender.SendDelayedAlert(delayedAlert, alert);
+                                notificationSender.SendDelayedMessage(delayedAlert, alert);
                             }
                             catch 
                             {

@@ -24,7 +24,7 @@ namespace CCSAdvancedAlerts
         
     }
 
-    public enum PeriodType
+      public enum PeriodType
     {
         Minutes,
         Hours,

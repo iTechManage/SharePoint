@@ -22,7 +22,76 @@ namespace CCSAdvancedAlerts
      + @"([a-zA-Z]+[\w-]+\.)+[a-zA-Z]{2,4})$";
         string PlaceHoldersExpressionPattern = @"\[(.*?)\]";
 
+        public string siteCollectionURL;
 
+        internal void SendDelayedMessage(DelayedAlert delayedAlert, Alert alert)
+        {
+
+            try
+            {
+                SPListItem item = null;
+                using (SPSite site = new SPSite(this.siteCollectionURL))
+                {
+                    site.CatchAccessDeniedException = false;
+                    using (SPWeb web = site.OpenWeb(alert.WebId))
+                    {
+                        SPList list = web.Lists[new Guid(alert.ListId)];
+                        item = list.GetItemById(Convert.ToInt32(delayedAlert.ParentItemID));
+                    }
+                   
+                }
+
+                MailTemplateUsageObject mtObject = alert.GetMailTemplateUsageObjectForEventType(delayedAlert.AlertType);
+
+                string toAddress = GetRecipientEmailAddresses(alert.ToAddress, item);
+                string ccAddress = GetRecipientEmailAddresses(alert.CcAddress, item);
+                string fromAddress = GetRecipientEmailAddresses(alert.FromAdderss, item);
+
+                string subject = ReplacePlaceHolders(mtObject.Template.Subject, item);
+                string body = ReplacePlaceHolders(mtObject.Template.Body, item);
+
+                SendMail("ITECHDC",
+                         toAddress,
+                         fromAddress,
+                         ccAddress,
+                         subject,
+                         body,
+                         null);
+            }
+            catch { }
+
+
+
+            //try
+            //{
+            //    SPListItem item = null;
+            //    using (SPSite site = new SPSite(this.siteCollectionURL))
+            //    {
+            //        site.CatchAccessDeniedException = false;
+            //        try
+            //        {
+            //            using (SPWeb web = site.OpenWeb(alert.WebId))
+            //            {
+            //               // item = ScanningUtilities.GetItemFromList(web, alert.ListId, delayedAlert.Item.ID);
+            //                //if (item == null)
+            //                {
+            //                    item = delayedAlert.Item;
+            //                }
+                          
+            //            }
+            //        }
+            //        catch 
+            //        {
+            //            item = delayedAlert.Item;
+            //        }
+
+            //    }
+            //}
+            //catch 
+            //{
+            //}
+        }
+   
         internal static bool SendMail(string SmtpServer, string To, string From, string CC, string Subject, string Body, List<Attachment> Attachments)
         {
             bool succes = false;
