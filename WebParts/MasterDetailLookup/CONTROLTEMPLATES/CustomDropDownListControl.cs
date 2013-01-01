@@ -77,6 +77,22 @@ namespace CustomLookupField
             base.OnLoad(e);
             if (ControlMode != SPControlMode.Display)
             {
+                if (!Page.ClientScript.IsStartupScriptRegistered(this.Field.Id.ToString("n")))
+                {
+                    System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                    sb.Append(@"<script language='javascript'>");
+                    sb.Append(@"function callbackMethod" + this.Field.Id.ToString("n") + " (dialogResult, returnValue)");
+                    sb.Append(@"{");
+                    sb.Append(@"if(dialogResult == 1)");
+                    sb.Append(@"{");
+                    sb.Append(@" __doPostBack('" + this.Field.Id.ToString("n") + "', '')");
+                    sb.Append(@"}");
+                    sb.Append(@"}");
+                    sb.Append(@"</script>");
+
+                    Page.ClientScript.RegisterStartupScript(this.GetType(), this.Field.Id.ToString("n"), sb.ToString());
+                }
+
                 if (!Page.IsPostBack)
                 {
                     SetValue();
@@ -117,15 +133,27 @@ namespace CustomLookupField
                         {
                             if (_availableItems != null && _availableItems.Count != 0)
                             {
+                                bool update = false, flag = Page.Request["__EVENTTARGET"] != null && this.Field.Id.ToString("n") == Page.Request.Params.Get("__EVENTTARGET");
+                                int Max = -1;
                                 foreach (ListItem li in _availableItems)
                                 {
                                     if (!_customisedList.Items.Contains(li))
                                     {
                                         int index = _customisedList.Items.Count;
                                         _customisedList.Items.Insert(index, li);
-                                        _customisedList.SelectedIndex = index;
-                                        l_SelectedIndexChanged(null, e);
+
+                                        if (flag && Max < Convert.ToInt32(li.Value))
+                                        {
+                                            Max = Convert.ToInt32(li.Value);
+                                            _customisedList.SelectedIndex = index;
+                                            update = true;
+                                        }
                                     }
+                                }
+
+                                if (update)
+                                {
+                                    l_SelectedIndexChanged(_customisedList, e);
                                 }
                             }
                         }
@@ -134,15 +162,27 @@ namespace CustomLookupField
                             List<ListItem> FielditemList = GetCurrentLinkedFieldValue();
                             if (FielditemList != null)
                             {
+                                bool update = false, flag = Page.Request["__EVENTTARGET"] != null && this.Field.Id.ToString("n") == Page.Request.Params.Get("__EVENTTARGET");
+                                int Max = -1;
                                 foreach (ListItem li in FielditemList)
                                 {
                                     if (!_customisedList.Items.Contains(li))
                                     {
                                         int index = _customisedList.Items.Count;
                                         _customisedList.Items.Insert(index, li);
-                                        _customisedList.SelectedIndex = index;
-                                        l_SelectedIndexChanged(null, e);
+
+
+                                        if (flag && Max < Convert.ToInt32(li.Value))
+                                        {
+                                            Max = Convert.ToInt32(li.Value);
+                                            _customisedList.SelectedIndex = index;
+                                            update = true;
+                                        }
                                     }
+                                }
+                                if (update)
+                                {
+                                    l_SelectedIndexChanged(_customisedList, e);
                                 }
                             }
                         }
@@ -509,7 +549,7 @@ namespace CustomLookupField
                 {
                     if (f.Id.ToString().Equals(Convert.ToString(field.GetProperty(CustomDropDownList.PARENT_COLUMN))))
                     {
-                        selected_items = Convert.ToString(f.GetCustomProperty("Items"));
+                        selected_items = GetFieldValue(f);
                         break;
                     }
                 }
@@ -563,7 +603,8 @@ namespace CustomLookupField
                         string url = form.Url;
                         url = weburl + "/" + form.Url;
                         string title = field.InternalName;
-                        _new_element.OnClientClick = "javascript:SP.UI.ModalDialog.showModalDialog({ url: '" + url + "', title: '" + title + "', dialogReturnValueCallback: RefreshOnDialogClose});";
+                        //_new_element.OnClientClick = "javascript:SP.UI.ModalDialog.showModalDialog({ url: '" + url + "', title: '" + title + "', dialogReturnValueCallback: RefreshOnDialogClose});";
+                        _new_element.OnClientClick = "javascript:SP.UI.ModalDialog.showModalDialog({ url: '" + url + "', title: '" + title + "', dialogReturnValueCallback:  callbackMethod" + this.Field.Id.ToString("n") + "});";
                     }
                     else
                     {
@@ -630,7 +671,7 @@ namespace CustomLookupField
                 {
                     if (f.Id.ToString().Equals(Convert.ToString(field.GetProperty(CustomDropDownList.PARENT_COLUMN))))
                     {
-                        selected_items = Convert.ToString(f.GetCustomProperty("Items"));
+                        selected_items = GetFieldValue(f);
                         break;
                     }
                 }
@@ -707,7 +748,8 @@ namespace CustomLookupField
                         string url = form.Url;
                         url = weburl + "/" + form.Url;
                         string title = field.InternalName;
-                        _new_element.OnClientClick = "javascript:SP.UI.ModalDialog.showModalDialog({ url: '" + url + "', title: '" + title + "', dialogReturnValueCallback: RefreshOnDialogClose});";
+                        //_new_element.OnClientClick = "javascript:SP.UI.ModalDialog.showModalDialog({ url: '" + url + "', title: '" + title + "', dialogReturnValueCallback: RefreshOnDialogClose});";
+                        _new_element.OnClientClick = "javascript:SP.UI.ModalDialog.showModalDialog({ url: '" + url + "', title: '" + title + "', dialogReturnValueCallback:  callbackMethod" + this.Field.Id.ToString("n") + "});";
                     }
                     else
                     {
@@ -889,7 +931,8 @@ namespace CustomLookupField
                         string url = form.Url;
                         url = weburl + "/" + form.Url;
                         string title = field.InternalName;
-                        _new_element.OnClientClick = "javascript:SP.UI.ModalDialog.showModalDialog({ url: '" + url + "', title: '" + title + "' , dialogReturnValueCallback: RefreshOnDialogClose}); return false";
+                        //_new_element.OnClientClick = "javascript:SP.UI.ModalDialog.showModalDialog({ url: '" + url + "', title: '" + title + "' , dialogReturnValueCallback: RefreshOnDialogClose}); return false";
+                        _new_element.OnClientClick = "javascript:SP.UI.ModalDialog.showModalDialog({ url: '" + url + "', title: '" + title + "', dialogReturnValueCallback:  callbackMethod" + this.Field.Id.ToString("n") + "});";
                     }
                     else
                     {
@@ -987,7 +1030,8 @@ namespace CustomLookupField
                         string url = form.Url;
                         url = weburl + "/" + form.Url;
                         string title = field.InternalName;
-                        _new_element.OnClientClick = "javascript:SP.UI.ModalDialog.showModalDialog({ url: '" + url + "', title: '" + title + "' , dialogReturnValueCallback: RefreshOnDialogClose}); return false";
+                        //_new_element.OnClientClick = "javascript:SP.UI.ModalDialog.showModalDialog({ url: '" + url + "', title: '" + title + "' , dialogReturnValueCallback: RefreshOnDialogClose}); return false";
+                        _new_element.OnClientClick = "javascript:SP.UI.ModalDialog.showModalDialog({ url: '" + url + "', title: '" + title + "', dialogReturnValueCallback:  callbackMethod" + this.Field.Id.ToString("n") + "});";
                     }
                     else
                     {
@@ -1367,7 +1411,7 @@ namespace CustomLookupField
 
                 foreach (string str in fields.Split(';'))
                 {
-                    string str2 = field.InternalName + ":" + sourceList.Fields[new Guid(str)].Title;
+                    string str2 = field.ToString() + ":" + sourceList.Fields[new Guid(str)].Title;
                     if (str2.Length > 0x20)
                     {
                         str2 = str2.Substring(0, 0x20);
@@ -1441,7 +1485,7 @@ namespace CustomLookupField
                     return;
                 }
 
-                if (_fieldVals != null && _fieldVals.Count >= 0)
+                if (_availableItems != null && _fieldVals != null && _fieldVals.Count >= 0)
                 {
                     right_box.Items.Clear();
                     foreach (SPFieldLookupValue i in _fieldVals)
@@ -1895,7 +1939,7 @@ namespace CustomLookupField
                     if (CurrentField.Id.ToString() == ChildControl.Field.GetProperty(CustomDropDownList.PARENT_COLUMN))
                     {
                         CustomDropDownList field = ChildControl.Field as CustomDropDownList;
-                        if (field != null)
+                        if (field != null && (Convert.ToString(field.GetCustomProperty(CustomDropDownList.LINK)) == Boolean.TrueString))
                         {
                             string linked_column = field.GetProperty(CustomDropDownList.LINK_COLUMN);
                             List<ListItem> poplateItemsList = new List<ListItem>();
@@ -1954,7 +1998,7 @@ namespace CustomLookupField
                                         if (rightListBox.Items != null && rightListBox.Items.Count > 0)
                                         {
                                             List<string> vals = new List<string>();
-                                            for(int i = rightListBox.Items.Count - 1; i >= 0; i--)
+                                            for (int i = rightListBox.Items.Count - 1; i >= 0; i--)
                                             {
                                                 if (!CheckListItemExistandRemove(rightListBox.Items[i], ref poplateItemsList))
                                                 {
@@ -1967,17 +2011,17 @@ namespace CustomLookupField
                                             }
 
                                             if (vals.Count > 0) childCtrlValue = vals;
-
-                                            for (int i = leftListBox.Items.Count - 1; i >= 0; i--)
-                                            {
-                                                if (!CheckListItemExistandRemove(leftListBox.Items[i], ref poplateItemsList))
-                                                {
-                                                    leftListBox.Items.RemoveAt(i);
-                                                }
-                                            }
-
-                                            leftListBox.Items.AddRange(poplateItemsList.ToArray());
                                         }
+
+                                        for (int i = leftListBox.Items.Count - 1; i >= 0; i--)
+                                        {
+                                            if (!CheckListItemExistandRemove(leftListBox.Items[i], ref poplateItemsList))
+                                            {
+                                                leftListBox.Items.RemoveAt(i);
+                                            }
+                                        }
+
+                                        leftListBox.Items.AddRange(poplateItemsList.ToArray());
                                     }
                                     else
                                     {
@@ -1995,7 +2039,7 @@ namespace CustomLookupField
                                     foreach (DropDownList childListBox in ChildControls)
                                     {
                                         childListBox.Items.Clear();
-                                        if (!Field.Required) childListBox.Items.Insert(0, new ListItem("(None)", "0"));
+                                        if (this.ControlMode == SPControlMode.New || !Field.Required) childListBox.Items.Insert(0, new ListItem("(None)", "0"));
                                         if(poplateItemsList != null && poplateItemsList.Count > 0)
                                             childListBox.Items.AddRange(poplateItemsList.ToArray());
                                         childListBox.SelectedIndex = 0;
@@ -2026,6 +2070,36 @@ namespace CustomLookupField
             }
 
             return false;
+        }
+
+        string GetFieldValue(SPField field)
+        {
+            string val = "";
+            if (field != null)
+            {
+                 val = Convert.ToString(field.GetCustomProperty("Items"));
+                if (string.IsNullOrEmpty(val))
+                {
+                    SPFieldLookupValue spVal = field.FieldRenderingControl.ItemFieldValue as SPFieldLookupValue;
+
+                    if (spVal != null)
+                    {
+                        return spVal.LookupId.ToString();
+                    }
+                    else
+                    {
+                        SPFieldLookupValueCollection valColl = field.FieldRenderingControl.ItemFieldValue as SPFieldLookupValueCollection;
+                        if (valColl != null && valColl.Count > 0)
+                        {
+                            foreach (SPFieldLookupValue v in valColl)
+                            {
+                                val += v.LookupId.ToString() + ":";
+                            }
+                        }
+                    }
+                }
+            }
+            return val;
         }
 
     }

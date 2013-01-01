@@ -91,7 +91,9 @@
     <Folder Include="Features\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="CONTROLTEMPLATES\CustomLookupFieldEditor.ascx" />
+    <Content Include="CONTROLTEMPLATES\CustomLookupFieldEditor.ascx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
     <Content Include="CONTROLTEMPLATES\CustomLookupMultiFieldEditor.ascx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>

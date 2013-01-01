@@ -112,7 +112,7 @@ namespace CustomLookupField.CONTROLTEMPLATES
 
                         if ((typename.Equals("CustomDropDownList") && !temp) || f.Type == SPFieldType.Lookup)
                         {
-                            if (parent_column_lookup_id == ((SPFieldLookup)f).LookupList)
+                            if (parent_column_lookup_id.ToLower() == ((SPFieldLookup)f).LookupList.ToLower())
                             {
                                 str2.Add(new ListItem(string.Format(CultureInfo.InvariantCulture, "{0}", f.Title), f.Id.ToString()));
                             }
@@ -318,15 +318,15 @@ namespace CustomLookupField.CONTROLTEMPLATES
                             bool temp = Convert.ToString(f.GetCustomProperty(CustomDropDownList.LINK)) == Boolean.TrueString;
 
                             if (((typename.Equals("CustomDropDownList") && !temp) || f.Type == SPFieldType.Lookup) &&
-                            (f1.Type == SPFieldType.Lookup || f1.TypeAsString == "CustomDropDownList"))
+                            (f1.Type == SPFieldType.Lookup || f1.TypeAsString == "Lookup" ||f1.TypeAsString == "CustomDropDownList"))
                             {
                                 string left = ((SPFieldLookup)f1).LookupList.ToString();
                                 left = left.TrimEnd('}');
-                                left = left.TrimStart('{');
+                                left = left.TrimStart('{').ToLower();
                                 
                                 string right = ((SPFieldLookup)f).LookupList.ToString();
                                 right = right.TrimEnd('}');
-                                right = right.TrimStart('{');
+                                right = right.TrimStart('{').ToLower();
                                
                                 if( left.Equals(right))
                                 {
@@ -363,7 +363,7 @@ namespace CustomLookupField.CONTROLTEMPLATES
                                 f_lookuplist = f_lookuplist.TrimStart('{');
                                 parent_column_lookup_id = parent_column_lookup_id.TrimEnd('}');
                                 parent_column_lookup_id = parent_column_lookup_id.TrimStart('{');
-                                if (parent_column_lookup_id == f_lookuplist)
+                                if (parent_column_lookup_id.ToLower() == f_lookuplist.ToLower())
                                 {
                                     str2.Add(new ListItem(string.Format(CultureInfo.InvariantCulture, "{0}", f.Title), f.Id.ToString()));
                                 }
@@ -428,7 +428,7 @@ namespace CustomLookupField.CONTROLTEMPLATES
                 }
 
             }
-            if (listParentColumn.Items.Count == 0 || listTargetList.SelectedValue == SPContext.Current.ListId.ToString())
+            if (listParentColumn.Items.Count == 0 || listTargetList.SelectedValue == SPContext.Current.ListId.ToString() || !cbxLinkParent.Checked)
             {
                 InitialParentColumnValues_with_false();
                 cbxLinkParent.Enabled = false;
@@ -733,23 +733,29 @@ namespace CustomLookupField.CONTROLTEMPLATES
             _f.SetCustomProperty(CustomDropDownList.SHOW_ALL_VALUES, cbxParentEmpty.Checked);
             if (cbxLinkParent.Checked && cbxLinkParent.Enabled)
             {
-              //  if (listParentColumn.Items.Count != 0)
+                //  if (listParentColumn.Items.Count != 0)
                 {
                     _f.SetCustomProperty(CustomDropDownList.PARENT_COLUMN, listParentColumn.SelectedItem.Value);
                 }
-              /*  else
-                {
-                    _f.SetCustomProperty(CustomDropDownList.PARENT_COLUMN, "");
-                }
-                if (listLinkColumn.Items.Count != 0)*/
+                /*  else
+                  {
+                      _f.SetCustomProperty(CustomDropDownList.PARENT_COLUMN, "");
+                  }
+                  if (listLinkColumn.Items.Count != 0)*/
                 {
                     _f.SetCustomProperty(CustomDropDownList.LINK_COLUMN, listLinkColumn.SelectedItem.Value);
                 }
-               /* else
-                {
-                    _f.SetCustomProperty(CustomDropDownList.LINK_COLUMN, "");
-                }*/
+                /* else
+                 {
+                     _f.SetCustomProperty(CustomDropDownList.LINK_COLUMN, "");
+                 }*/
             }
+            else
+            {
+                _f.SetCustomProperty(CustomDropDownList.PARENT_COLUMN, "");
+                _f.SetCustomProperty(CustomDropDownList.LINK_COLUMN, "");
+            }
+
             _f.SetCustomProperty(CustomDropDownList.AUTO_COMPLETE, cbxAutoCompleteORFilter.Checked);
 
             _f.SetCustomProperty(CustomDropDownList.ADVANCE_SETTINGS, cbxAdvanceSettings.Checked);
