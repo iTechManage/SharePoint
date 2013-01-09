@@ -249,7 +249,8 @@ namespace CCSAdvancedAlerts
             try
             {
                 SPQuery query = new SPQuery();
-                string strQuery = string.Format("<Where><And><Eq><FieldRef Name=\"{0}\"/><Value Type=\"Choice\">{1}</Value></Eq><Eq><FieldRef Name=\"Alert\" LookupId=\"TRUE\"/><Value Type=\"Lookup\">{2}</Value></Eq></And></Where>", "ChangeTypes", eventType.ToString(), alertId);
+                string strQuery = string.Format("<Where><And><Eq><FieldRef Name=\"{0}\"/><Value Type=\"Choice\">{1}</Value></Eq><Eq><FieldRef Name=\"Alert\" LookupId=\"TRUE\"/><Value Type=\"Lookup\">{2}</Value></Eq></And></Where>", "EventType", eventType.ToString(), alertId);
+                query.Query = strQuery;
                 SPListItemCollection listItemcollection = mailTemlateUsageList.GetItems(query);
                 if (listItemcollection != null && listItemcollection.Count > 0)
                 {

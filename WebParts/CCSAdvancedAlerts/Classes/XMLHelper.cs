@@ -29,9 +29,9 @@ namespace CCSAdvancedAlerts
         internal static string GetChildValue(XmlDocument xmlDoc, string nodeName)
         {
             string strValue = string.Empty;
-            if(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.BlockedUsers) != null)
+            if(xmlDoc.DocumentElement.SelectSingleNode(nodeName) != null)
             {
-                strValue = xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.BlockedUsers).InnerText;
+                strValue = xmlDoc.DocumentElement.SelectSingleNode(nodeName).InnerText;
             }
             return strValue;
         }

@@ -115,9 +115,9 @@ namespace CCSAdvancedAlerts
             get { return periodPosition; }
             set { periodPosition = value; }
         }
-    
-        private RepeatType repeatType;
-        internal RepeatType RepeatType
+
+        private PeriodType repeatType;
+        internal PeriodType RepeatType
         {
             get { return repeatType; }
             set { repeatType = value; }
@@ -314,8 +314,8 @@ namespace CCSAdvancedAlerts
                 string metaXML = Convert.ToString(listItem[ListAndFieldNames.settingsListDetailInfoFieldName]);
                 DeSerializeMetaData(metaXML);
 
-                this.sendType = SendType.Immediate;
 
+                CaliculateSendType();
                 //Send type
                 //if (Convert.ToString(listItem[ListAndFieldNames.settingsListWhenToSendFieldName] )== Convert.ToString(SendType.Immediate))
                 //{
@@ -368,7 +368,7 @@ namespace CCSAdvancedAlerts
                 this.RepeatInterval = Utilities.ParseToInt(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.RInterval));
 
                 if (!string.IsNullOrEmpty(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.RType)))
-                this.RepeatType = (RepeatType)Enum.Parse(typeof(RepeatType), XMLHelper.GetChildValue(xmlDoc, XMLElementNames.RType));
+                    this.RepeatType = (PeriodType)Enum.Parse(typeof(PeriodType), XMLHelper.GetChildValue(xmlDoc, XMLElementNames.RType));
 
                 this.RepeatCount = Utilities.ParseToInt(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.RCount));
                 
@@ -388,9 +388,9 @@ namespace CCSAdvancedAlerts
 
                 this.PeriodQty = Utilities.ParseToInt(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.PQty));
 
-                this.sendDay = 3;
+                this.sendDay = Utilities.ParseToInt(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.SendDay));
 
-                this.SendHour = 12;
+                this.SendHour = Utilities.ParseToInt(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.SendHour));
             }
             catch 
             {
@@ -398,7 +398,27 @@ namespace CCSAdvancedAlerts
             }
 
         }
-       
+
+        private void CaliculateSendType()
+        {
+            try
+            {
+                if (this.ImmidiateAlways)
+                {
+                    this.sendType = SendType.Immediate;
+                }
+                else if (this.DailyBusinessDays.Count > 0)
+                {
+                    this.sendType = SendType.Daily;
+                }
+                else
+                {
+                    this.sendType = SendType.Weekely;
+                }
+            }
+            catch { }
+        }
+
 
         private List<WeekDays> DesrializeDays(string serializedDays)
         {
@@ -415,13 +435,13 @@ namespace CCSAdvancedAlerts
         }
 
 
-        internal bool IsValid(SPListItem item, AlertEventType eventType)
+        internal bool IsValid(SPListItem item, AlertEventType eventType, SPItemEventProperties properties)
         {
             foreach(Condition condition in this.conditions)
             {
                 if (condition != null)
                 {
-                    if (!condition.isValid(item, eventType))
+                    if (!condition.isValid(item, eventType,properties))
                     {
                         return false;
                     }
@@ -430,7 +450,7 @@ namespace CCSAdvancedAlerts
             return true;
         }
 
-
+    
         public MailTemplateUsageObject GetMailTemplateUsageObjectForEventType( AlertEventType eventType)
         {
             return this.templateManager.GetTemplateUsageObjectForAlert(this.Id, eventType);

@@ -33,6 +33,14 @@ namespace CCSAdvancedAlerts
             set { strValue = value; }
         }
 
+        private ConditionComparisionType comparisionType;
+        public ConditionComparisionType ComparisionType
+        {
+            get { return comparisionType; }
+            set { comparisionType = value; }
+        }
+
+
         //private string whenToSend;
         //internal string WhenToSend
         //{
@@ -67,6 +75,7 @@ namespace CCSAdvancedAlerts
                 this.FieldName = xmlElement.GetAttribute("Field");
                 this.comparisionOperator = (Operators)Enum.Parse(typeof(Operators), xmlElement.GetAttribute("Operator"));
                 this.strValue = xmlElement.GetAttribute("Value");
+                this.comparisionType = (ConditionComparisionType)Enum.Parse(typeof(ConditionComparisionType), xmlElement.GetAttribute("ComparisionType"));
             }
             catch { }
         }
@@ -74,7 +83,7 @@ namespace CCSAdvancedAlerts
 
         #region Condition Evaluation
 
-        internal bool isValid(SPListItem item, AlertEventType eventType)
+        internal bool isValid(SPListItem item, AlertEventType eventType, SPItemEventProperties properties)
         {
             SPList list = item.ParentList;
             if (list == null)
@@ -82,12 +91,30 @@ namespace CCSAdvancedAlerts
             SPField field = list.Fields.TryGetFieldByStaticName(this.fieldName);
             if (field != null)
             {
-                return MatchItemValueBasedOnOperatorAndValueType(item[this.fieldName], field.FieldValueType, eventType);
+                object fieldValue = item[this.fieldName];
+                if (eventType == AlertEventType.ItemUpdated && properties !=null)
+                {
+                    if (this.comparisionType != ConditionComparisionType.Always)
+                    {
+                        //if (!properties.AfterProperties.ChangedProperties.Contains(this.fieldName))
+                        if (Convert.ToString(item[this.fieldName])
+                            .Equals(Convert.ToString(properties.AfterProperties[this.fieldName]), StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            return false;
+                        }
+                        else
+                        {
+                            fieldValue = properties.AfterProperties[this.fieldName];
+                        }
+                    }
+                }
+
+                return MatchItemValueBasedOnOperatorAndValueType(fieldValue, field.FieldValueType, eventType,item.ParentList.ParentWeb);
             }
             return false;
         }
 
-        public bool MatchItemValueBasedOnOperatorAndValueType(object fieldValue, Type fieldValueType, AlertEventType eventType)
+        public bool MatchItemValueBasedOnOperatorAndValueType(object fieldValue, Type fieldValueType, AlertEventType eventType,SPWeb web)
         {
 
             if (fieldValue != null && !string.IsNullOrEmpty(fieldValue.ToString()))
@@ -102,7 +129,8 @@ namespace CCSAdvancedAlerts
                 }
                 else if (fieldValueType == (typeof(SPFieldUserValue)))
                 {
-                    SPFieldUserValue fieldUserValue = new SPFieldUserValue(SPContext.Current.Web, fieldValue.ToString());
+                    //SPFieldUserValue fieldUserValue = new SPFieldUserValue(SPContext.Current.Web, fieldValue.ToString());
+                    SPFieldUserValue fieldUserValue = new SPFieldUserValue(web, fieldValue.ToString());
 
                     string userLoginName = fieldUserValue.User.LoginName;
                     string userDispalyName = fieldUserValue.User.Name;
@@ -115,7 +143,8 @@ namespace CCSAdvancedAlerts
                 }
                 else if (fieldValueType == (typeof(SPFieldUserValueCollection)))
                 {
-                    SPFieldUserValueCollection fieldUserValueCollection = new SPFieldUserValueCollection(SPContext.Current.Web, fieldValue.ToString());
+                    //SPFieldUserValueCollection fieldUserValueCollection = new SPFieldUserValueCollection(SPContext.Current.Web, fieldValue.ToString());
+                    SPFieldUserValueCollection fieldUserValueCollection = new SPFieldUserValueCollection(web, fieldValue.ToString());
                     string userLoginNames = "";
                     string userDispalyNames = "";
 

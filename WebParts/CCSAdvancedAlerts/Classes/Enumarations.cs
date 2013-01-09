@@ -5,6 +5,13 @@ using System.Text;
 
 namespace CCSAdvancedAlerts
 {
+
+    public enum ConditionComparisionType
+    {
+        Always,
+        AfterChange
+    }
+
     public enum AlertEventType
     {
         ItemAdded,

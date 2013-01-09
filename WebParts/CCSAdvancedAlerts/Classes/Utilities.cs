@@ -41,8 +41,7 @@ namespace CCSAdvancedAlerts
             { }
             return false;
         }
-
-
+        
         internal static bool ParseToBool(string value)
         {
             bool boolTemp = false;
@@ -56,8 +55,7 @@ namespace CCSAdvancedAlerts
             int.TryParse(value, out intTemp);
             return intTemp;
         }
-
-
+        
         internal static bool ContainsDay(List<WeekDays> days, int day)
         {
             bool isValid = false;
@@ -98,6 +96,53 @@ namespace CCSAdvancedAlerts
             return isValid;
 
         }
+
+        internal static bool CreateOrUpdate_CCSAdvancedAlertsList(SPWeb web)
+        {
+            try
+            {
+                //SPList list = web.Lists.Add("CCSAdvancedAlertsList","CCS Advanced Alerts",
+
+            }
+            catch 
+            {return false;}
+            return true;
+        }
+
+        internal static bool CreateOrUpdate_CCSAdvancedAlertsList(SPWeb web)
+        {
+            try
+            {
+                //SPList list = web.Lists.Add("CCSAdvancedAlertsList","CCS Advanced Alerts",
+
+            }
+            catch
+            { return false; }
+            return true;
+        }
+
+        internal static bool CreateOrUpdate_CCSAdvancedAlertsList(SPWeb web)
+        {
+            try
+            {
+                //SPList list = web.Lists.Add("CCSAdvancedAlertsList","CCS Advanced Alerts",
+            }
+            catch
+            { return false; }
+            return true;
+        }
+
+        internal static bool CreateOrUpdate_CCSAdvancedAlertsList(SPWeb web)
+        {
+            try
+            {
+                //SPList list = web.Lists.Add("CCSAdvancedAlertsList","CCS Advanced Alerts",
+            }
+            catch
+            {return false;}
+            return true;
+        }
+
 
     }
 }

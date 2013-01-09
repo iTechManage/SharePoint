@@ -218,12 +218,13 @@ namespace CCSAdvancedAlerts
                     xCondition.Attributes.Append(XMLHelper.AppendAttribute(xmlDoc, XMLElementNames.ConditionFieldTagName, condition.FieldName));
                     xCondition.Attributes.Append(XMLHelper.AppendAttribute(xmlDoc, XMLElementNames.ConditionOperatorTagName, Convert.ToString(condition.ComparisionOperator)));
                     xCondition.Attributes.Append(XMLHelper.AppendAttribute(xmlDoc, XMLElementNames.ConditionValueTagName, condition.StrValue));
+                    xCondition.Attributes.Append(XMLHelper.AppendAttribute(xmlDoc, XMLElementNames.ConditionsComparisionType, Convert.ToString(condition.ComparisionType)));
                 }
 
 
+                //General Information
                 rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.BlockedUsers, alert.BlockedUsers));//
                 rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.DateColumnName, alert.DateColumnName));//
-                //rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.PQty, alert.PeriodQty.ToString()));//
                 rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.PType, alert.PeriodType.ToString()));//
                 rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.PPosition, alert.PeriodPosition.ToString()));//
                 rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.Repeat, alert.Repeat.ToString()));//
@@ -237,47 +238,14 @@ namespace CCSAdvancedAlerts
                 rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.ImmediateBusinessHoursFinish, alert.BusinessendtHour.ToString()));//
                 rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.DailyBusinessDays, ConvertDaysToString(alert.DailyBusinessDays)));//
                 rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.SummaryMode, alert.SummaryMode.ToString())); //
-
-                if (alert.PeriodQty > 0)
+                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.SendDay, alert.SendDay.ToString()));//
+                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.SendHour, alert.SendHour.ToString()));//
+            
+                //if (alert.PeriodQty > 0)
                 {
                     rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.PQty, alert.PeriodQty.ToString())); //
                 }
-
-                
-             
-                //SetChildText(rootEl, "PeriodType", this.PeriodType.ToString());
-                //SetChildText(rootEl, "PeriodPosition", this.PeriodPosition.ToString());
-                //SetChildText(rootEl, "Repeat", this.RepeatNotification.ToString());
-                //SetChildText(rootEl, "RepeatInterval", this.RepeatInterval.ToString());
-                //SetChildText(rootEl, "RepeatType", this.RepeatIntervalUnit.ToString());
-                //SetChildText(rootEl, "RepeatCount", this.RepeatCount.ToString());
-                //SetChildText(rootEl, "CombineAlerts", this.ComnbineAlerts.ToString());
-                //SetChildText(rootEl, "ImmediateAlways", this.ImmediateSendAlways.ToString());
-                //SetChildText(rootEl, "ImmediateBusinessDays", this.SerializeBusinessDays(this.ImmediateBusinessDays));
-                //SetChildText(rootEl, "ImmediateBusinessHoursStart", this.ImmediateBusinessHourStart.ToString());
-                //SetChildText(rootEl, "ImmediateBusinessHoursFinish", this.ImmediateBusinessHourFinish.ToString());
-                //SetChildText(rootEl, "DailyBusinessDays", this.SerializeBusinessDays(this.DailyBusinessDays));
-
-                //if (this.PeriodQty >= 0)
-                //{
-                //    SetChildText(rootEl, "PeriodQty", this.PeriodQty.ToString());
-                //}
-
-
-                //XmlNode userNode = xmlDoc.CreateElement("To").InnerText="";
-                //userNode.InnerText = "krishna@itechmanage.com";
-                //rootNode.AppendChild(userNode);
-                //userNode = xmlDoc.CreateElement("user");
-                //attribute = xmlDoc.CreateAttribute("age");
-                //attribute.Value = "39";
-                //userNode.Attributes.Append(attribute);
-                //userNode.InnerText = "Jane Doe";
-                //rootNode.AppendChild(userNode);
-                //XmlAttribute attribute = xmlDoc.CreateAttribute("age");
-                //attribute.Value = "42";
-                //userNode.Attributes.Append(attribute);
-          
-
+         
             }
             catch { }
             return xmlDoc.InnerXml;
@@ -354,6 +322,11 @@ namespace CCSAdvancedAlerts
 
                         }
 
+                        if (alert != null && !alert.ImmidiateAlways)
+                        {
+                            alert = null;
+                        }
+
                         modifiedAlerts.Add(item.Id, alert);
                     }
                     //Check if the alert is not immediate and all the stuff which are not eligible for timer based alerts
@@ -403,6 +376,12 @@ namespace CCSAdvancedAlerts
             }
         }
 
+        /// <summary>
+        /// Get Alert from its item id
+        /// </summary>
+        /// <param name="alertId"></param>
+        /// <param name="mtManager"></param>
+        /// <returns></returns>
         internal Alert GetAlertFromID(string alertId,MailTemplateManager mtManager)
         {
             Alert alert = null;

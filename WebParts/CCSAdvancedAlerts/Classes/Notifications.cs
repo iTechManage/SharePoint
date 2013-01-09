@@ -22,6 +22,10 @@ namespace CCSAdvancedAlerts
      + @"([a-zA-Z]+[\w-]+\.)+[a-zA-Z]{2,4})$";
         string PlaceHoldersExpressionPattern = @"\[(.*?)\]";
 
+        static string SMTPServerName;
+
+     
+
         public string siteCollectionURL;
 
         internal void SendDelayedMessage(DelayedAlert delayedAlert, Alert alert)
@@ -38,7 +42,7 @@ namespace CCSAdvancedAlerts
                         SPList list = web.Lists[new Guid(alert.ListId)];
                         item = list.GetItemById(Convert.ToInt32(delayedAlert.ParentItemID));
                     }
-                   
+
                 }
 
                 MailTemplateUsageObject mtObject = alert.GetMailTemplateUsageObjectForEventType(delayedAlert.AlertType);
@@ -50,7 +54,8 @@ namespace CCSAdvancedAlerts
                 string subject = ReplacePlaceHolders(mtObject.Template.Subject, item);
                 string body = ReplacePlaceHolders(mtObject.Template.Body, item);
 
-                SendMail("ITECHDC",
+                string smtpSName = GetSMTPServer(item);
+                SendMail(smtpSName,
                          toAddress,
                          fromAddress,
                          ccAddress,
@@ -77,7 +82,7 @@ namespace CCSAdvancedAlerts
             //                {
             //                    item = delayedAlert.Item;
             //                }
-                          
+
             //            }
             //        }
             //        catch 
@@ -91,7 +96,7 @@ namespace CCSAdvancedAlerts
             //{
             //}
         }
-   
+
         internal static bool SendMail(string SmtpServer, string To, string From, string CC, string Subject, string Body, List<Attachment> Attachments)
         {
             bool succes = false;
@@ -154,7 +159,9 @@ namespace CCSAdvancedAlerts
                 string subject = ReplacePlaceHolders(mtObject.Template.Subject, item);
                 string body = ReplacePlaceHolders(mtObject.Template.Body, item);
 
-                SendMail("ITECHDC",
+                string smtpSName = GetSMTPServer(item);
+
+                SendMail(smtpSName,
                          toAddress,
                          fromAddress,
                          ccAddress,
@@ -202,7 +209,7 @@ namespace CCSAdvancedAlerts
             }
             return emailAddresses;
         }
-
+        
         bool isEmailAddress(string address)
         {
             return address.Contains("@");
@@ -222,14 +229,48 @@ namespace CCSAdvancedAlerts
 
         string GetEmailAddressFromField(SPListItem listItem, string fieldName)
         {
+            //string strDiplayName = string.Empty;
+            //string Email = string.Empty;
+            //SPField field = listItem.Fields.TryGetFieldByStaticName(fieldName);
+            //if (field != null)
+            //{
+            //    object fieldValue = listItem[fieldName];
+            //    string strValue = GetFieldValue(fieldValue, field.FieldValueType);
+            //    SPUtility.GetFullNameandEmailfromLogin(listItem.ParentList.ParentWeb, strValue, out strDiplayName, out Email);
+            //}
+            //return Email;
+
             string strDiplayName = string.Empty;
             string Email = string.Empty;
-            SPField field = listItem.Fields.TryGetFieldByStaticName(fieldName);
-            if (field != null)
+            if (!string.IsNullOrEmpty(fieldName) && fieldName.IndexOf(',') != -1)
             {
-                object fieldValue = listItem[fieldName];
-                string strValue = GetFieldValue(fieldValue, field.FieldValueType);
-                SPUtility.GetFullNameandEmailfromLogin(listItem.ParentList.ParentWeb, strValue, out strDiplayName, out Email);
+                string[] fieldNames = fieldName.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (string strFieldName in fieldNames)
+                {
+                    string strCurrentEmail = string.Empty;
+                    //SPField field = listItem.Fields.TryGetFieldByStaticName(strFieldName);
+                    SPField field = null;
+                    try
+                    {
+                        field = listItem.Fields.GetField(strFieldName);
+                    }
+                    catch { }
+                    if (field != null)
+                    {
+                        object fieldValue = listItem[strFieldName];
+                        strCurrentEmail = this.GetUserEmailFromField(Convert.ToString(fieldValue), field);
+
+                        if (!string.IsNullOrEmpty(strCurrentEmail))
+                        {
+                            if (!string.IsNullOrEmpty(Email))
+                            {
+                                Email += ",";
+                            }
+                            Email += strCurrentEmail;
+                        }
+                    }
+                }
             }
             return Email;
         }
@@ -253,7 +294,7 @@ namespace CCSAdvancedAlerts
                     if (field != null)
                     {
                         object fieldValue = listItem[placeHolder];
-                        string strValue = GetFieldValue(fieldValue, field.FieldValueType);
+                        string strValue = GetFieldValue(fieldValue, field.FieldValueType, listItem.ParentList.ParentWeb);
                         template = template.Replace(match.Value, strValue);
                     }
                 }
@@ -270,7 +311,7 @@ namespace CCSAdvancedAlerts
         /// <param name="fieldValue"></param>
         /// <param name="fieldValueType"></param>
         /// <returns></returns>
-        public string GetFieldValue(object fieldValue, Type fieldValueType)
+        internal string GetFieldValue(object fieldValue, Type fieldValueType, SPWeb web)
         {
 
             if (fieldValue != null && !string.IsNullOrEmpty(fieldValue.ToString()))
@@ -283,7 +324,7 @@ namespace CCSAdvancedAlerts
                 }
                 else if (fieldValueType == (typeof(SPFieldUserValue)))
                 {
-                    SPFieldUserValue fieldUserValue = new SPFieldUserValue(SPContext.Current.Web, fieldValue.ToString());
+                    SPFieldUserValue fieldUserValue = new SPFieldUserValue(web, fieldValue.ToString());
 
                     string userLoginName = fieldUserValue.User.LoginName;
                     string userDispalyName = fieldUserValue.User.Name;
@@ -293,7 +334,7 @@ namespace CCSAdvancedAlerts
                 }
                 else if (fieldValueType == (typeof(SPFieldUserValueCollection)))
                 {
-                    SPFieldUserValueCollection fieldUserValueCollection = new SPFieldUserValueCollection(SPContext.Current.Web, fieldValue.ToString());
+                    SPFieldUserValueCollection fieldUserValueCollection = new SPFieldUserValueCollection(web, fieldValue.ToString());
                     string userLoginNames = "";
                     string userDispalyNames = "";
 
@@ -344,7 +385,89 @@ namespace CCSAdvancedAlerts
 
         }
 
+        string GetUserEmailFromField(string strUserFieldValue, SPField personOrGroupField)
+        {
+            string emailAddressToReturn = string.Empty;
 
+            if (!string.IsNullOrEmpty(strUserFieldValue) && strUserFieldValue.Contains(";#"))
+            {
+                if (personOrGroupField != null &&
+                    personOrGroupField.Type == SPFieldType.User)
+                {
+                    try
+                    {
+                        SPFieldUser userField = (SPFieldUser)personOrGroupField;
+
+                        if (userField != null)
+                        {
+                            if (userField.AllowMultipleValues)
+                            {
+                                SPFieldUserValueCollection userFieldValueColl = (SPFieldUserValueCollection)userField.GetFieldValue(strUserFieldValue);
+
+                                if (userFieldValueColl != null &&
+                                    userFieldValueColl.Count > 0)
+                                {
+                                    foreach (SPFieldUserValue userValue in userFieldValueColl)
+                                    {
+                                        SPUser spUser = userValue.User;
+
+                                        if (spUser != null &&
+                                            !string.IsNullOrEmpty(spUser.Email))
+                                        {
+                                            if (!string.IsNullOrEmpty(emailAddressToReturn))
+                                            {
+                                                if (!emailAddressToReturn.Contains(spUser.Email))
+                                                {
+                                                    emailAddressToReturn = emailAddressToReturn + "," + spUser.Email;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                emailAddressToReturn = spUser.Email;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                SPFieldUserValue userFieldValue = (SPFieldUserValue)userField.GetFieldValue(strUserFieldValue);
+
+                                if (userFieldValue != null)
+                                {
+                                    SPUser spUser = userFieldValue.User;
+
+                                    if (spUser != null &&
+                                        !string.IsNullOrEmpty(spUser.Email))
+                                    {
+                                        emailAddressToReturn = spUser.Email;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    catch { }
+                }
+            }
+            return emailAddressToReturn;
+        }
+        
+        static string GetSMTPServer(SPListItem lItem)
+        {
+            if (string.IsNullOrEmpty(SMTPServerName))
+            {
+                try
+                {
+                    SPSecurity.RunWithElevatedPrivileges(delegate
+                    {
+                        SMTPServerName = lItem.ParentList.ParentWeb.Site.WebApplication.OutboundMailServiceInstance.Server.Address;
+                    });
+                }
+                catch 
+                { }
+            }
+            return SMTPServerName;
+        }
 
     }
 }
