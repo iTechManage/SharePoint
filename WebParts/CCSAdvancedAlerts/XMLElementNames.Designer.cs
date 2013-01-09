@@ -124,6 +124,15 @@ namespace CCSAdvancedAlerts {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ComparisionType.
+        /// </summary>
+        internal static string ConditionsComparisionType {
+            get {
+                return ResourceManager.GetString("ConditionsComparisionType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Conditions.
         /// </summary>
         internal static string ConditionsRootNodeName {
@@ -264,6 +273,24 @@ namespace CCSAdvancedAlerts {
         internal static string RType {
             get {
                 return ResourceManager.GetString("RType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SendDay.
+        /// </summary>
+        internal static string SendDay {
+            get {
+                return ResourceManager.GetString("SendDay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SendHour.
+        /// </summary>
+        internal static string SendHour {
+            get {
+                return ResourceManager.GetString("SendHour", resourceCulture);
             }
         }
         

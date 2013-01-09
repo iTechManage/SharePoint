@@ -108,8 +108,9 @@ namespace CCSAdvancedAlerts
                        if (eventType != AlertEventType.DateColumn)
                        {
 
-                           if (alert.IsValid(properties.ListItem, eventType))
+                           if (alert.IsValid(properties.ListItem, eventType, properties))
                            {
+                               
 
                                if (alert.SendType == SendType.Immediate)
                                {

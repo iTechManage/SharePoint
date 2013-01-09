@@ -97,51 +97,51 @@ namespace CCSAdvancedAlerts
 
         }
 
-        internal static bool CreateOrUpdate_CCSAdvancedAlertsList(SPWeb web)
-        {
-            try
-            {
-                //SPList list = web.Lists.Add("CCSAdvancedAlertsList","CCS Advanced Alerts",
+        //internal static bool CreateOrUpdate_CCSAdvancedAlertsList(SPWeb web)
+        //{
+        //    try
+        //    {
+        //        //SPList list = web.Lists.Add("CCSAdvancedAlertsList","CCS Advanced Alerts",
 
-            }
-            catch 
-            {return false;}
-            return true;
-        }
+        //    }
+        //    catch 
+        //    {return false;}
+        //    return true;
+        //}
 
-        internal static bool CreateOrUpdate_CCSAdvancedAlertsList(SPWeb web)
-        {
-            try
-            {
-                //SPList list = web.Lists.Add("CCSAdvancedAlertsList","CCS Advanced Alerts",
+        //internal static bool CreateOrUpdate_CCSAdvancedAlertsList(SPWeb web)
+        //{
+        //    try
+        //    {
+        //        //SPList list = web.Lists.Add("CCSAdvancedAlertsList","CCS Advanced Alerts",
 
-            }
-            catch
-            { return false; }
-            return true;
-        }
+        //    }
+        //    catch
+        //    { return false; }
+        //    return true;
+        //}
 
-        internal static bool CreateOrUpdate_CCSAdvancedAlertsList(SPWeb web)
-        {
-            try
-            {
-                //SPList list = web.Lists.Add("CCSAdvancedAlertsList","CCS Advanced Alerts",
-            }
-            catch
-            { return false; }
-            return true;
-        }
+        //internal static bool CreateOrUpdate_CCSAdvancedAlertsList(SPWeb web)
+        //{
+        //    try
+        //    {
+        //        //SPList list = web.Lists.Add("CCSAdvancedAlertsList","CCS Advanced Alerts",
+        //    }
+        //    catch
+        //    { return false; }
+        //    return true;
+        //}
 
-        internal static bool CreateOrUpdate_CCSAdvancedAlertsList(SPWeb web)
-        {
-            try
-            {
-                //SPList list = web.Lists.Add("CCSAdvancedAlertsList","CCS Advanced Alerts",
-            }
-            catch
-            {return false;}
-            return true;
-        }
+        //internal static bool CreateOrUpdate_CCSAdvancedAlertsList(SPWeb web)
+        //{
+        //    try
+        //    {
+        //        //SPList list = web.Lists.Add("CCSAdvancedAlertsList","CCS Advanced Alerts",
+        //    }
+        //    catch
+        //    {return false;}
+        //    return true;
+        //}
 
 
     }

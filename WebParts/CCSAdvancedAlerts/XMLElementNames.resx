@@ -192,4 +192,13 @@
   <data name="SummaryMode" xml:space="preserve">
     <value>SummaryMode</value>
   </data>
+  <data name="SendDay" xml:space="preserve">
+    <value>SendDay</value>
+  </data>
+  <data name="SendHour" xml:space="preserve">
+    <value>SendHour</value>
+  </data>
+  <data name="ConditionsComparisionType" xml:space="preserve">
+    <value>ComparisionType</value>
+  </data>
 </root>

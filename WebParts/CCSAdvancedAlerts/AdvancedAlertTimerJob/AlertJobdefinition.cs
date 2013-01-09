@@ -154,55 +154,60 @@ namespace CCSAdvancedAlerts
             {
                 if (web != null && list != null)
                 {
-                    DateTime executionTime;
-                    DateTime currentTime;
-                    if (alert.PeriodPosition == PeriodPosition.After)
-                    {
-                        executionTime = DateTime.Now.AddMinutes(-30  * alert.PeriodQty);
-                        currentTime = DateTime.Now;
-                    }
-                    else
-                    {
-                        executionTime = DateTime.Now;
-                        currentTime = DateTime.Now.AddMinutes(30 * alert.PeriodQty);
-                    }
-                    
-                    //We need to get all alerts which are fall
-                    SPQuery query = new SPQuery();
-                    query.Query = string.Format("<Where>" +
-                                                  "<And>" +
-                                                   "<Gt>" +
-                                                    "<FieldRef Name=\"{0}\" />" +
-                                                      "<Value Type=\"DateTime\" IncludeTimeValue=\"TRUE\">{1}</Value>" +
-                                                    "</Gt>" +
-                                                    "<Leq>" +
-                                                      "<FieldRef Name=\"{0}\" />" +
-                                                      "<Value Type=\"DateTime\" IncludeTimeValue=\"TRUE\">{2}</Value>" +
-                                                    "</Leq>" +
-                                                   "</And>" +
-                                                   "</Where>",
-                                                    new object[] { alert.DateColumnName, SPUtility.CreateISO8601DateTimeFromSystemDateTime(executionTime), SPUtility.CreateISO8601DateTimeFromSystemDateTime(currentTime) });
-                    SPListItemCollection items = list.GetItems(query);
-                    if (items.Count > 0)
-                    {
-                        foreach (SPListItem item in items)
-                        {
-                            if (alert.IsValid(item, AlertEventType.DateColumn))
-                            {
-                                Notifications mailSender = new Notifications();
-                                //mailSender.SendAlert(alert, ChangeTypes.DateColumn, item2, null);
-                                mailSender.SendMail(alert, AlertEventType.DateColumn, item);
 
-                            }
-                            else
+
+                    DateTime startTime = web.RegionalSettings.TimeZone.UTCToLocalTime(DateTime.UtcNow).AddMinutes(-30.0);
+                    DateTime endTime = web.RegionalSettings.TimeZone.UTCToLocalTime(DateTime.UtcNow);
+                    TimerJobHelper.CaliculateExecutionTime(ref startTime, alert, false);
+                    TimerJobHelper.CaliculateExecutionTime(ref endTime, alert, false);
+
+                    int num = !alert.Repeat ? 1 : (alert.RepeatCount + 1);
+                    int num2 = 1;
+                    while (num2 <= num)
+                    {
+
+                        //We need to get all alerts which are fall
+                        SPQuery query = new SPQuery();
+                        query.Query = string.Format("<Where>" +
+                                                      "<And>" +
+                                                       "<Gt>" +
+                                                        "<FieldRef Name=\"{0}\" />" +
+                                                          "<Value Type=\"DateTime\" IncludeTimeValue=\"TRUE\">{1}</Value>" +
+                                                        "</Gt>" +
+                                                        "<Leq>" +
+                                                          "<FieldRef Name=\"{0}\" />" +
+                                                          "<Value Type=\"DateTime\" IncludeTimeValue=\"TRUE\">{2}</Value>" +
+                                                        "</Leq>" +
+                                                       "</And>" +
+                                                       "</Where>",
+                                                        new object[] { alert.DateColumnName, SPUtility.CreateISO8601DateTimeFromSystemDateTime(startTime), SPUtility.CreateISO8601DateTimeFromSystemDateTime(endTime) });
+                        SPListItemCollection items = list.GetItems(query);
+                        if (items.Count > 0)
+                        {
+                            foreach (SPListItem item in items)
                             {
-                                //Some conditions are not passthrough
+                                if (alert.IsValid(item, AlertEventType.DateColumn, null))
+                                {
+                                    Notifications mailSender = new Notifications();
+                                    //mailSender.SendAlert(alert, ChangeTypes.DateColumn, item2, null);
+                                    mailSender.SendMail(alert, AlertEventType.DateColumn, item);
+
+                                }
+                                else
+                                {
+                                    //Some conditions are not passthrough
+                                }
                             }
                         }
-                    }
-                    else
-                    {
-                        //No items returned as part of Query
+                        else
+                        { //No items returned as part of Query
+                        }
+                        if (num2 < num)
+                        {
+                            TimerJobHelper.CaliculateExecutionTime(ref startTime, alert, true);
+                            TimerJobHelper.CaliculateExecutionTime(ref endTime, alert, true);
+                        }
+                        num2++;
                     }
                 }
             }
@@ -211,10 +216,6 @@ namespace CCSAdvancedAlerts
                 //Error occured while executing timer alerts
             }
         }
-
-
-
-
         #endregion
 
 
