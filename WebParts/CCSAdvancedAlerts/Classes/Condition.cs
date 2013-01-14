@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using Microsoft.SharePoint;
+using System.Text.RegularExpressions;
 
 namespace CCSAdvancedAlerts
 {
@@ -89,7 +90,9 @@ namespace CCSAdvancedAlerts
             if (list == null)
                 return false;
             SPField field = list.Fields.TryGetFieldByStaticName(this.fieldName);
-            if (field != null)
+            ConditionValueType valType = GetConditionValueType();
+
+            if (field != null && valType != ConditionValueType.Invalid)
             {
                 object fieldValue = item[this.fieldName];
                 if (eventType == AlertEventType.ItemUpdated && properties !=null)
@@ -109,13 +112,16 @@ namespace CCSAdvancedAlerts
                     }
                 }
 
-                return MatchItemValueBasedOnOperatorAndValueType(fieldValue, field.FieldValueType, eventType,item.ParentList.ParentWeb);
+                return MatchItemValueBasedOnOperatorAndValueType(fieldValue, field.FieldValueType, eventType, item);
             }
+
             return false;
         }
 
-        public bool MatchItemValueBasedOnOperatorAndValueType(object fieldValue, Type fieldValueType, AlertEventType eventType,SPWeb web)
+        public bool MatchItemValueBasedOnOperatorAndValueType(object fieldValue, Type fieldValueType, AlertEventType eventType, SPListItem item)
         {
+            SPWeb web = item.ParentList.ParentWeb;
+            string strComputedValue = GetConditionComputedValue(item);
 
             if (fieldValue != null && !string.IsNullOrEmpty(fieldValue.ToString()))
             {
@@ -123,7 +129,7 @@ namespace CCSAdvancedAlerts
                 {
                     SPFieldUrlValue fieldUrlValue = new SPFieldUrlValue(fieldValue.ToString());
                     bool isDescMatched = CompareValuesBasedOnOperator(fieldUrlValue.Description, this.comparisionOperator, this.strValue);
-                    bool isUrlMatched = CompareValuesBasedOnOperator(fieldUrlValue.Url, this.comparisionOperator, strValue);
+                    bool isUrlMatched = CompareValuesBasedOnOperator(fieldUrlValue.Url, this.comparisionOperator, strComputedValue);
 
                     return isDescMatched || isUrlMatched;
                 }
@@ -135,8 +141,8 @@ namespace CCSAdvancedAlerts
                     string userLoginName = fieldUserValue.User.LoginName;
                     string userDispalyName = fieldUserValue.User.Name;
 
-                    bool isLoginMatched = CompareValuesBasedOnOperator(userLoginName, this.comparisionOperator, strValue);
-                    bool isDisplayNameMatched = CompareValuesBasedOnOperator(userLoginName, this.comparisionOperator, strValue);
+                    bool isLoginMatched = CompareValuesBasedOnOperator(userLoginName, this.comparisionOperator, strComputedValue);
+                    bool isDisplayNameMatched = CompareValuesBasedOnOperator(userLoginName, this.comparisionOperator, strComputedValue);
 
                     return isLoginMatched || isDisplayNameMatched;
 
@@ -160,8 +166,8 @@ namespace CCSAdvancedAlerts
                     userLoginNames = userLoginNames.TrimEnd(ValueCollectionSeperator.ToCharArray());
                     userDispalyNames = userDispalyNames.TrimEnd(ValueCollectionSeperator.ToCharArray());
 
-                    bool isLoginMatched = CompareValuesBasedOnOperator(userLoginNames, this.comparisionOperator, strValue);
-                    bool isDisplayNameMatched = CompareValuesBasedOnOperator(userLoginNames, this.comparisionOperator, strValue);
+                    bool isLoginMatched = CompareValuesBasedOnOperator(userLoginNames, this.comparisionOperator, strComputedValue);
+                    bool isDisplayNameMatched = CompareValuesBasedOnOperator(userLoginNames, this.comparisionOperator, strComputedValue);
 
                     return isLoginMatched || isDisplayNameMatched;
 
@@ -173,7 +179,7 @@ namespace CCSAdvancedAlerts
                     SPFieldLookupValue fieldLookupValue = new SPFieldLookupValue(fieldValue.ToString());
 
                     string strFieldValue = fieldLookupValue.LookupValue;
-                    return CompareValuesBasedOnOperator(strFieldValue, this.comparisionOperator, strValue);
+                    return CompareValuesBasedOnOperator(strFieldValue, this.comparisionOperator, strComputedValue);
                 }
                 else if (fieldValueType == (typeof(SPFieldLookupValueCollection)))
                 {
@@ -186,13 +192,13 @@ namespace CCSAdvancedAlerts
                     }
 
                     strFieldValue = strFieldValue.TrimEnd(ValueCollectionSeperator.ToCharArray());
-                    return CompareValuesBasedOnOperator(strFieldValue, this.comparisionOperator, strValue);
+                    return CompareValuesBasedOnOperator(strFieldValue, this.comparisionOperator, strComputedValue);
                 }
                 else if (fieldValueType == (typeof(DateTime)))
                 {
                     DateTime sourceDT = DateTime.Parse(fieldValue.ToString());
                     DateTime targetDT = new DateTime();
-                    if (DateTime.TryParse(strValue, out targetDT))
+                    if (DateTime.TryParse(strComputedValue, out targetDT))
                     {
                         switch (this.comparisionOperator)
                         {
@@ -224,7 +230,7 @@ namespace CCSAdvancedAlerts
                 {
                     int sourceInt = int.Parse(fieldValue.ToString());
                     int targetInt;
-                    if (Int32.TryParse(strValue, out targetInt))
+                    if (Int32.TryParse(strComputedValue, out targetInt))
                     {
                         switch (this.comparisionOperator)
                         {
@@ -255,11 +261,11 @@ namespace CCSAdvancedAlerts
                     bool sourceBool = Boolean.Parse(fieldValue.ToString());
                     bool targetBool = false;
 
-                    if (strValue.Equals("True", StringComparison.InvariantCultureIgnoreCase) || strValue.Equals("Yes", StringComparison.InvariantCultureIgnoreCase))
+                    if (strComputedValue.Equals("True", StringComparison.InvariantCultureIgnoreCase) || strComputedValue.Equals("Yes", StringComparison.InvariantCultureIgnoreCase))
                     {
                         targetBool = true;
                     }
-                    else if (strValue.Equals("False", StringComparison.InvariantCultureIgnoreCase) || strValue.Equals("No", StringComparison.InvariantCultureIgnoreCase))
+                    else if (strComputedValue.Equals("False", StringComparison.InvariantCultureIgnoreCase) || strComputedValue.Equals("No", StringComparison.InvariantCultureIgnoreCase))
                     {
                         targetBool = false;
                     }
@@ -286,7 +292,7 @@ namespace CCSAdvancedAlerts
                 else // default matching will be performed with string type
                 {
                     string strFieldValue = fieldValue.ToString();
-                    return CompareValuesBasedOnOperator(strFieldValue, this.comparisionOperator, strValue);
+                    return CompareValuesBasedOnOperator(strFieldValue, this.comparisionOperator, strComputedValue);
                 }
             }
             else
@@ -317,9 +323,123 @@ namespace CCSAdvancedAlerts
         }
 
         #endregion Condition Evaluation
+
+
+        #region Computed Condition Values
+
+        internal string GetConditionComputedValue(SPListItem item)
+        {
+            ConditionValueType valType = GetConditionValueType();
+            string propVal = this.StrValue.Trim();
+
+            switch (valType)
+            {
+                case ConditionValueType.StringLiteral:
+                    return this.StrValue;
+
+                case ConditionValueType.ItemPropertyValue:
+                    {
+                        string propName = propVal.Substring(1, propVal.Length - 2);
+                        SPField field = item.ParentList.Fields.TryGetFieldByStaticName(propName);
+                        if (field != null)
+                        {
+                            return Convert.ToString(item[propName]);
+                        }
+                    }
+                    break;
+
+                case ConditionValueType.FunctionOnPropertyValue:
+                    {
+                        int open = propVal.IndexOf('(');
+                        int close = propVal.IndexOf(')');
+
+                        string funcName = propVal.Substring(1, open - 1);
+                        string propNameExp = propVal.Substring(open + 1, close - open - 1);
+                        string propName = propNameExp.Substring(1, propNameExp.Length - 2);
+
+                        SPField field = item.ParentList.Fields.TryGetFieldByStaticName(propName);
+                        if (field != null)
+                        {
+                            switch (funcName)
+                            {
+                                case "strlen":
+                                    {
+                                        return Convert.ToString(Convert.ToString(item[propName]).Length);
+                                    }
+                            }
+                        }
+                    }
+                    break;
+            }
+
+            throw new Exception("Invalid argument for computed condition value");
+        }
+
+        // TODO: write a regular expression for this
+        // TODO: Add validations for valid property name and function name
+        // Valid condition values are:
+        // value
+        // [propName]
+        // $FuncName(value or [propName])
+        internal ConditionValueType GetConditionValueType()
+        {
+            ConditionValueType ret = ConditionValueType.Invalid;
+
+            String strVal = this.StrValue.Trim();
+            if (!string.IsNullOrEmpty(strVal))
+            {
+                if (IsLiteralStringValue(strVal))
+                    return ConditionValueType.StringLiteral;
+
+                if (IsValidItemPropertyExpression(strVal))
+                    return ConditionValueType.ItemPropertyValue;
+
+                if (strVal[0] == '$')
+                {
+                    int startFunc = strVal.IndexOf('(', 2);
+                    int endFunc = strVal.IndexOf(')', startFunc);
+
+                    if (startFunc > 0 && endFunc > startFunc + 1)
+                    {
+                        string propExp = strVal.Substring(startFunc + 1, endFunc - startFunc - 1);
+
+                        if (IsLiteralStringValue(propExp))
+                        {
+                            // Not supporting function values on literals as it is not useful
+                            //return ConditionValueType.Function;
+                            return ConditionValueType.Invalid;
+                        }
+                            
+                        if(IsValidItemPropertyExpression(propExp))
+                            return ConditionValueType.FunctionOnPropertyValue;
+                    }
+                }
+            }
+
+            return ret;
+        }
+
+        internal bool IsLiteralStringValue(string strVal)
+        {
+            if (strVal.IndexOfAny(new char[] { '$', '[', ']', '(', ')' }) < 0)
+                return true;
+
+            return false;
+        }
+
+        internal bool IsValidItemPropertyExpression(string strVal)
+        {
+            if (!string.IsNullOrEmpty(strVal) &&
+                strVal.StartsWith("[") && strVal.EndsWith("]") &&
+                strVal.IndexOfAny(new char[] { '$', '(', ')' }) < 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        #endregion
     }
-
-
-
 
 }

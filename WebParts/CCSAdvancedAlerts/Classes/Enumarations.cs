@@ -85,4 +85,13 @@ namespace CCSAdvancedAlerts
         No
     }
 
+    public enum ConditionValueType
+    {
+        StringLiteral,
+        ItemPropertyValue,
+        Function,
+        FunctionOnPropertyValue,
+        Invalid
+    }
+
 }
