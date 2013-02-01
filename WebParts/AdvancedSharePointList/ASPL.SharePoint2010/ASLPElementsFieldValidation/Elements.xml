@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Elements xmlns="http://schemas.microsoft.com/sharepoint/">
+	<CustomAction
+		Id="ASLP.Configuration.FieldValidation"
+		GroupId="Permissions"
+		Location="Microsoft.SharePoint.ListEdit"
+		RequireSiteAdministrator ="FALSE"
+		Sequence="250"
+		Title="ASLP Field Validation Configuration">
+		<UrlAction  Url="_layouts/ASPL.SharePoint2010/FieldValidationSettings.aspx?List={ListId}" />
+	</CustomAction>
+</Elements>

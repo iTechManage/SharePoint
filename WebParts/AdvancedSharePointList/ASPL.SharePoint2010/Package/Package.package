@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="ef0042ed-7279-4dca-8df7-b007b1030d4e" solutionId="ef0042ed-7279-4dca-8df7-b007b1030d4e" resetWebServer="false" name="ASPL.SharePoint2010" xmlns="http://schemas.microsoft.com/VisualStudio/2008/SharePointTools/PackageModel">
+  <assemblies>
+    <projectOutputAssembly location="ASPL.ConfigModel.dll" deploymentTarget="GlobalAssemblyCache" projectPath="..\ASPL.ConfigModel\ASPL.ConfigModel.csproj" />
+    <projectOutputAssembly location="ASPL.Blocks.dll" deploymentTarget="GlobalAssemblyCache" projectPath="..\ASPL.Blocks\ASPL.Blocks.csproj" />
+  </assemblies>
+  <features>
+    <featureReference itemId="571d3219-fd39-44b0-b120-e111c0910a79" />
+  </features>
+  <projectItems>
+    <projectItemReference itemId="62ecefd6-6975-4da6-9ddd-42d1f499e905" />
+    <projectItemReference itemId="47d617ca-1b7a-4e7a-9508-6ceb1a95a4b2" />
+  </projectItems>
+</package>

@@ -1,0 +1,76 @@
+﻿.SLFE_Product32
+{
+	top:0px;
+	left:0px;
+}
+.SLFE_Product16
+{
+	top:0px;
+	left:0px;
+}
+
+.SLFE_FieldLevelPermissions32
+{
+	top:0px;
+	left:-32px;
+}
+.SLFE_FieldLevelPermissions16
+{
+	top:0px;
+	left:-16px;
+}
+
+.SLFE_FieldLevelConstraints32
+{
+	top:0px;
+	left:-64px;
+}
+.SLFE_FieldLevelConstraints16
+{
+	top:0px;
+	left:-32px;
+}
+
+.SLFE_FieldDefaults32
+{
+	top:0px;
+	left:-96px;
+}
+.SLFE_FieldDefaults16
+{
+	top:0px;
+	left:-48px;
+}
+
+.SLFE_FieldGroups32
+{
+	top:0px;
+	left:-128px;
+}
+.SLFE_FieldGroups16
+{
+	top:0px;
+	left:-64px;
+}
+
+.SLFE_ViewPermissions32
+{
+	top:0px;
+	left:-160px;
+}
+.SLFE_ViewPermissions16
+{
+	top:0px;
+	left:-80px;
+}
+
+.SLFE_ItemNavigation32
+{
+	top:0px;
+	left:-192px;
+}
+.SLFE_ItemNavigation16
+{
+	top:0px;
+	left:-96px;
+}

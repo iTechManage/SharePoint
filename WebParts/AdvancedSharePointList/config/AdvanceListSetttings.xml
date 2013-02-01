@@ -1,0 +1,88 @@
+<listsettings>
+	<tabs>
+		<theme>theme name comes here</theme>
+		<hideemptytags>yes|no</hideemptytags>	
+		<tab>
+			<index>0</index>
+			<title>tab name</title>
+			<description>tab description comes here</description>
+			<fields>
+				<fiels>
+					<index>0</index>
+					<spname>title</spname>
+				</fiels>
+				<fiels>
+					<index>1</index>
+					<spname>content</spname>
+				</fiels>
+			</fields>
+			<permissions>
+				<permission>
+					<isdefault>yes|no</isdefault>
+					<level>R|W|D</level>  <!-- R:Read   W:Write   D:Deny -->
+					<onforms>N|E|V</onforms>  <!-- N:Newform   E:Editform  V:Viewform -->
+					<forprinciples>in|notin;user1,user2,group1</forprinciples>  <!--  '|' pipe to differ operators, then semi-colon and then comma seperated users/groups -->
+					<isconditional>yes|no</isconditional>
+					<conditions>
+						<condition>fieldname1;equal|nequal|contains|ncontains;value</condition>
+						<condition>fieldname2;equal|nequal|contains|ncontains;value</condition>
+					</conditions>
+				</permission>
+				<permission>
+					<isdefault>yes|no</isdefault>
+					<level>R|W|D</level>  <!-- R:Read   W:Write   D:Deny -->
+					<onforms>N|E|V</onforms>  <!-- N:Newform   E:Editform  V:Viewform -->
+					<forprinciples>in|notin;user1,user2,group1</forprinciples>  <!--  '|' pipe to differ operators, then semi-colon and then comma seperated users/groups -->
+					<isconditional>yes|no</isconditional>
+					<conditions>
+						<condition>fieldname1;equal|nequal|contains|ncontains;value</condition>
+						<condition>fieldname2;equal|nequal|contains|ncontains;value</condition>
+					</conditions>
+				</permission>				
+			</permissions>
+		</tab>
+	</tabs>
+	<fieldpermissions>
+		<fieldpermission>
+			<onfield>field name</onfield>
+			<level>R|W|D</level>  <!-- R:Read   W:Write   D:Deny -->
+			<onforms>N|E|V</onforms>  <!-- N:Newform   E:Editform  V:Viewform -->
+			<forprinciples>in|notin;user1,user2,group1</forprinciples>  <!--  '|' pipe to differ operators, then semi-colon and then comma seperated users/groups -->
+			<isconditional>yes|no</isconditional>
+			<conditions>
+				<condition>fieldname1;equal|nequal|contains|ncontains;value</condition>
+				<condition>fieldname2;equal|nequal|contains|ncontains;value</condition>
+			</conditions>
+		</fieldpermission>
+		<fieldpermission>
+			<field>*</onfield>   <!-- * means all the fields -->
+			<level>R|W|D</level>  <!-- R:Read   W:Write   D:Deny -->
+			<onforms>N|E|V</onforms>  <!-- N:Newform   E:Editform  V:Viewform -->
+			<forprinciples>in|notin;user1,user2,group1</forprinciples>  <!--  '|' pipe to differ operators, then semi-colon and then comma seperated users/groups -->
+			<isconditional>yes|no</isconditional>
+			<conditions>
+				<condition>fieldname1;equal|nequal|contains|ncontains;value</condition>
+				<condition>fieldname2;equal|nequal|contains|ncontains;value</condition>
+			</conditions>
+		</fieldpermission>		
+	</fieldpermissions>
+	<fieldvalidations>
+		<fieldvalidation>
+			<onfield>field name</onfield>
+			<rule>Pattern|column|length;operator;value;error msg</rule>
+			<forprinciples>in|notin;user1,user2,group1</forprinciples>  <!--  '|' pipe to differ operators, then semi-colon and then comma seperated users/groups -->
+			<isconditional>yes|no</isconditional>
+			<conditions>
+				<condition>fieldname1;equal|nequal|contains|ncontains;value</condition>
+				<condition>fieldname2;equal|nequal|contains|ncontains;value</condition>
+			</conditions>
+		</fieldvalidation>
+	</fieldvalidations>
+	<fielddefaults>
+		<default>fieldname;value;user1,user2,group1;contenttype</default>
+		<default>fieldname2;value;user1,user2,group1;contenttype</default>
+	</fielddefaults>
+	<viewpermissions>
+	<!-- i am clear for this please complete it -->
+	</viewpermissions>
+</listsettings>

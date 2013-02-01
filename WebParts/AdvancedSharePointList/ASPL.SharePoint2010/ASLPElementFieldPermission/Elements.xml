@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Elements xmlns="http://schemas.microsoft.com/sharepoint/">
+	<CustomAction
+		Id="ASLP.Configuration.FieldPermissions"
+		GroupId="Permissions"
+		Location="Microsoft.SharePoint.ListEdit"
+		RequireSiteAdministrator ="FALSE"
+		Sequence="225"
+		Title="ASLP Field Permissions Configuration">
+		<UrlAction  Url="_layouts/ASPL.SharePoint2010/FieldPermissionSettings.aspx?List={ListId}" />
+	</CustomAction>
+</Elements>

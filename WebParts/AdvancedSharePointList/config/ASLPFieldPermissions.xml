@@ -1,0 +1,1 @@
+<fieldpermissions><fieldpermission><onfield>Title</onfield><level>Write</level><onforms>New|Edit</onforms><forprinciples>None;</forprinciples><conditions></conditions></fieldpermission><fieldpermission><onfield>Predecessors</onfield><level>Read</level><onforms>New|Edit</onforms><forprinciples>None;</forprinciples><conditions></conditions></fieldpermission></fieldpermissions>
