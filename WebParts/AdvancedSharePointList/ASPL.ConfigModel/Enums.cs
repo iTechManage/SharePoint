@@ -9,13 +9,14 @@ namespace ASPL.ConfigModel
 {
     public static class Enums
     {
-        public enum PermissionLevel{
+        public enum PermissionLevel
+        {
             [DescriptionAttribute("Read Only")]
-            Read=11,
+            Read = 11,
             [DescriptionAttribute("Write")]
-            Write=12,
+            Write = 12,
             [DescriptionAttribute("Hidden")]
-            Deny=13
+            Deny = 13
         };
 
         [Flags]
@@ -30,40 +31,42 @@ namespace ASPL.ConfigModel
         };
 
 
-        public enum ValidationRule {
+        public enum ValidationRule
+        {
             [DescriptionAttribute("Pattern")]
-            Pattern=31,
+            Pattern = 31,
             [DescriptionAttribute("length")]
-            length=32,
+            length = 32,
             [DescriptionAttribute("Column")]
-            Column=33,
+            Column = 33,
             [DescriptionAttribute("Invalid")]
-            Invalid=30
+            Invalid = 30
         };
 
-        public enum Operator {
+        public enum Operator
+        {
             [DescriptionAttribute("In")]
-            In=101,
+            In = 101,
             [DescriptionAttribute("Not in")]
-            NotIn=102,
+            NotIn = 102,
             [DescriptionAttribute("Equal")]
-            Equal=103,
+            Equal = 103,
             [DescriptionAttribute("Not equal")]
-            NotEqual=104,
+            NotEqual = 104,
             [DescriptionAttribute("Contains")]
-            Contains=105,
+            Contains = 105,
             [DescriptionAttribute("Not contains")]
-            NotContains=106,
+            NotContains = 106,
             [DescriptionAttribute("Greater than")]
-            GreaterThan=107,
+            GreaterThan = 107,
             [DescriptionAttribute("Greater than or Equal to")]
             GreaterThanOrEqual = 110,
             [DescriptionAttribute("Less than")]
-            LessThan=108,
+            LessThan = 108,
             [DescriptionAttribute("Less than or Equal to")]
             LessThanOrEqual = 111,
             [DescriptionAttribute(" ")]
-            None=0 
+            None = 0
         };
 
         public static string DisplayString(this Enum value)
@@ -73,9 +76,9 @@ namespace ASPL.ConfigModel
 
             if (info != null)
             {
-
                 //Get the Description Attributes
-                DescriptionAttribute[] attributes = (DescriptionAttribute[])info.GetCustomAttributes(typeof(DescriptionAttribute), false);
+                DescriptionAttribute[] attributes = (DescriptionAttribute[])info.GetCustomAttributes(
+                    typeof(DescriptionAttribute), false);
 
                 //Only capture the description attribute if it is a concrete result (i.e. 1 entry)
                 if (attributes != null && attributes.Length == 1)
@@ -83,9 +86,8 @@ namespace ASPL.ConfigModel
                     return attributes[0].Description;
                 }
             }
-            
+
             return value.ToString();
-            
         }
 
         public static PermissionLevel ParsePermissionLevel(string value)
@@ -108,6 +110,4 @@ namespace ASPL.ConfigModel
             return (Enums.Operator)Enum.Parse(typeof(Enums.Operator), value, true);
         }
     }
-
-
 }

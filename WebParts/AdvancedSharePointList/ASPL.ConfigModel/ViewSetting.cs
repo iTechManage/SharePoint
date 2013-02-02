@@ -19,12 +19,15 @@ namespace ASPL.ConfigModel
             this.UserGroup = viewNode.SelectSingleNode(parentXPath + "/UserGroup").InnerText;
             this.Permission = viewNode.SelectSingleNode(parentXPath + "/Permission").InnerText;
 
-            this.HideActionsMenu = Convert.ToBoolean(viewNode.SelectSingleNode(parentXPath + "/HideActionsMenu").InnerText);
-            this.HideAccessItem = Convert.ToBoolean(viewNode.SelectSingleNode(parentXPath + "/HideAccessItem").InnerText);
-            this.HideRSSItem = Convert.ToBoolean(viewNode.SelectSingleNode(parentXPath + "/HideRSSItem").InnerText);
-            this.HideAlertItem = Convert.ToBoolean(viewNode.SelectSingleNode(parentXPath + "/HideAlertItem").InnerText);
+            this.HideActionsMenu =
+                Convert.ToBoolean(viewNode.SelectSingleNode(parentXPath + "/HideActionsMenu").InnerText);
+            this.HideAccessItem =
+                Convert.ToBoolean(viewNode.SelectSingleNode(parentXPath + "/HideAccessItem").InnerText);
+            this.HideRSSItem =
+                Convert.ToBoolean(viewNode.SelectSingleNode(parentXPath + "/HideRSSItem").InnerText);
+            this.HideAlertItem =
+                Convert.ToBoolean(viewNode.SelectSingleNode(parentXPath + "/HideAlertItem").InnerText);
         }
-
 
         public int Index { get; set; }
         public string SPVName { get; set; }
@@ -32,19 +35,19 @@ namespace ASPL.ConfigModel
         public string UserGroup { get; set; }
         public string ID { get; set; }
 
-
         public bool HideActionsMenu { get; set; }
         public bool HideAccessItem { get; set; }
         public bool HideRSSItem { get; set; }
         public bool HideAlertItem { get; set; }
-
 
         public ViewSetting(string viewName)
         {
             this.SPVName = viewName;
         }
 
-        public ViewSetting(string id, int index, string viewName, string userGroup, string viewpermission, bool hideActionsMenu, bool hideAccessItem, bool hideRSSItem, bool hideAlertItem)
+        public ViewSetting(string id, int index, string viewName,
+            string userGroup, string viewpermission, bool hideActionsMenu,
+            bool hideAccessItem, bool hideRSSItem, bool hideAlertItem)
         {
             this.ID = id;
             this.Index = index;
@@ -52,28 +55,39 @@ namespace ASPL.ConfigModel
             this.Permission = viewpermission;
             this.UserGroup = userGroup;
 
-
             this.HideActionsMenu = hideActionsMenu;
             this.HideAccessItem = hideAccessItem;
             this.HideRSSItem = hideRSSItem;
             this.HideAlertItem = hideAlertItem;
         }
+
         public override string ToString()
         {
-            return string.Format("<ViewSettings><Id>{0}</Id><Index>{1}</Index><ViewName>{2}</ViewName><UserGroup>{3}</UserGroup><Permission>{4}</Permission><HideActionsMenu>{5}</HideActionsMenu><HideAccessItem>{6}</HideAccessItem><HideRSSItem>{7}</HideRSSItem><HideAlertItem>{8}</HideAlertItem></ViewSettings>", this.ID, this.Index.ToString(), this.SPVName, this.UserGroup, this.Permission.ToString(),this.HideActionsMenu,this.HideAccessItem,this.HideRSSItem,this.HideAlertItem);
+            return string.Format("<ViewSettings><Id>{0}</Id><Index>{1}</Index><ViewName>{2}</ViewName><UserGroup>{3}</UserGroup><Permission>{4}</Permission><HideActionsMenu>{5}</HideActionsMenu><HideAccessItem>{6}</HideAccessItem><HideRSSItem>{7}</HideRSSItem><HideAlertItem>{8}</HideAlertItem></ViewSettings>",
+                this.ID, this.Index.ToString(), this.SPVName, this.UserGroup,
+                this.Permission.ToString(), this.HideActionsMenu,
+                this.HideAccessItem, this.HideRSSItem, this.HideAlertItem);
         }
     }
+
     public class ViewRibbonPermission
     {
         internal ViewRibbonPermission(XmlNode viewNode, int viewIndex)
         {
             string conditionPath = string.Format("/ListViewsSettings[{0}]", viewIndex);
-            this.HideActionsMenu = Convert.ToBoolean(viewNode.SelectSingleNode(conditionPath + "/HideActionsMenu").InnerText);
-            this.HideActionsMenu = Convert.ToBoolean(viewNode.SelectSingleNode(conditionPath + "/HideActionsMenu").InnerText);
-            this.HideActionsMenu = Convert.ToBoolean(viewNode.SelectSingleNode(conditionPath + "/HideActionsMenu").InnerText);
-            this.HideActionsMenu = Convert.ToBoolean(viewNode.SelectSingleNode(conditionPath + "/HideActionsMenu").InnerText);
 
+            // TODO: Why repeated four times?
+            // Should be for access item, rss item and alert item for last 3
+            this.HideActionsMenu =
+                Convert.ToBoolean(viewNode.SelectSingleNode(conditionPath + "/HideActionsMenu").InnerText);
+            this.HideActionsMenu =
+                Convert.ToBoolean(viewNode.SelectSingleNode(conditionPath + "/HideActionsMenu").InnerText);
+            this.HideActionsMenu =
+                Convert.ToBoolean(viewNode.SelectSingleNode(conditionPath + "/HideActionsMenu").InnerText);
+            this.HideActionsMenu =
+                Convert.ToBoolean(viewNode.SelectSingleNode(conditionPath + "/HideActionsMenu").InnerText);
         }
+
         public bool HideActionsMenu { get; set; }
         public bool HideAccessItem { get; set; }
         public bool HideRSSItem { get; set; }
@@ -81,8 +95,8 @@ namespace ASPL.ConfigModel
 
         public ViewSetting view { get; set; }
 
-
-        public ViewRibbonPermission(bool hideactionsMenu, bool hideaccessItem, bool hideRSSItem, bool hideAlertItem)
+        public ViewRibbonPermission(bool hideactionsMenu, bool hideaccessItem,
+            bool hideRSSItem, bool hideAlertItem)
         {
 
             this.HideActionsMenu = hideactionsMenu;
@@ -90,12 +104,14 @@ namespace ASPL.ConfigModel
             this.HideRSSItem = hideRSSItem;
             this.HideAlertItem = hideAlertItem;
         }
+
         public override string ToString()
         {
-            return string.Format("<ListViewsSettings><HideActionsMenu>{0}</HideActionsMenu><HideAccessItem>{1}</HideAccessItem><HideRSSItem>{2}</HideRSSItem><HideAlertItem>{3}</HideAlertItem>{4}</ListViewsSettings>", this.HideActionsMenu, this.HideAccessItem, this.HideRSSItem, this.HideAlertItem, view);
+            return string.Format("<ListViewsSettings><HideActionsMenu>{0}</HideActionsMenu><HideAccessItem>{1}</HideAccessItem><HideRSSItem>{2}</HideRSSItem><HideAlertItem>{3}</HideAlertItem>{4}</ListViewsSettings>",
+                this.HideActionsMenu, this.HideAccessItem, this.HideRSSItem, this.HideAlertItem, view);
         }
-
     }
+
     public class Views : List<ViewSetting>
     {
         public bool UseRedirectPage { get; set; }
@@ -103,7 +119,6 @@ namespace ASPL.ConfigModel
         public string AllViewsUnavailableText { get; set; }
         public string NextViewButtonCaption { get; set; }
         public string GotoHomepageButtonCaption { get; set; }
-
 
         public Views()
         {
@@ -122,7 +137,10 @@ namespace ASPL.ConfigModel
             {
                 str += item.ToString();
             }
-            return string.Format("<ListViewsSettings><UseRedirectPage>{0}</UseRedirectPage><ViewUnavailableText>{1}</ViewUnavailableText><AllViewsUnavailableText>{2}</AllViewsUnavailableText><NextViewButtonCaption>{3}</NextViewButtonCaption><GotoHomepageButtonCaption>{4}</GotoHomepageButtonCaption>{5}</ListViewsSettings>", this.UseRedirectPage, this.ViewUnavailableText, this.AllViewsUnavailableText, NextViewButtonCaption, GotoHomepageButtonCaption, str);
+
+            return string.Format("<ListViewsSettings><UseRedirectPage>{0}</UseRedirectPage><ViewUnavailableText>{1}</ViewUnavailableText><AllViewsUnavailableText>{2}</AllViewsUnavailableText><NextViewButtonCaption>{3}</NextViewButtonCaption><GotoHomepageButtonCaption>{4}</GotoHomepageButtonCaption>{5}</ListViewsSettings>",
+                this.UseRedirectPage, this.ViewUnavailableText, this.AllViewsUnavailableText,
+                NextViewButtonCaption, GotoHomepageButtonCaption, str);
         }
 
         public static Views LoadViews(XmlDocument xmlViewSettings)
@@ -131,11 +149,16 @@ namespace ASPL.ConfigModel
 
             Views viewsSettings = new Views();
 
-            viewsSettings.UseRedirectPage = Convert.ToBoolean(xmlViewSettings.SelectSingleNode("/ListViewsSettings/UseRedirectPage").InnerText);
-            viewsSettings.ViewUnavailableText = xmlViewSettings.SelectSingleNode("/ListViewsSettings/ViewUnavailableText").InnerText;
-            viewsSettings.AllViewsUnavailableText = xmlViewSettings.SelectSingleNode("/ListViewsSettings/AllViewsUnavailableText").InnerText;
-            viewsSettings.NextViewButtonCaption = xmlViewSettings.SelectSingleNode("/ListViewsSettings/NextViewButtonCaption").InnerText;
-            viewsSettings.GotoHomepageButtonCaption = xmlViewSettings.SelectSingleNode("/ListViewsSettings/GotoHomepageButtonCaption").InnerText;
+            viewsSettings.UseRedirectPage =
+                Convert.ToBoolean(xmlViewSettings.SelectSingleNode("/ListViewsSettings/UseRedirectPage").InnerText);
+            viewsSettings.ViewUnavailableText =
+                xmlViewSettings.SelectSingleNode("/ListViewsSettings/ViewUnavailableText").InnerText;
+            viewsSettings.AllViewsUnavailableText =
+                xmlViewSettings.SelectSingleNode("/ListViewsSettings/AllViewsUnavailableText").InnerText;
+            viewsSettings.NextViewButtonCaption =
+                xmlViewSettings.SelectSingleNode("/ListViewsSettings/NextViewButtonCaption").InnerText;
+            viewsSettings.GotoHomepageButtonCaption =
+                xmlViewSettings.SelectSingleNode("/ListViewsSettings/GotoHomepageButtonCaption").InnerText;
 
             //bool hideActionsMenu = Convert.ToBoolean(xmlViewSettings.SelectSingleNode("/ListViewsSettings/UseRedirectPage").InnerText);
             //bool hideAccessItem = Convert.ToBoolean(xmlViewSettings.SelectSingleNode("/ListViewsSettings/UseRedirectPage").InnerText);
@@ -158,8 +181,6 @@ namespace ASPL.ConfigModel
                 index++;
             }
 
-
-
             //Tab t2 = null;
             //XmlNodeList tabNodes = xmlViewSettings.SelectNodes("/tabs/tab");
             //int index = 1;
@@ -174,8 +195,6 @@ namespace ASPL.ConfigModel
 
 
             return viewsSettings;
-
         }
-
     }
 }

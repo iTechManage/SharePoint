@@ -21,40 +21,52 @@ namespace ASPL.ConfigModel
             string parentXPath = string.Format("/fielddefaults/default[{0}]", defaultValueIndex);
             this.OnField = new Field(fieldDefaultNode.SelectSingleNode(parentXPath + "/onfield").InnerText);
             this.Value = Helper.HtmlDecode(fieldDefaultNode.SelectSingleNode(parentXPath + "/value").InnerText);
-            this.BySPPrinciplesOperator = (Enums.Operator)Enum.Parse(typeof(Enums.Operator), fieldDefaultNode.SelectSingleNode(parentXPath + "/forprinciples").InnerText.Split(Constants.XmlElementTextSeperator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[0], true);
-            this.ForSPPrinciples = fieldDefaultNode.SelectSingleNode(parentXPath + "/forprinciples").InnerText.Split(Constants.XmlElementTextSeperator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[1];
+
+            this.BySPPrinciplesOperator =
+                (Enums.Operator)Enum.Parse(
+                typeof(Enums.Operator),
+                fieldDefaultNode.SelectSingleNode(parentXPath + "/forprinciples").
+                InnerText.Split(Constants.XmlElementTextSeparator.ToCharArray(),
+                StringSplitOptions.RemoveEmptyEntries)[0],
+                true);
+
+            this.ForSPPrinciples =
+                fieldDefaultNode.SelectSingleNode(parentXPath + "/forprinciples").InnerText.Split(
+                Constants.XmlElementTextSeparator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[1];
+
             this.SPContentType = fieldDefaultNode.SelectSingleNode(parentXPath + "/ctype").InnerText;
-            
         }
 
-        public FieldDefault(Field onField, string forSPPrinciples, Enums.Operator bySPPrinciplesOperator, string spContentType, object value)
+        public FieldDefault(Field onField, string forSPPrinciples,
+            Enums.Operator bySPPrinciplesOperator, string spContentType, object value)
         {
             this.OnField = onField;
-            this.ForSPPrinciples =forSPPrinciples;
+            this.ForSPPrinciples = forSPPrinciples;
             this.BySPPrinciplesOperator = bySPPrinciplesOperator;
             this.SPContentType = spContentType;
             this.Value = value;
         }
-        
+
         public override string ToString()
         {
-            return string.Format("<default><onfield>{0}</onfield><forprinciples>{1}{5}{2}</forprinciples><value>{3}</value><ctype>{4}</ctype></default>",
+            return string.Format(
+                "<default><onfield>{0}</onfield><forprinciples>{1}{5}{2}</forprinciples><value>{3}</value><ctype>{4}</ctype></default>",
                             this.OnField.SPName,//0
                             this.BySPPrinciplesOperator,//1
                             this.ForSPPrinciples,//2
                             Helper.HtmlEncode(this.Value.ToString()),//3
                             this.SPContentType,//4
-                            Constants.XmlElementTextSeperator//5
+                            Constants.XmlElementTextSeparator//5
                             );
         }
     }
 
-    public class FieldDefaults:List<FieldDefault>
+    public class FieldDefaults : List<FieldDefault>
     {
 
         public static FieldDefaults LoadFieldDefaults(XmlDocument xmlFieldDefaults)
         {
-            if(xmlFieldDefaults == null) return null;
+            if (xmlFieldDefaults == null) return null;
 
             FieldDefaults fieldDefaults = new FieldDefaults();
 
@@ -67,8 +79,10 @@ namespace ASPL.ConfigModel
                 fieldDefaults.Add(f);
                 defValindex++;
             }
+
             return fieldDefaults;
         }
+
         public override string ToString()
         {
             string str = string.Empty;
@@ -76,7 +90,8 @@ namespace ASPL.ConfigModel
             {
                 str += item.ToString();
             }
-            return string.Format("<fielddefaults>{0}</fielddefaults>",str);
+
+            return string.Format("<fielddefaults>{0}</fielddefaults>", str);
         }
     }
 }

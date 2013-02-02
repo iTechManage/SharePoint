@@ -82,7 +82,7 @@
 
     // Add fields to selected tab in grid row selection
 
-    function iwslp_addOptionATgridRowSelection(divSelected, txt, fieldIName,filedDisName, fieldCount, seperator) {
+    function iwslp_addOptionATgridRowSelection(divSelected, txt, fieldIName,filedDisName, fieldCount, separator) {
 
         var countValues = fieldCount + 1;
 

@@ -60,15 +60,15 @@ namespace ASPL.SharePoint2010.Core
 
                     foreach (SPFieldUserValue userValue in fieldUserValueCollection)
                     {
-                        userLoginNames += userValue.LookupValue + Constants.ValueCollectionSeperator;
+                        userLoginNames += userValue.LookupValue + Constants.ValueCollectionSeparator;
 
                         if (userValue.User != null)
-                            userDispalyNames += userValue.User.Name + Constants.ValueCollectionSeperator;
+                            userDispalyNames += userValue.User.Name + Constants.ValueCollectionSeparator;
 
                     }
 
-                    userLoginNames = userLoginNames.TrimEnd(Constants.ValueCollectionSeperator.ToCharArray());
-                    userDispalyNames = userDispalyNames.TrimEnd(Constants.ValueCollectionSeperator.ToCharArray());
+                    userLoginNames = userLoginNames.TrimEnd(Constants.ValueCollectionSeparator.ToCharArray());
+                    userDispalyNames = userDispalyNames.TrimEnd(Constants.ValueCollectionSeparator.ToCharArray());
 
                     bool isLoginMatched = CompareValuesBasedOnOperator(userLoginNames, op, value);
                     bool isDisplayNameMatched = CompareValuesBasedOnOperator(userLoginNames, op, value);
@@ -92,10 +92,10 @@ namespace ASPL.SharePoint2010.Core
 
                     foreach (SPFieldLookupValue lookup in fieldLookupValueCollection)
                     {
-                        strFieldValue += lookup.LookupValue + Constants.ValueCollectionSeperator;
+                        strFieldValue += lookup.LookupValue + Constants.ValueCollectionSeparator;
                     }
 
-                    strFieldValue = strFieldValue.TrimEnd(Constants.ValueCollectionSeperator.ToCharArray());
+                    strFieldValue = strFieldValue.TrimEnd(Constants.ValueCollectionSeparator.ToCharArray());
                     return CompareValuesBasedOnOperator(strFieldValue, op, value);
                 }
                 else if (fieldValueType == (typeof(DateTime)))

@@ -14,14 +14,38 @@ namespace ASPL.ConfigModel
         internal FieldValidation(XmlNode fieldValidationNode, int valIndex)
         {
             string parentXPath = string.Format("/fieldvalidations/fieldvalidation[{0}]", valIndex);
+
             this.OnField = new Field(fieldValidationNode.SelectSingleNode(parentXPath + "/onfield").InnerText);
-            this.Rule = (Enums.ValidationRule)Enum.Parse(typeof(Enums.ValidationRule), fieldValidationNode.SelectSingleNode(parentXPath + "/rule").InnerText.Split(Constants.XmlElementTextSeperator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[0], true);
-            this.ByRuleOperator = (Enums.Operator)Enum.Parse(typeof(Enums.Operator), fieldValidationNode.SelectSingleNode(parentXPath + "/rule").InnerText.Split(Constants.XmlElementTextSeperator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[1], true);
-            this.Value = Helper.HtmlDecode(fieldValidationNode.SelectSingleNode(parentXPath + "/rule").InnerText.Split(Constants.XmlElementTextSeperator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[2]);
-            this.ErrorMsg = Helper.HtmlDecode(fieldValidationNode.SelectSingleNode(parentXPath + "/rule").InnerText.Split(Constants.XmlElementTextSeperator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[3]);
-            this.BySPPrinciplesOperator = (Enums.Operator)Enum.Parse(typeof(Enums.Operator), fieldValidationNode.SelectSingleNode(parentXPath + "/forprinciples").InnerText.Split(Constants.XmlElementTextSeperator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[0], true);
-            this.ForSPPrinciples = fieldValidationNode.SelectSingleNode(parentXPath + "/forprinciples").InnerText.Split(Constants.XmlElementTextSeperator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[1];
-            this.Conditions = Conditions.LoadConditions(fieldValidationNode.SelectNodes(parentXPath + "/conditions/condition"));
+
+            this.Rule = (Enums.ValidationRule)Enum.Parse(typeof(Enums.ValidationRule),
+                fieldValidationNode.SelectSingleNode(parentXPath + "/rule").
+                    InnerText.Split(Constants.XmlElementTextSeparator.ToCharArray(),
+                    StringSplitOptions.RemoveEmptyEntries)[0], true);
+
+            this.ByRuleOperator = (Enums.Operator)Enum.Parse(typeof(Enums.Operator),
+                fieldValidationNode.SelectSingleNode(parentXPath + "/rule").
+                    InnerText.Split(Constants.XmlElementTextSeparator.ToCharArray(),
+                    StringSplitOptions.RemoveEmptyEntries)[1], true);
+
+            this.Value = Helper.HtmlDecode(fieldValidationNode.SelectSingleNode(parentXPath + "/rule").
+                InnerText.Split(Constants.XmlElementTextSeparator.ToCharArray(),
+                StringSplitOptions.RemoveEmptyEntries)[2]);
+
+            this.ErrorMsg = Helper.HtmlDecode(fieldValidationNode.SelectSingleNode(parentXPath + "/rule").
+                InnerText.Split(Constants.XmlElementTextSeparator.ToCharArray(),
+                StringSplitOptions.RemoveEmptyEntries)[3]);
+
+            this.BySPPrinciplesOperator = (Enums.Operator)Enum.Parse(typeof(Enums.Operator),
+                fieldValidationNode.SelectSingleNode(parentXPath + "/forprinciples").
+                    InnerText.Split(Constants.XmlElementTextSeparator.ToCharArray(),
+                    StringSplitOptions.RemoveEmptyEntries)[0], true);
+
+            this.ForSPPrinciples = fieldValidationNode.SelectSingleNode(parentXPath + "/forprinciples").
+                InnerText.Split(Constants.XmlElementTextSeparator.ToCharArray(),
+                StringSplitOptions.RemoveEmptyEntries)[1];
+
+            this.Conditions =
+                Conditions.LoadConditions(fieldValidationNode.SelectNodes(parentXPath + "/conditions/condition"));
         }
 
         public FieldValidation(Field onField, Enums.ValidationRule rule, Enums.Operator byRuleOperator, object value, string errorMsg, string forSPPrinciples, Enums.Operator bySPPrinciplesOperator)
@@ -37,7 +61,7 @@ namespace ASPL.ConfigModel
         }
 
         public Field OnField { get; set; }
-        public Enums.ValidationRule Rule{ get; set; }
+        public Enums.ValidationRule Rule { get; set; }
         public Enums.Operator ByRuleOperator { get; set; }
         public object Value { get; set; }
         public string ErrorMsg { get; set; }
@@ -45,12 +69,13 @@ namespace ASPL.ConfigModel
         public string ForSPPrinciples { get; set; }
         public Enums.Operator BySPPrinciplesOperator { get; set; }
 
-        public bool isConditional { get{ return this.Conditions.Count>0; } }
+        public bool isConditional { get { return this.Conditions.Count > 0; } }
         public Conditions Conditions { get; set; }
 
         public override string ToString()
         {
-            return string.Format(@"<fieldvalidation><onfield>{0}</onfield><rule>{1}{8}{2}{8}{3}{8}{4}</rule><forprinciples>{5}{8}{6}</forprinciples>{7}</fieldvalidation>",
+            return string.Format(
+                @"<fieldvalidation><onfield>{0}</onfield><rule>{1}{8}{2}{8}{3}{8}{4}</rule><forprinciples>{5}{8}{6}</forprinciples>{7}</fieldvalidation>",
                 this.OnField.SPName,//0
                 this.Rule.ToString(),//1
                 this.ByRuleOperator.ToString(),//2
@@ -59,13 +84,12 @@ namespace ASPL.ConfigModel
                 this.BySPPrinciplesOperator.ToString(),//5
                 this.ForSPPrinciples,//6
                 this.Conditions.ToString(),//7
-                Constants.XmlElementTextSeperator//8
+                Constants.XmlElementTextSeparator//8
                 );
         }
-
     }
 
-    public class FieldValidations:List<FieldValidation>
+    public class FieldValidations : List<FieldValidation>
     {
         public static FieldValidations LoadFieldValidations(XmlDocument xmlFieldValidations)
         {
@@ -78,11 +102,11 @@ namespace ASPL.ConfigModel
 
             foreach (XmlNode node in xmlFieldValidationNodes)
             {
-
                 FieldValidation f = new FieldValidation(node, index);
                 fieldValidations.Add(f);
                 index++;
             }
+
             return fieldValidations;
         }
 
@@ -93,6 +117,7 @@ namespace ASPL.ConfigModel
             {
                 str += item.ToString();
             }
+
             return string.Format("<fieldvalidations>{0}</fieldvalidations>", str);
         }
     }

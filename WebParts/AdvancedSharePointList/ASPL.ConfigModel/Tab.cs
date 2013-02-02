@@ -21,15 +21,14 @@ namespace ASPL.ConfigModel
 
             XmlNodeList fieldNode = tabNode.SelectNodes(parentXPath + "/fields/field");
             this.Fields = new Fields();
+
             int fieldIndex = 1;
             foreach (XmlNode node in fieldNode)
             {
                 Field f = new Field(this, node, tabIndex, fieldIndex);
                 this.Fields.Add(f);
                 fieldIndex++;
-
             }
-
 
             XmlNodeList tabPermission = tabNode.SelectNodes(parentXPath + "/permissions/permission");
 
@@ -42,8 +41,6 @@ namespace ASPL.ConfigModel
                 this.Permissions.Add(tp);
                 permIndex++;
             }
-
-
         }
 
         public Tab(ushort index, string title, string description)
@@ -57,11 +54,12 @@ namespace ASPL.ConfigModel
 
         public string ToHiddenFldValue()
         {
-            string value = SPHttpUtility.UrlPathEncode(this.Title ,false)+ "=";
+            string value = SPHttpUtility.UrlPathEncode(this.Title, false) + "=";
             foreach (Field f in this.Fields)
             {
                 value += f.SPName + "~Show|";
             }
+
             return value;
         }
 
@@ -70,13 +68,23 @@ namespace ASPL.ConfigModel
             get
             {
                 string strCommaSeperatedFields = "";
-                foreach (Field field in this.Fields) strCommaSeperatedFields += field.SPName + Constants.FieldToStringSeperator;
+                foreach (Field field in this.Fields)
+                {
+                    strCommaSeperatedFields += field.SPName + Constants.FieldToStringSeparator;
+                }
+
                 return strCommaSeperatedFields;
             }
             set
             {
-                foreach (string field in value.Split(Constants.FieldToStringSeperator.ToCharArray(),StringSplitOptions.RemoveEmptyEntries))  if (!string.IsNullOrEmpty(field))this.Fields.Add(new Field(field));
-                
+                foreach (string field in
+                    value.Split(Constants.FieldToStringSeparator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
+                {
+                    if (!string.IsNullOrEmpty(field))
+                    {
+                        this.Fields.Add(new Field(field));
+                    }
+                }
             }
         }
 
@@ -91,12 +99,13 @@ namespace ASPL.ConfigModel
 
         public override string ToString()
         {
-            return string.Format("<tab><index>{0}</index><isselected>{1}</isselected><title>{2}</title><description>{3}</description>{4}{5}</tab>", 
-                this.Index.ToString(), 
-                this.IsSelected.ToString(), 
-                Helper.HtmlEncode(this.Title), 
-                Helper.HtmlEncode(this.Description), 
-                this.Fields.ToString(), 
+            return string.Format(
+                "<tab><index>{0}</index><isselected>{1}</isselected><title>{2}</title><description>{3}</description>{4}{5}</tab>",
+                this.Index.ToString(),
+                this.IsSelected.ToString(),
+                Helper.HtmlEncode(this.Title),
+                Helper.HtmlEncode(this.Description),
+                this.Fields.ToString(),
                 this.Permissions.ToString()
                 );
         }
@@ -120,7 +129,9 @@ namespace ASPL.ConfigModel
             {
                 str += item.ToString();
             }
-            return string.Format("<tabs><theme>{0}</theme><hideemptytags>{1}</hideemptytags>{2}</tabs>", this.Theme.ToString(), this.HideEmptyTabs.ToString(), str);
+
+            return string.Format("<tabs><theme>{0}</theme><hideemptytags>{1}</hideemptytags>{2}</tabs>",
+                this.Theme.ToString(), this.HideEmptyTabs.ToString(), str);
         }
 
         public static Tabs LoadTabs(XmlDocument xmlTabSettings)
@@ -129,7 +140,10 @@ namespace ASPL.ConfigModel
 
             Tabs tabsSettings = new Tabs();
             tabsSettings.Theme = xmlTabSettings.SelectSingleNode("/tabs/theme").InnerText;
-            tabsSettings.HideEmptyTabs = Helper.ConvertToBool(xmlTabSettings.SelectSingleNode("/tabs/hideemptytags").InnerText);
+
+            tabsSettings.HideEmptyTabs =
+                Helper.ConvertToBool(xmlTabSettings.SelectSingleNode("/tabs/hideemptytags").InnerText);
+
             Tab t2 = null;
             XmlNodeList tabNodes = xmlTabSettings.SelectNodes("/tabs/tab");
             int index = 1;
@@ -140,11 +154,13 @@ namespace ASPL.ConfigModel
                 tabsSettings.Add(t);
                 index++;
             }
-            if (t2 != null) t2.IsLast = true;
 
+            if (t2 != null)
+            {
+                t2.IsLast = true;
+            }
 
             return tabsSettings;
-
         }
 
         public List<string> GetAllUniqueFields()
@@ -167,23 +183,23 @@ namespace ASPL.ConfigModel
         public string ToHiddenFldValue()
         {
             string currentTab = "currenttab=";
-            const string seperator = "&";
+            const string separator = "&";
             string tabFields = "";
             foreach (Tab t in this)
             {
                 if (t.IsSelected)
                 {
-                    currentTab += SPHttpUtility.UrlPathEncode( t.Title,false);
+                    currentTab += SPHttpUtility.UrlPathEncode(t.Title, false);
                     break;
                 }
             }
 
             foreach (Tab t in this)
             {
-                tabFields += t.ToHiddenFldValue() + seperator;
+                tabFields += t.ToHiddenFldValue() + separator;
             }
 
-            return currentTab + seperator + tabFields.Trim(seperator.ToCharArray());
+            return currentTab + separator + tabFields.Trim(separator.ToCharArray());
         }
 
         public Tab GetSelectedTab()
@@ -208,6 +224,5 @@ namespace ASPL.ConfigModel
 
             return null;
         }
-
     }
 }

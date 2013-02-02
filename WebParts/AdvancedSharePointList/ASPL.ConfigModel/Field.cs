@@ -10,13 +10,15 @@ namespace ASPL.ConfigModel
 {
     public class Field
     {
-        internal Field(Tab parent,XmlNode fieldNode,int tabIndex,int fieldIndex)
+        internal Field(Tab parent, XmlNode fieldNode, int tabIndex, int fieldIndex)
         {
             this.Parent = parent;
+
             string parentXPath = string.Format("/tabs/tab[{0}]/fields/field[{1}]", tabIndex, fieldIndex);
-            this.Index = Convert.ToUInt16(fieldNode.SelectSingleNode(parentXPath+"/index").InnerText);
+            this.Index = Convert.ToUInt16(fieldNode.SelectSingleNode(parentXPath + "/index").InnerText);
             this.SPName = fieldNode.SelectSingleNode(parentXPath + "/spname").InnerText;
-            this.SPDisplayName = Helper.HtmlDecode(fieldNode.SelectSingleNode(parentXPath + "/spdisplayname").InnerText);
+            this.SPDisplayName = 
+                Helper.HtmlDecode(fieldNode.SelectSingleNode(parentXPath + "/spdisplayname").InnerText);
         }
 
         public Field(string fieldName)
@@ -30,8 +32,8 @@ namespace ASPL.ConfigModel
             this.Index = index;
         }
 
-        public Field(string fieldName,string fieldDisplayName)
-            :this(fieldName)
+        public Field(string fieldName, string fieldDisplayName)
+            : this(fieldName)
         {
             this.Index = 0;
             this.SPDisplayName = fieldDisplayName;
@@ -44,9 +46,9 @@ namespace ASPL.ConfigModel
 
         public override string ToString()
         {
-            return string.Format("<field><index>{0}</index><spname>{1}</spname><spdisplayname>{2}</spdisplayname></field>", this.Index.ToString(), this.SPName,Helper.HtmlEncode(this.SPDisplayName));
+            return string.Format("<field><index>{0}</index><spname>{1}</spname><spdisplayname>{2}</spdisplayname></field>",
+                this.Index.ToString(), this.SPName, Helper.HtmlEncode(this.SPDisplayName));
         }
-
     }
 
     public class Fields : List<Field>
@@ -58,6 +60,7 @@ namespace ASPL.ConfigModel
             {
                 str += item.ToString();
             }
+
             return string.Format("<fields>{0}</fields>", str);
         }
     }

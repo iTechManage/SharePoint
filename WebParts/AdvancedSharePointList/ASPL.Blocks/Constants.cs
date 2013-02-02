@@ -9,11 +9,11 @@ namespace ASPL.Blocks
     {
 
         public const string RowID="RowID";
-        public const string FieldToStringSeperator = "]";
-        public const string EnumValueSeperator = "|";
+        public const string FieldToStringSeparator = "]";
+        public const string EnumValueSeparator = "|";
         public const string AllSPPrinciples = "All";
-        public const string ValueCollectionSeperator = ";";
-        public const string XmlElementTextSeperator = "^|";
+        public const string ValueCollectionSeparator = ";";
+        public const string XmlElementTextSeparator = "^|";
         
         public static string[] InvalidChar = new string[]{";#","^|"};
 
@@ -96,6 +96,7 @@ namespace ASPL.Blocks
             public const string SPPrinciplesOperatorName = "SPPrinciplesOperatorName";
             public const string HasCondition = "HasCondition";
         }
+
         public static class ViewField
         {
 

@@ -12,13 +12,15 @@ namespace ASPL.ConfigModel
     {
         internal PermissionBase() { }
 
-        public PermissionBase(Enums.PermissionLevel level, List<Enums.SPForms> onForms, string forSPPrinciples, Enums.Operator bySPPrinciplesOperator)
+        public PermissionBase(Enums.PermissionLevel level, List<Enums.SPForms> onForms,
+            string forSPPrinciples, Enums.Operator bySPPrinciplesOperator)
         {
             this.Level = level;
 
             this.OnForms = onForms;
             this.ForSPPrinciples = forSPPrinciples;
             this.BySPPrinciplesOperator = bySPPrinciplesOperator;
+
             this.Conditions = new Conditions();
         }
 
@@ -34,10 +36,13 @@ namespace ASPL.ConfigModel
         public static List<Enums.SPForms> ParseForms(string forms)
         {
             List<Enums.SPForms> OnForms = new List<Enums.SPForms>();
-            foreach (string f in forms.Split(Constants.EnumValueSeperator.ToCharArray(),StringSplitOptions.RemoveEmptyEntries))
+            foreach (string f in
+                forms.Split(Constants.EnumValueSeparator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
             {
-                if(!string.IsNullOrEmpty(f))
+                if (!string.IsNullOrEmpty(f))
+                {
                     OnForms.Add((Enums.SPForms)Convert.ToInt32(f));
+                }
             }
 
             return OnForms;
@@ -46,10 +51,13 @@ namespace ASPL.ConfigModel
         public void LoadForms(string forms)
         {
             this.OnForms = new List<Enums.SPForms>();
-            foreach (string f in forms.Split(Constants.EnumValueSeperator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
+            foreach (string f in
+                forms.Split(Constants.EnumValueSeparator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
             {
                 if (!string.IsNullOrEmpty(f))
+                {
                     this.OnForms.Add((Enums.SPForms)Convert.ToInt32(f));
+                }
             }
         }
 
@@ -59,10 +67,10 @@ namespace ASPL.ConfigModel
 
             foreach (Enums.SPForms f in this.OnForms)
             {
-                value += Enums.DisplayString(f) + Constants.EnumValueSeperator;
+                value += Enums.DisplayString(f) + Constants.EnumValueSeparator;
             }
 
-            return value.Trim(Constants.EnumValueSeperator.ToCharArray());
+            return value.Trim(Constants.EnumValueSeparator.ToCharArray());
 
         }
 
@@ -72,11 +80,10 @@ namespace ASPL.ConfigModel
 
             foreach (Enums.SPForms f in onForms)
             {
-                value += Enums.DisplayString(f) + Constants.EnumValueSeperator;
+                value += Enums.DisplayString(f) + Constants.EnumValueSeparator;
             }
 
-            return value.Trim(Constants.EnumValueSeperator.ToCharArray());
-
+            return value.Trim(Constants.EnumValueSeparator.ToCharArray());
         }
 
         public string FormsIdToString()
@@ -85,10 +92,10 @@ namespace ASPL.ConfigModel
 
             foreach (Enums.SPForms f in this.OnForms)
             {
-                value += ((int)f).ToString() + Constants.EnumValueSeperator;
+                value += ((int)f).ToString() + Constants.EnumValueSeparator;
             }
 
-            return value.Trim(Constants.EnumValueSeperator.ToCharArray());
+            return value.Trim(Constants.EnumValueSeparator.ToCharArray());
 
         }
 
@@ -98,13 +105,11 @@ namespace ASPL.ConfigModel
 
             foreach (Enums.SPForms f in onForms)
             {
-                value += ((int)f).ToString() + Constants.EnumValueSeperator;
+                value += ((int)f).ToString() + Constants.EnumValueSeparator;
             }
 
-            return value.Trim(Constants.EnumValueSeperator.ToCharArray());
-
+            return value.Trim(Constants.EnumValueSeparator.ToCharArray());
         }
-
     }
 
     public class FieldPermission : PermissionBase
@@ -112,12 +117,28 @@ namespace ASPL.ConfigModel
         internal FieldPermission(XmlNode fieldPermissionNode, int permIndex)
         {
             string parentXPath = string.Format("/fieldpermissions/fieldpermission[{0}]", permIndex);
+
             this.OnField = new Field(fieldPermissionNode.SelectSingleNode(parentXPath + "/onfield").InnerText);
-            this.Level = (Enums.PermissionLevel)Enum.Parse(typeof(Enums.PermissionLevel), fieldPermissionNode.SelectSingleNode(parentXPath + "/level").InnerText, true);
-            this.OnForms = PermissionBase.ParseForms(fieldPermissionNode.SelectSingleNode(parentXPath + "/onforms").InnerText);
-            this.BySPPrinciplesOperator = (Enums.Operator)Enum.Parse(typeof(Enums.Operator), fieldPermissionNode.SelectSingleNode(parentXPath + "/forprinciples").InnerText.Split(Constants.XmlElementTextSeperator.ToCharArray(),StringSplitOptions.RemoveEmptyEntries)[0], true);
-            this.ForSPPrinciples = fieldPermissionNode.SelectSingleNode(parentXPath + "/forprinciples").InnerText.Split(Constants.XmlElementTextSeperator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[1];
-            this.Conditions = Conditions.LoadConditions(fieldPermissionNode.SelectNodes(parentXPath + "/conditions/condition"));
+
+            this.Level =
+                (Enums.PermissionLevel)Enum.Parse(typeof(Enums.PermissionLevel),
+                fieldPermissionNode.SelectSingleNode(parentXPath + "/level").InnerText, true);
+
+            this.OnForms =
+                PermissionBase.ParseForms(fieldPermissionNode.SelectSingleNode(parentXPath + "/onforms").InnerText);
+
+            this.BySPPrinciplesOperator =
+                (Enums.Operator)Enum.Parse(typeof(Enums.Operator),
+                fieldPermissionNode.SelectSingleNode(parentXPath + "/forprinciples").
+                    InnerText.Split(Constants.XmlElementTextSeparator.ToCharArray(),
+                    StringSplitOptions.RemoveEmptyEntries)[0], true);
+
+            this.ForSPPrinciples = fieldPermissionNode.SelectSingleNode(parentXPath + "/forprinciples").
+                InnerText.Split(Constants.XmlElementTextSeparator.ToCharArray(),
+                StringSplitOptions.RemoveEmptyEntries)[1];
+
+            this.Conditions =
+                Conditions.LoadConditions(fieldPermissionNode.SelectNodes(parentXPath + "/conditions/condition"));
         }
 
         public FieldPermission(Field OnField, Enums.PermissionLevel level, List<Enums.SPForms> onForms, string forSPPrinciples, Enums.Operator bySPPrinciplesOperator)
@@ -126,25 +147,21 @@ namespace ASPL.ConfigModel
             this.OnField = OnField;
         }
 
-
-
-
         public Field OnField { get; set; }
-
 
         public override string ToString()
         {
-            return string.Format("<fieldpermission><onfield>{0}</onfield><level>{1}</level><onforms>{2}</onforms><forprinciples>{3}{6}{4}</forprinciples>{5}</fieldpermission>",
+            return string.Format(
+                "<fieldpermission><onfield>{0}</onfield><level>{1}</level><onforms>{2}</onforms><forprinciples>{3}{6}{4}</forprinciples>{5}</fieldpermission>",
                 this.OnField.SPName,//0
                 this.Level.ToString(),//1
                 this.FormsIdToString(),//2
                 this.BySPPrinciplesOperator.ToString(),//3
                 this.ForSPPrinciples,//4
                 this.Conditions.ToString(),//5
-                Constants.XmlElementTextSeperator//6
+                Constants.XmlElementTextSeparator//6
                 );
         }
-
     }
 
     public class FieldPermissions : List<FieldPermission>
@@ -159,7 +176,6 @@ namespace ASPL.ConfigModel
                     {
                         return f;
                     }
-
                 }
 
                 return null;
@@ -178,11 +194,11 @@ namespace ASPL.ConfigModel
 
             foreach (XmlNode node in xmlFieldPermissionNodes)
             {
-
                 FieldPermission f = new FieldPermission(node, index);
                 fieldPermissions.Add(f);
                 index++;
             }
+
             return fieldPermissions;
         }
 
@@ -193,6 +209,7 @@ namespace ASPL.ConfigModel
             {
                 str += item.ToString();
             }
+
             return string.Format("<fieldpermissions>{0}</fieldpermissions>", str);
         }
     }
@@ -203,15 +220,33 @@ namespace ASPL.ConfigModel
         internal TabPermission(XmlNode tabPermissionNode, int tabIndex, int permIndex)
         {
             string parentXPath = string.Format("/tabs/tab[{0}]/permissions/permission[{1}]", tabIndex, permIndex);
-            this.IsDefault = Helper.ConvertToBool(tabPermissionNode.SelectSingleNode(parentXPath + "/isdefault").InnerText);
-            this.Level = (Enums.PermissionLevel)Enum.Parse(typeof(Enums.PermissionLevel), tabPermissionNode.SelectSingleNode(parentXPath + "/level").InnerText, true);
-            this.OnForms = TabPermission.ParseForms(tabPermissionNode.SelectSingleNode(parentXPath + "/onforms").InnerText);
-            this.BySPPrinciplesOperator = (Enums.Operator)Enum.Parse(typeof(Enums.Operator), tabPermissionNode.SelectSingleNode(parentXPath + "/forprinciples").InnerText.Split(Constants.XmlElementTextSeperator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[0], true);
-            this.ForSPPrinciples = tabPermissionNode.SelectSingleNode(parentXPath + "/forprinciples").InnerText.Split(Constants.XmlElementTextSeperator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries)[1];
-            this.Conditions = Conditions.LoadConditions(tabPermissionNode.SelectNodes(parentXPath + "/conditions/condition"));
+
+            this.IsDefault =
+                Helper.ConvertToBool(tabPermissionNode.SelectSingleNode(parentXPath + "/isdefault").InnerText);
+
+            this.Level =
+                (Enums.PermissionLevel)Enum.Parse(typeof(Enums.PermissionLevel),
+                tabPermissionNode.SelectSingleNode(parentXPath + "/level").InnerText, true);
+
+            this.OnForms =
+                TabPermission.ParseForms(tabPermissionNode.SelectSingleNode(parentXPath + "/onforms").InnerText);
+
+            this.BySPPrinciplesOperator = (Enums.Operator)Enum.Parse(typeof(Enums.Operator),
+                tabPermissionNode.SelectSingleNode(parentXPath + "/forprinciples").
+                    InnerText.Split(Constants.XmlElementTextSeparator.ToCharArray(),
+                    StringSplitOptions.RemoveEmptyEntries)[0], true);
+
+            this.ForSPPrinciples =
+                tabPermissionNode.SelectSingleNode(parentXPath + "/forprinciples").
+                InnerText.Split(Constants.XmlElementTextSeparator.ToCharArray(),
+                StringSplitOptions.RemoveEmptyEntries)[1];
+
+            this.Conditions =
+                Conditions.LoadConditions(tabPermissionNode.SelectNodes(parentXPath + "/conditions/condition"));
         }
 
-        public TabPermission(bool isDefault, Enums.PermissionLevel level, List<Enums.SPForms> onForms, string forSPPrinciples, Enums.Operator bySPPrinciplesOperator)
+        public TabPermission(bool isDefault, Enums.PermissionLevel level,
+            List<Enums.SPForms> onForms, string forSPPrinciples, Enums.Operator bySPPrinciplesOperator)
             : base(level, onForms, forSPPrinciples, bySPPrinciplesOperator)
         {
             this.IsDefault = isDefault;
@@ -221,14 +256,15 @@ namespace ASPL.ConfigModel
 
         public override string ToString()
         {
-            return string.Format("<permission><isdefault>{0}</isdefault><level>{1}</level><onforms>{2}</onforms><forprinciples>{3}{6}{4}</forprinciples>{5}</permission>",
+            return string.Format(
+                "<permission><isdefault>{0}</isdefault><level>{1}</level><onforms>{2}</onforms><forprinciples>{3}{6}{4}</forprinciples>{5}</permission>",
                 this.IsDefault.ToString(),//0
                 this.Level.ToString(),//1
                 this.FormsIdToString(),//2
                 this.BySPPrinciplesOperator.ToString(),//3
                 this.ForSPPrinciples,//4
                 this.Conditions.ToString(),//5
-                Constants.XmlElementTextSeperator//6
+                Constants.XmlElementTextSeparator//6
                 );
         }
     }
@@ -242,8 +278,8 @@ namespace ASPL.ConfigModel
             {
                 str += item.ToString();
             }
+
             return string.Format("<permissions>{0}</permissions>", str);
         }
     }
-
 }

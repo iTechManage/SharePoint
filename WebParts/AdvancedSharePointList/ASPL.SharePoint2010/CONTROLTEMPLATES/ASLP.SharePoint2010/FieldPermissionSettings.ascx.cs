@@ -157,13 +157,13 @@ namespace AdvanceSharepointListPro.CONTROLTEMPLATES
                 {
                     if (li.Selected)
                     {
-                        strForms += Enums.DisplayString(((Enums.SPForms)Convert.ToInt32(li.Value))) + Constants.EnumValueSeperator;
-                        strFormsID += li.Value + Constants.EnumValueSeperator;
+                        strForms += Enums.DisplayString(((Enums.SPForms)Convert.ToInt32(li.Value))) + Constants.EnumValueSeparator;
+                        strFormsID += li.Value + Constants.EnumValueSeparator;
                     }
                 }
 
-                strFormsID = strFormsID.TrimEnd(Constants.EnumValueSeperator.ToCharArray());
-                strForms = strForms.TrimEnd(Constants.EnumValueSeperator.ToCharArray());
+                strFormsID = strFormsID.TrimEnd(Constants.EnumValueSeparator.ToCharArray());
+                strForms = strForms.TrimEnd(Constants.EnumValueSeparator.ToCharArray());
                 drPermission[Constants.PermissionField.OnFormIDs] = strFormsID;
                 drPermission[Constants.PermissionField.OnFormNames] = strForms;
                 drPermission[Constants.PermissionField.HasCondition] = "";
@@ -190,13 +190,13 @@ namespace AdvanceSharepointListPro.CONTROLTEMPLATES
                     {
                         if (li.Selected)
                         {
-                            strForms += Enums.DisplayString(((Enums.SPForms)Convert.ToInt32(li.Value))) + Constants.EnumValueSeperator;
-                            strFormsID += li.Value + Constants.EnumValueSeperator;
+                            strForms += Enums.DisplayString(((Enums.SPForms)Convert.ToInt32(li.Value))) + Constants.EnumValueSeparator;
+                            strFormsID += li.Value + Constants.EnumValueSeparator;
                         }
                     }
 
-                    strFormsID = strFormsID.TrimEnd(Constants.EnumValueSeperator.ToCharArray());
-                    strForms = strForms.TrimEnd(Constants.EnumValueSeperator.ToCharArray());
+                    strFormsID = strFormsID.TrimEnd(Constants.EnumValueSeparator.ToCharArray());
+                    strForms = strForms.TrimEnd(Constants.EnumValueSeparator.ToCharArray());
                     drSelectedPermission[Constants.PermissionField.OnFormIDs] = strFormsID;
                     drSelectedPermission[Constants.PermissionField.OnFormNames] = strForms;
 
@@ -235,7 +235,7 @@ namespace AdvanceSharepointListPro.CONTROLTEMPLATES
                 cdoPermissionLevel.SelectedValue = drSelectedPermission[Constants.PermissionField.PermissionID].ToString();
                 string formIDs = drSelectedPermission[Constants.PermissionField.OnFormIDs].ToString();
 
-                foreach (string formID in formIDs.Split(Constants.EnumValueSeperator.ToCharArray(),StringSplitOptions.RemoveEmptyEntries))
+                foreach (string formID in formIDs.Split(Constants.EnumValueSeparator.ToCharArray(),StringSplitOptions.RemoveEmptyEntries))
                 {
                     ListItem li = chkPages.Items.FindByValue(formID);
                     if (li != null) li.Selected = true;

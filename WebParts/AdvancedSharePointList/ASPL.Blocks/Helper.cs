@@ -193,16 +193,16 @@ namespace ASPL.Blocks
             }
         }
 
-        //TODO: Replace the xml inner text seperator
+        //TODO: Replace the xml inner text separator
         //public static string[] XmlElementTextSplit(string value)
         //{
-        //    return value.Split(Constants.XmlElementTextSeperator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+        //    return value.Split(Constants.XmlElementTextSeparator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
         //}
 
-        //TODO: Repalce the sp principle seperator
+        //TODO: Repalce the sp principle separator
         //public static string[] SPPrinciplesSplit(string value)
         //{
-        //    return value.Split(Constants.SPPrinciplesSeperator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+        //    return value.Split(Constants.SPPrinciplesSeparator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
         //}
 
         //TODO: Always replace the textbox value with Helper.ReplaceInvalidChar() method
@@ -238,10 +238,10 @@ namespace ASPL.Blocks
         {
             string fieldDisplayName = "";
 
-            foreach (string fieldInternalName in fieldInternalNames.Split(Constants.FieldToStringSeperator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
+            foreach (string fieldInternalName in fieldInternalNames.Split(Constants.FieldToStringSeparator.ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
             {
                 if (fromList.Fields.ContainsField(fieldInternalName))
-                    fieldDisplayName += fromList.Fields.GetFieldByInternalName(fieldInternalName) + Constants.FieldToStringSeperator;
+                    fieldDisplayName += fromList.Fields.GetFieldByInternalName(fieldInternalName) + Constants.FieldToStringSeparator;
             }
 
             return fieldDisplayName;
