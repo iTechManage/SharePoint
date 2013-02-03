@@ -13,7 +13,6 @@ namespace ASPL.SharePoint2010.Core
 {
     class RendringUtil
     {
-
         public static string RenderTabs(Tabs allTabs)
         {
             if (allTabs != null && allTabs.Count > 0)
@@ -44,7 +43,7 @@ namespace ASPL.SharePoint2010.Core
         {
             string cssClass = "ms-cui-tt ";
             string realCssClass = cssClass;
-            if (tab.IsSelected)  cssClass += "ms-cui-tt-s ";
+            if (tab.IsSelected) cssClass += "ms-cui-tt-s ";
 
             else if (tab.IsFirst) { cssClass += "ms-cui-ct-first "; realCssClass = cssClass; }
 
@@ -62,17 +61,19 @@ namespace ASPL.SharePoint2010.Core
             return string.Format(html, tab.Title, cssClass, tab.Description, realCssClass);
         }
 
-        public static void SetDefault(SPField field,FieldDefaults allFieldDefaults)
+        public static void SetDefault(SPField field, FieldDefaults allFieldDefaults)
         {
-            if (allFieldDefaults.Count > 0 )
+            if (allFieldDefaults.Count > 0)
             {
                 foreach (FieldDefault fd in allFieldDefaults)
                 {
                     if (fd.OnField.SPName == field.InternalName)
                     {
-                        if (PrincipalEvaluator.Check(fd.ForSPPrinciples, fd.BySPPrinciplesOperator))
+                        if (PrincipalEvaluator.Check(fd.ForSPPrinciples,
+                            fd.BySPPrinciplesOperator))
                         {
-                            field.DefaultValue = fd.Value.ToString(); break;
+                            field.DefaultValue = fd.Value.ToString();
+                            break;
                         }
                     }
                 }
@@ -81,24 +82,23 @@ namespace ASPL.SharePoint2010.Core
 
         public static void RenderResources(Control ctrlTarget)
         {
-        	HtmlGenericControl jsTag1 = new HtmlGenericControl("script");
-			jsTag1.Attributes.Add("type", "text/javascript");
-			jsTag1.Attributes.Add("language", "javascript");
-			jsTag1.Attributes.Add("src", Constants.Resource.JQuery1_7_2_min);
-			ctrlTarget.Page.Header.Controls.Add(jsTag1);
+            HtmlGenericControl jsTag1 = new HtmlGenericControl("script");
+            jsTag1.Attributes.Add("type", "text/javascript");
+            jsTag1.Attributes.Add("language", "javascript");
+            jsTag1.Attributes.Add("src", Constants.Resource.JQuery1_7_2_min);
+            ctrlTarget.Page.Header.Controls.Add(jsTag1);
 
-			HtmlGenericControl jsTag = new HtmlGenericControl("script");
-			jsTag.Attributes.Add("type", "text/javascript");
-			jsTag.Attributes.Add("language", "javascript");
-			jsTag.Attributes.Add("src",  Constants.Resource.IteratorJS);
+            HtmlGenericControl jsTag = new HtmlGenericControl("script");
+            jsTag.Attributes.Add("type", "text/javascript");
+            jsTag.Attributes.Add("language", "javascript");
+            jsTag.Attributes.Add("src", Constants.Resource.IteratorJS);
             ctrlTarget.Page.Header.Controls.Add(jsTag);
 
-			HtmlGenericControl cssTag = new HtmlGenericControl("link");
-			cssTag.Attributes.Add("type", "text/css");
-			cssTag.Attributes.Add("rel", "stylesheet");
-			cssTag.Attributes.Add("href", Constants.Resource.DefaultCSS);
-			ctrlTarget.Page.Header.Controls.Add(cssTag);
+            HtmlGenericControl cssTag = new HtmlGenericControl("link");
+            cssTag.Attributes.Add("type", "text/css");
+            cssTag.Attributes.Add("rel", "stylesheet");
+            cssTag.Attributes.Add("href", Constants.Resource.DefaultCSS);
+            ctrlTarget.Page.Header.Controls.Add(cssTag);
         }
-
     }
 }

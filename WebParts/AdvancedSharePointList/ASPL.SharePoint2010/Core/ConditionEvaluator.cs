@@ -13,13 +13,18 @@ namespace ASPL.SharePoint2010.Core
     {
         //TODO: check the values based on column type for below types..
 
-        private static bool CheckFromListItem(string fieldName, Enums.Operator op, string value)
+        private static bool CheckFromListItem(string fieldName,
+            Enums.Operator op, string value)
         {
             if (SPContext.Current.List.Fields.ContainsField(fieldName))
             {
                 object fieldValue = SPContext.Current.ListItem[fieldName];
-                Type fieldValueType = SPContext.Current.List.Fields.GetFieldByInternalName(fieldName).FieldValueType;
-                return MatchItemValueBasedOnOperatorAndValueType(op, value, fieldValue, fieldValueType);
+                Type fieldValueType =
+                    SPContext.Current.List.Fields.GetFieldByInternalName(fieldName).
+                    FieldValueType;
+
+                return MatchItemValueBasedOnOperatorAndValueType(op, value,
+                    fieldValue, fieldValueType);
             }
             else
             {
@@ -50,7 +55,6 @@ namespace ASPL.SharePoint2010.Core
                     bool isDisplayNameMatched = CompareValuesBasedOnOperator(userLoginName, op, value);
 
                     return isLoginMatched || isDisplayNameMatched;
-
                 }
                 else if (fieldValueType == (typeof(SPFieldUserValueCollection)))
                 {
@@ -64,7 +68,6 @@ namespace ASPL.SharePoint2010.Core
 
                         if (userValue.User != null)
                             userDispalyNames += userValue.User.Name + Constants.ValueCollectionSeparator;
-
                     }
 
                     userLoginNames = userLoginNames.TrimEnd(Constants.ValueCollectionSeparator.ToCharArray());
@@ -74,9 +77,6 @@ namespace ASPL.SharePoint2010.Core
                     bool isDisplayNameMatched = CompareValuesBasedOnOperator(userLoginNames, op, value);
 
                     return isLoginMatched || isDisplayNameMatched;
-
-
-
                 }
                 else if (fieldValueType == (typeof(SPFieldLookupValue)))
                 {
@@ -106,7 +106,6 @@ namespace ASPL.SharePoint2010.Core
                     {
                         switch (op)
                         {
-
                             case Enums.Operator.Equal:
                                 return sourceDT == targetDT;
                             case Enums.Operator.NotEqual:
@@ -127,8 +126,6 @@ namespace ASPL.SharePoint2010.Core
                     {
                         return false;
                     }
-
-
                 }
                 else if (fieldValueType == (typeof(int)))
                 {
@@ -138,7 +135,6 @@ namespace ASPL.SharePoint2010.Core
                     {
                         switch (op)
                         {
-
                             case Enums.Operator.Equal:
                                 return sourceInt == targetInt;
                             case Enums.Operator.NotEqual:
@@ -180,7 +176,6 @@ namespace ASPL.SharePoint2010.Core
 
                     switch (op)
                     {
-
                         case Enums.Operator.Equal:
                             return sourceBool == targetBool;
                         case Enums.Operator.NotEqual:
@@ -203,24 +198,23 @@ namespace ASPL.SharePoint2010.Core
             {
                 return false;
             }
-
         }
 
-        private static bool CompareValuesBasedOnOperator(string sourceValue, Enums.Operator op, string targetValue)
+        private static bool CompareValuesBasedOnOperator(string sourceValue,
+            Enums.Operator op, string targetValue)
         {
             sourceValue = sourceValue.Trim();
             targetValue = targetValue.Trim();
             switch (op)
             {
-
                 case Enums.Operator.Equal:
-                    return sourceValue.Equals(targetValue,StringComparison.InvariantCultureIgnoreCase);
+                    return sourceValue.Equals(targetValue, StringComparison.InvariantCultureIgnoreCase);
                 case Enums.Operator.NotEqual:
-                    return !sourceValue.Equals(targetValue,StringComparison.InvariantCultureIgnoreCase);
+                    return !sourceValue.Equals(targetValue, StringComparison.InvariantCultureIgnoreCase);
                 case Enums.Operator.Contains:
-                    return sourceValue.IndexOf(targetValue,StringComparison.InvariantCultureIgnoreCase)>-1;
+                    return sourceValue.IndexOf(targetValue, StringComparison.InvariantCultureIgnoreCase) > -1;
                 case Enums.Operator.NotContains:
-                    return !(sourceValue.IndexOf(targetValue, StringComparison.InvariantCultureIgnoreCase)>-1);
+                    return !(sourceValue.IndexOf(targetValue, StringComparison.InvariantCultureIgnoreCase) > -1);
                 default:
                     return false;
             }
@@ -237,7 +231,6 @@ namespace ASPL.SharePoint2010.Core
 
                 switch (op)
                 {
-
                     case Enums.Operator.Equal:
                         return fieldVaue.Equals(value);
                     case Enums.Operator.NotEqual:
@@ -252,21 +245,21 @@ namespace ASPL.SharePoint2010.Core
             }
             else
             {
-
                 if (field is LookupField)
                 {
-                    LookupField l = field as LookupField;                    
+                    LookupField l = field as LookupField;
                     String v = l.Value.ToString();
                 }
-                return MatchItemValueBasedOnOperatorAndValueType(op, value, field.Value, field.Field.FieldValueType);
 
+                return MatchItemValueBasedOnOperatorAndValueType(op, value, field.Value, field.Field.FieldValueType);
             }
         }
 
         public static bool EvaluateFromListItem(Conditions conditions)
         {
             bool result = true;
-            if (SPContext.Current.FormContext.FormMode != Microsoft.SharePoint.WebControls.SPControlMode.New)
+            if (SPContext.Current.FormContext.FormMode !=
+                Microsoft.SharePoint.WebControls.SPControlMode.New)
             {
                 foreach (Condition c in conditions)
                 {
@@ -277,7 +270,8 @@ namespace ASPL.SharePoint2010.Core
             return result;
         }
 
-        public static bool EvaluateFromUIValue(Conditions conditions, SPFormContext formContext, string clientID)
+        public static bool EvaluateFromUIValue(Conditions conditions,
+            SPFormContext formContext, string clientID)
         {
             bool result = true;
             if (SPContext.Current.FormContext.FormMode != Microsoft.SharePoint.WebControls.SPControlMode.Display)

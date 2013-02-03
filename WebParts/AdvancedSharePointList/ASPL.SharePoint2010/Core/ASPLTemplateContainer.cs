@@ -21,10 +21,13 @@ namespace ASPL.SharePoint2010.Core
         {
             get
             {
-                Type targetType=_templateContainer.GetType();
-                PropertyInfo propertyInfo = targetType.GetProperty("Controls", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+                Type targetType = _templateContainer.GetType();
+                PropertyInfo propertyInfo =
+                    targetType.GetProperty("Controls",
+                    BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
 
-                return propertyInfo.GetGetMethod(true).Invoke(_templateContainer, null) as ControlCollection;
+                return propertyInfo.GetGetMethod(true).
+                    Invoke(_templateContainer, null) as ControlCollection;
             }
         }
 
@@ -33,9 +36,12 @@ namespace ASPL.SharePoint2010.Core
             get
             {
                 Type targetType = _templateContainer.GetType();
-                PropertyInfo propertyInfo = targetType.GetProperty("ControlMode", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+                PropertyInfo propertyInfo =
+                    targetType.GetProperty("ControlMode",
+                    BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
 
-                string ControlModeString=propertyInfo.GetGetMethod(true).Invoke(_templateContainer, null) as string;
+                string ControlModeString =
+                    propertyInfo.GetGetMethod(true).Invoke(_templateContainer, null) as string;
 
                 if (!string.IsNullOrEmpty(ControlModeString))
                 {
@@ -49,9 +55,11 @@ namespace ASPL.SharePoint2010.Core
             set
             {
                 Type targetType = _templateContainer.GetType();
-                PropertyInfo propertyInfo = targetType.GetProperty("ControlMode", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+                PropertyInfo propertyInfo =
+                    targetType.GetProperty("ControlMode",
+                    BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
 
-                propertyInfo.GetSetMethod(true).Invoke(_templateContainer,new object[]{ value});
+                propertyInfo.GetSetMethod(true).Invoke(_templateContainer, new object[] { value });
             }
         }
 
@@ -60,7 +68,9 @@ namespace ASPL.SharePoint2010.Core
             get
             {
                 Type targetType = _templateContainer.GetType();
-                PropertyInfo propertyInfo = targetType.GetProperty("FieldName", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+                PropertyInfo propertyInfo =
+                    targetType.GetProperty("FieldName",
+                    BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
 
                 return propertyInfo.GetGetMethod(true).Invoke(_templateContainer, null) as string;
 
@@ -68,7 +78,9 @@ namespace ASPL.SharePoint2010.Core
             set
             {
                 Type targetType = _templateContainer.GetType();
-                PropertyInfo propertyInfo = targetType.GetProperty("FieldName", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+                PropertyInfo propertyInfo =
+                    targetType.GetProperty("FieldName",
+                    BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
 
                 propertyInfo.GetSetMethod(true).Invoke(_templateContainer, new object[] { value });
             }

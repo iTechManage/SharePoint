@@ -41,15 +41,16 @@ namespace ASPL.SharePoint2010.Core
                     {
                         if (objView.SPVName == CurrentViewName)
                         {
-                            if (objView.Permission == "hide" && DoesUserExist(objView.UserGroup, ObjCurrentUserPrincipal))
-                            {                                
-                                SPUtility.Redirect(Constants.Resource.ViewAccessDeniedPage, SPRedirectFlags.RelativeToLayoutsPage, HttpContext.Current);
+                            if (objView.Permission == "hide" &&
+                                DoesUserExist(objView.UserGroup, ObjCurrentUserPrincipal))
+                            {
+                                SPUtility.Redirect(
+                                    Constants.Resource.ViewAccessDeniedPage,
+                                    SPRedirectFlags.RelativeToLayoutsPage,
+                                    HttpContext.Current);
                             }
-
                         }
-
                     }
-
                 }
             }
             catch (Exception exp)
@@ -58,17 +59,18 @@ namespace ASPL.SharePoint2010.Core
                 Logging.Log(exp);
             }
             base.OnPreRender(e);
-        }     
+        }
 
         private bool DoesUserExist(string Username, SPPrincipal objPrincipal)
         {
-            
+
             if (!String.IsNullOrEmpty(Username))
             {
                 if (Username == "ALL")
-                { 
-                   return true;
+                {
+                    return true;
                 }
+
                 string[] objsplitUsers = Username.Split(',');
                 foreach (string user in objsplitUsers)
                 {
@@ -82,12 +84,11 @@ namespace ASPL.SharePoint2010.Core
                         {
                             SPGroup grp = SPContext.Current.Web.Groups[user];
                             return grp.ContainsCurrentUser;
-
                         }
                     }
                 }
             }
-            
+
             return false;
         }
 
@@ -95,7 +96,11 @@ namespace ASPL.SharePoint2010.Core
         {
             try
             {
-                SPFile file = SPContext.Current.Web.GetFile(SPUtility.GetFullUrl(SPContext.Current.Web.Site, SPContext.Current.List.RootFolder.ServerRelativeUrl.TrimEnd('/') + "/" + filename));
+                SPFile file = SPContext.Current.Web.GetFile(
+                    SPUtility.GetFullUrl(SPContext.Current.Web.Site,
+                    SPContext.Current.List.RootFolder.ServerRelativeUrl.TrimEnd('/') + "/" + filename)
+                    );
+
                 XmlDocument doc = new XmlDocument();
                 doc.Load(file.OpenBinaryStream());
                 return doc;

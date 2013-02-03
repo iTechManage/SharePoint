@@ -11,27 +11,27 @@ using Microsoft.SharePoint.WebControls;
 
 namespace ASPL.SharePoint2010.Core
 {
-	public class ASPLListFieldIterator : ListFieldIterator
-	{
-		private LiteralControl TabControl;
-		protected UpdatePanel updatePanelIterator;
-		protected HiddenField RequestResultTabsInfoHidden;
-		protected string RequestResultTabsInfoHiddenValue;
-		private HiddenField CurrentTab;
-		private HiddenField hdnChangedControls;
-		private HiddenField hdnLiveControls;
-		private Tabs allTabs = null;
-		private FieldPermissions allFieldPermissions = null;
-		private FieldDefaults allFieldDefaults = null;
-		protected SPFormContext _formContext = SPContext.Current.FormContext;
+    public class ASPLListFieldIterator : ListFieldIterator
+    {
+        private LiteralControl TabControl;
+        protected UpdatePanel updatePanelIterator;
+        protected HiddenField RequestResultTabsInfoHidden;
+        protected string RequestResultTabsInfoHiddenValue;
+        private HiddenField CurrentTab;
+        private HiddenField hdnChangedControls;
+        private HiddenField hdnLiveControls;
+        private Tabs allTabs = null;
+        private FieldPermissions allFieldPermissions = null;
+        private FieldDefaults allFieldDefaults = null;
+        protected SPFormContext _formContext = SPContext.Current.FormContext;
 
-		protected override bool IsFieldExcluded(SPField field)
-		{
-			return base.IsFieldExcluded(field);
-		}
+        protected override bool IsFieldExcluded(SPField field)
+        {
+            return base.IsFieldExcluded(field);
+        }
 
-		protected override void OnInit(EventArgs e)
-		{
+        protected override void OnInit(EventArgs e)
+        {
             try
             {
                 if (SPContext.Current.SiteFeatures[new Guid(Constants.ASPLFeature.FeatureID)] == null)
@@ -107,6 +107,7 @@ namespace ASPL.SharePoint2010.Core
                 {
                     this.RequestResultTabsInfoHidden = new HiddenField();
                 }
+
                 this.RequestResultTabsInfoHidden.ID = "RequestResultTabsInfoHidden";
 
                 this.RequestResultTabsInfoHidden.Value = (allTabs == null ? "null" : allTabs.ToHiddenFldValue());
@@ -131,14 +132,15 @@ namespace ASPL.SharePoint2010.Core
                 base.OnInit(e);
                 Logging.Log(exp);
             }
-
-		}
+        }
 
         private XmlDocument GetConfigFile(string filename)
         {
             try
             {
-                SPFile file = SPContext.Current.Web.GetFile(SPUtility.GetFullUrl(SPContext.Current.Web.Site, SPContext.Current.List.RootFolder.ServerRelativeUrl.TrimEnd('/') + "/" + filename));
+                SPFile file =
+                    SPContext.Current.Web.GetFile(SPUtility.GetFullUrl(SPContext.Current.Web.Site,
+                    SPContext.Current.List.RootFolder.ServerRelativeUrl.TrimEnd('/') + "/" + filename));
 
                 if (file.Exists)
                 {
@@ -150,7 +152,6 @@ namespace ASPL.SharePoint2010.Core
                 {
                     return null;
                 }
-            
             }
             catch (Exception exp)
             {
@@ -158,37 +159,37 @@ namespace ASPL.SharePoint2010.Core
             }
         }
 
-		protected override void OnLoad(EventArgs e)
-		{
+        protected override void OnLoad(EventArgs e)
+        {
             if (SPContext.Current.SiteFeatures[new Guid(Constants.ASPLFeature.FeatureID)] == null)
             {
                 base.OnLoad(e); return;
             }
 
-			if (Page.IsPostBack)
-			{
-				Page.Validate();
-				this.Validate();
-			}
-		}
+            if (Page.IsPostBack)
+            {
+                Page.Validate();
+                this.Validate();
+            }
+        }
 
-		protected void SaveHandler(object sender, EventArgs e)
-		{
-			Page.Validate();
+        protected void SaveHandler(object sender, EventArgs e)
+        {
+            Page.Validate();
 
-			if (Page.IsValid)
-			{
-				// do custom activities, send mail, create task, set permissions etc
-				// we should save the item explicitly
-				Item.Update();
-			}
-		}
+            if (Page.IsValid)
+            {
+                // do custom activities, send mail, create task, set permissions etc
+                // we should save the item explicitly
+                Item.Update();
+            }
+        }
 
-		public void Validate()
-		{
+        public void Validate()
+        {
             FieldValidations allFieldVals = FieldValidations.LoadFieldValidations(GetConfigFile(Constants.ConfigFile.FieldValidationFile));
 
-			if (base.ControlMode != SPControlMode.Display && allFieldVals!=null)
+            if (base.ControlMode != SPControlMode.Display && allFieldVals != null)
             {
                 #region Test data
                 //allFieldVals.Add(new FieldValidation(new Field("Title"), Enums.ValidationRule.Column, Enums.Operator.Equal, "adil", "error for adil", "", Enums.Operator.None));
@@ -198,38 +199,37 @@ namespace ASPL.SharePoint2010.Core
                 #endregion
 
                 bool isErroredField = false;
-				foreach (FieldValidation v in allFieldVals)
-				{
-                    if (ConditionEvaluator.EvaluateFromUIValue(v.Conditions, _formContext, ClientID) &&  PrincipalEvaluator.Check(v.ForSPPrinciples, v.BySPPrinciplesOperator))
-					{
-						BaseFieldControl field = ValidationInjector.GetFieldControlByName(v.OnField.SPName, _formContext, ClientID);
+                foreach (FieldValidation v in allFieldVals)
+                {
+                    if (ConditionEvaluator.EvaluateFromUIValue(v.Conditions, _formContext, ClientID) && PrincipalEvaluator.Check(v.ForSPPrinciples, v.BySPPrinciplesOperator))
+                    {
+                        BaseFieldControl field = ValidationInjector.GetFieldControlByName(v.OnField.SPName, _formContext, ClientID);
 
-						if (field != null)
-						{
-							switch (v.Rule)
-							{
-								case Enums.ValidationRule.Column:
+                        if (field != null)
+                        {
+                            switch (v.Rule)
+                            {
+                                case Enums.ValidationRule.Column:
                                     if (ValidationInjector.InvalidColumnValue(field.Value, v.ByRuleOperator, v.Value.ToString(), field.Field.FieldValueType))
-									{
-										ValidationInjector.SetValidationError(field, v.ErrorMsg); isErroredField = true;
-									}
-									break;
-								case Enums.ValidationRule.length:
+                                    {
+                                        ValidationInjector.SetValidationError(field, v.ErrorMsg); isErroredField = true;
+                                    }
+                                    break;
+                                case Enums.ValidationRule.length:
                                     int length = (field.Value == null ? 0 : field.Value.ToString().Length);
                                     if (ValidationInjector.InvalidLengthValue(length, v.ByRuleOperator, v.Value.ToString()))
-									{
-										ValidationInjector.SetValidationError(field, v.ErrorMsg); isErroredField = true;
-									}
-									break;
-								case Enums.ValidationRule.Pattern:
-                                    if (ValidationInjector.InvalidPatternValue((field.Value??"").ToString(), v.Value.ToString()))
-									{
-										ValidationInjector.SetValidationError(field, v.ErrorMsg); isErroredField = true;
-									}
-									break;
-
-							}
-						}
+                                    {
+                                        ValidationInjector.SetValidationError(field, v.ErrorMsg); isErroredField = true;
+                                    }
+                                    break;
+                                case Enums.ValidationRule.Pattern:
+                                    if (ValidationInjector.InvalidPatternValue((field.Value ?? "").ToString(), v.Value.ToString()))
+                                    {
+                                        ValidationInjector.SetValidationError(field, v.ErrorMsg); isErroredField = true;
+                                    }
+                                    break;
+                            }
+                        }
 
                         if (allTabs != null)
                         {
@@ -247,16 +247,13 @@ namespace ASPL.SharePoint2010.Core
                                 this.Page.ClientScript.RegisterStartupScript(base.GetType(), "SLFE_CallFirstSelectTab", "<script type='text/javascript'>SLFE_SelectTab('" + allTabs.GetTabNameOfField(v.OnField.SPName) + "')</script>");
                             }
                         }
-					}
+                    }
+                }
+            }
+        }
 
-
-				}
-			}
-
-		}
-
-		protected override void OnPreRender(EventArgs e)
-		{
+        protected override void OnPreRender(EventArgs e)
+        {
             if (SPContext.Current.SiteFeatures[new Guid(Constants.ASPLFeature.FeatureID)] == null)
             {
                 base.OnPreRender(e); return;
@@ -275,104 +272,104 @@ namespace ASPL.SharePoint2010.Core
                 this.Page.ClientScript.RegisterStartupScript(base.GetType(), "SLFE_CallFirstSelectTab", "<script type='text/javascript'>SLFE_SelectTab('" + allTabs.GetSelectedTab().Title + "')</script>");
                 //base.OnPreRender(e);
             }
-		}
+        }
 
-		protected override void CreateChildControls()
-		{
-
+        protected override void CreateChildControls()
+        {
             if (SPContext.Current.SiteFeatures[new Guid(Constants.ASPLFeature.FeatureID)] == null)
             {
                 base.CreateChildControls(); return;
             }
 
-			this.Controls.Clear();
+            this.Controls.Clear();
 
-			try
-			{
-				if (this.ControlTemplate == null)
-				{
-					throw new ArgumentException("Could not find ListFieldIterator control template.");
-				}
+            try
+            {
+                if (this.ControlTemplate == null)
+                {
+                    throw new ArgumentException("Could not find ListFieldIterator control template.");
+                }
 
-				AddLiteralControl(RendringUtil.RenderTabs(allTabs));
+                AddLiteralControl(RendringUtil.RenderTabs(allTabs));
 
-				string allFields = string.Empty;
+                string allFields = string.Empty;
 
-				for (int i = 0; i < base.Fields.Count; i++)
-				{
-					SPField spField = base.Fields[i];
-					SPControlMode ctrlMode = SPControlMode.Invalid;
-					bool isFieldHidden = false;
+                for (int i = 0; i < base.Fields.Count; i++)
+                {
+                    SPField spField = base.Fields[i];
+                    SPControlMode ctrlMode = SPControlMode.Invalid;
+                    bool isFieldHidden = false;
 
-					// Permission matrix execution...
+                    // Permission matrix execution...
 
                     ctrlMode = PermissionHandler.Handle(spField.InternalName, this.ControlMode, allTabs, allFieldPermissions, SPContext.Current.Web.CurrentUser, out isFieldHidden);
 
-                    if (this.ControlMode == SPControlMode.New && allFieldDefaults!=null)
-						RendringUtil.SetDefault(spField, allFieldDefaults);
+                    if (this.ControlMode == SPControlMode.New && allFieldDefaults != null)
+                        RendringUtil.SetDefault(spField, allFieldDefaults);
 
-					if (!this.IsFieldExcluded(spField) && !spField.Hidden && !spField.ReadOnlyField && !isFieldHidden)
-					{
-						ASPLTemplateContainer tempCon = new ASPLTemplateContainer();
-						this.Controls.Add(tempCon.Template);
-						tempCon.FieldName = spField.InternalName;
-						tempCon.ControlMode = ctrlMode;
-						this.ControlTemplate.InstantiateIn(tempCon.Template);
-						allFields += "'" + spField.InternalName + "~Show',";
-						LiteralControl templateTR = tempCon.Controls[0] as LiteralControl;
-						templateTR.Text = templateTR.Text.Replace("tr", "tr id='" + spField.InternalName + "~Show" + "'");
-					}
-				}
+                    if (!this.IsFieldExcluded(spField) && !spField.Hidden && !spField.ReadOnlyField && !isFieldHidden)
+                    {
+                        ASPLTemplateContainer tempCon = new ASPLTemplateContainer();
+                        this.Controls.Add(tempCon.Template);
+                        tempCon.FieldName = spField.InternalName;
+                        tempCon.ControlMode = ctrlMode;
+                        this.ControlTemplate.InstantiateIn(tempCon.Template);
+                        allFields += "'" + spField.InternalName + "~Show',";
+                        LiteralControl templateTR = tempCon.Controls[0] as LiteralControl;
+                        templateTR.Text = templateTR.Text.Replace("tr", "tr id='" + spField.InternalName + "~Show" + "'");
+                    }
+                }
 
-				AddLiteralControl("<script type='text/javascript'> var allFieldsArray = new Array(" + allFields.Trim(',') + ");</script>");
+                AddLiteralControl("<script type='text/javascript'> var allFieldsArray = new Array(" + allFields.Trim(',') + ");</script>");
+            }
+            catch (Exception exp)
+            {
+                this.Controls.Clear();
+                base.CreateChildControls();
+                Logging.Log(exp);
+            }
+        }
 
+        protected void CreateHelperControls()
+        {
+            if (this.Page == null || this.Page.ClientScript.IsClientScriptBlockRegistered("FieldsIteratorBase_ScriptAndCotnrols"))
+            {
+                return;
+            }
 
+            this.TabControl = new LiteralControl();
+            this.Controls.Add(this.TabControl);
+            this.CurrentTab = new HiddenField();
+            this.CurrentTab.ID = "CurrentTabFieldID";
 
-			}
-			catch (Exception exp)
-			{
-				this.Controls.Clear();
-				base.CreateChildControls();
-				Logging.Log(exp);
-			}
-		}
+            if (!string.IsNullOrEmpty(this.Page.Request.Form[this.UniqueID + "$CurrentTabFieldID"]))
+            {
+                this.CurrentTab.Value = this.Page.Request.Form[this.UniqueID + "$CurrentTabFieldID"];
+            }
 
-		protected void CreateHelperControls()
-		{
-			if (this.Page == null || this.Page.ClientScript.IsClientScriptBlockRegistered("FieldsIteratorBase_ScriptAndCotnrols"))
-			{
-				return;
-			}
-			this.TabControl = new LiteralControl();
-			this.Controls.Add(this.TabControl);
-			this.CurrentTab = new HiddenField();
-			this.CurrentTab.ID = "CurrentTabFieldID";
-			if (!string.IsNullOrEmpty(this.Page.Request.Form[this.UniqueID + "$CurrentTabFieldID"]))
-			{
-				this.CurrentTab.Value = this.Page.Request.Form[this.UniqueID + "$CurrentTabFieldID"];
-			}
-			try
-			{
-				if (!string.IsNullOrEmpty(this.Page.Request["CurrentTab"]))
-				{
-					this.CurrentTab.Value = this.Page.Request["CurrentTab"];
-					NameValueCollection queryString = this.Page.Request.QueryString;
-					//ReflectionUtility.SetPropertyValue(queryString, "IsReadOnly", false);
-					queryString.Remove("CurrentTab");
-				}
-			}
-			catch (Exception ex)
-			{
-				//this.logger.LogError(ex);
-			}
-			this.Controls.Add(this.CurrentTab);
-			this.hdnChangedControls = new HiddenField();
-			this.hdnChangedControls.ID = "hdnChangedControls";
-			this.Controls.Add(this.hdnChangedControls);
-			this.hdnLiveControls = new HiddenField();
-			this.hdnLiveControls.ID = "hdnLiveControls";
-			this.Controls.Add(this.hdnLiveControls);
-			this.Page.ClientScript.RegisterClientScriptBlock(base.GetType(), "FieldsIteratorBase_ScriptAndCotnrols", string.Concat(new string[]
+            try
+            {
+                if (!string.IsNullOrEmpty(this.Page.Request["CurrentTab"]))
+                {
+                    this.CurrentTab.Value = this.Page.Request["CurrentTab"];
+                    NameValueCollection queryString = this.Page.Request.QueryString;
+                    //ReflectionUtility.SetPropertyValue(queryString, "IsReadOnly", false);
+                    queryString.Remove("CurrentTab");
+                }
+            }
+            catch (Exception ex)
+            {
+                //this.logger.LogError(ex);
+            }
+
+            this.Controls.Add(this.CurrentTab);
+            this.hdnChangedControls = new HiddenField();
+            this.hdnChangedControls.ID = "hdnChangedControls";
+            this.Controls.Add(this.hdnChangedControls);
+            this.hdnLiveControls = new HiddenField();
+            this.hdnLiveControls.ID = "hdnLiveControls";
+            this.Controls.Add(this.hdnLiveControls);
+            this.Page.ClientScript.RegisterClientScriptBlock(base.GetType(), "FieldsIteratorBase_ScriptAndCotnrols", string.Concat(new string[]
 			{
 				"\r\n<script type=\"text/javascript\" language=\"javascript\"> \r\nvar hdnCurrentTabFieldID = '",
 				this.CurrentTab.ClientID,
@@ -380,12 +377,11 @@ namespace ASPL.SharePoint2010.Core
 				this.hdnChangedControls.ClientID,
 				"';\r\nfunction SetHiddenChangedControls(fieldName, fieldValue) {\r\n    var hdnCtrl = document.getElementById(hdnChangedControlsClientID);\r\n    if (hdnCtrl == null) return;\r\n    else hdnCtrl.value += ';' + fieldName + '|' + fieldValue;\r\n    try\r\n    {\r\n\t\t__doPostBack(g_SLFEUpdatePanelHelper, hdnChangedControlsClientID);\r\n    }\r\n    catch(e)\r\n    {\r\n        document.aspnetForm.submit();\r\n    }\r\n}\r\n</script>\r\n"
 			}));
-		}
+        }
 
-		public void AddLiteralControl(string s)
-		{
-			this.Controls.Add(new LiteralControl(s));
-		}
-
-	}
+        public void AddLiteralControl(string s)
+        {
+            this.Controls.Add(new LiteralControl(s));
+        }
+    }
 }

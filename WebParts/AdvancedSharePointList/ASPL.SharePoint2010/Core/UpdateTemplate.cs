@@ -16,6 +16,7 @@ namespace ASPL.SharePoint2010.Core
         {
             this.AssociatedUpdatePanelID = AssociatedUpdatePanelID;
         }
+
         public static UpdateProgress GetUpdateProgress(string AssociatedUpdatePanelID)
         {
             return new UpdateProgress
@@ -26,9 +27,13 @@ namespace ASPL.SharePoint2010.Core
                 AssociatedUpdatePanelID = AssociatedUpdatePanelID
             };
         }
+
         public void InstantiateIn(Control container)
         {
-            container.Controls.Add(new LiteralControl((this.ProgressHtml + this.MoveToParentControlScript).Replace("{0}", this.AssociatedUpdatePanelID)));
+            container.Controls.Add(new LiteralControl(
+                (this.ProgressHtml + this.MoveToParentControlScript).
+                    Replace("{0}", this.AssociatedUpdatePanelID))
+                );
         }
     }
 }

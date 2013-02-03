@@ -10,9 +10,11 @@ namespace ASPL.SharePoint2010.Core
 {
     class PermissionHandler
     {
-        public static SPControlMode Handle(string spInternalName, SPControlMode formMode, Tabs tabs, FieldPermissions fPerms, SPPrincipal princ, out bool isHidden)
+        public static SPControlMode Handle(string spInternalName,
+            SPControlMode formMode, Tabs tabs, FieldPermissions fPerms,
+            SPPrincipal princ, out bool isHidden)
         {
-            SPControlMode result= SPControlMode.Invalid;
+            SPControlMode result = SPControlMode.Invalid;
             isHidden = false;
 
             if (tabs != null)
@@ -21,18 +23,25 @@ namespace ASPL.SharePoint2010.Core
                 {
                     foreach (TabPermission tp in tab.Permissions)
                     {
-                        if (ConditionEvaluator.EvaluateFromListItem(tp.Conditions) && PrincipalEvaluator.Check(tp.ForSPPrinciples, tp.BySPPrinciplesOperator))
+                        if (ConditionEvaluator.EvaluateFromListItem(tp.Conditions)
+                            && PrincipalEvaluator.Check(tp.ForSPPrinciples,
+                                tp.BySPPrinciplesOperator))
                         {
-                            if (tab.Fields.Any<Field>(f => f.SPName.Equals(spInternalName, StringComparison.InvariantCultureIgnoreCase)))
+                            if (tab.Fields.Any<Field>
+                                (f => f.SPName.Equals(spInternalName,
+                                    StringComparison.InvariantCultureIgnoreCase)))
                             {
-                                if (tp.OnForms.Contains(Enums.SPForms.New) && formMode == SPControlMode.New
-                                        || tp.OnForms.Contains(Enums.SPForms.View) && formMode == SPControlMode.Display
-                                            || tp.OnForms.Contains(Enums.SPForms.Edit) && formMode == SPControlMode.Edit)
+                                if (tp.OnForms.Contains(Enums.SPForms.New)
+                                    && formMode == SPControlMode.New
+                                        || tp.OnForms.Contains(Enums.SPForms.View)
+                                        && formMode == SPControlMode.Display
+                                            || tp.OnForms.Contains(Enums.SPForms.Edit)
+                                            && formMode == SPControlMode.Edit)
                                 {
                                     switch (tp.Level)
                                     {
                                         case Enums.PermissionLevel.Read:
-                                            result = SPControlMode.Display;isHidden=false;
+                                            result = SPControlMode.Display; isHidden = false;
                                             break;
 
                                         case Enums.PermissionLevel.Write:
@@ -42,7 +51,7 @@ namespace ASPL.SharePoint2010.Core
                                             else
                                                 result = SPControlMode.New;
 
-                                            isHidden=false;
+                                            isHidden = false;
                                             break;
 
                                         case Enums.PermissionLevel.Deny:
@@ -57,23 +66,30 @@ namespace ASPL.SharePoint2010.Core
                     }
                 }
             }
+
             //FieldPermissionCheck:
             if (fPerms != null)
             {
                 foreach (FieldPermission fp in fPerms)
                 {
-                    if (ConditionEvaluator.EvaluateFromListItem(fp.Conditions) && PrincipalEvaluator.Check(fp.ForSPPrinciples, fp.BySPPrinciplesOperator))
+                    if (ConditionEvaluator.EvaluateFromListItem(fp.Conditions)
+                        && PrincipalEvaluator.Check(fp.ForSPPrinciples,
+                            fp.BySPPrinciplesOperator))
                     {
-                        if (fp.OnField.SPName.Equals(spInternalName, StringComparison.InvariantCultureIgnoreCase))
+                        if (fp.OnField.SPName.Equals(spInternalName,
+                            StringComparison.InvariantCultureIgnoreCase))
                         {
-                            if (fp.OnForms.Contains(Enums.SPForms.New) && formMode == SPControlMode.New
-                                    || fp.OnForms.Contains(Enums.SPForms.View) && formMode == SPControlMode.Display
-                                        || fp.OnForms.Contains(Enums.SPForms.Edit) && formMode == SPControlMode.Edit)
+                            if (fp.OnForms.Contains(Enums.SPForms.New)
+                                && formMode == SPControlMode.New
+                                    || fp.OnForms.Contains(Enums.SPForms.View)
+                                    && formMode == SPControlMode.Display
+                                        || fp.OnForms.Contains(Enums.SPForms.Edit)
+                                        && formMode == SPControlMode.Edit)
                             {
                                 switch (fp.Level)
                                 {
                                     case Enums.PermissionLevel.Read:
-                                        result = SPControlMode.Display;isHidden=false;
+                                        result = SPControlMode.Display; isHidden = false;
                                         goto FinishPermissionCheck;
 
                                     case Enums.PermissionLevel.Write:
@@ -82,23 +98,22 @@ namespace ASPL.SharePoint2010.Core
                                             result = SPControlMode.Edit;
                                         else
                                             result = SPControlMode.New;
-                                        
-                                        isHidden=false;
+
+                                        isHidden = false;
                                         goto FinishPermissionCheck;
 
                                     case Enums.PermissionLevel.Deny:
                                         isHidden = true;
                                         result = SPControlMode.Invalid;
                                         break;
-                                       
-
                                 }
                             }
                         }
                     }
                 }
             }
-            FinishPermissionCheck:
+
+        FinishPermissionCheck:
             return result;
         }
     }

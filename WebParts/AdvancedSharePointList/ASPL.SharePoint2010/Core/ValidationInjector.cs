@@ -12,7 +12,8 @@ namespace ASPL.SharePoint2010.Core
 {
     class ValidationInjector
     {
-        public static BaseFieldControl GetFieldControlByName(String fieldNameToFind, SPFormContext formContext, string clientID)
+        public static BaseFieldControl GetFieldControlByName(
+            String fieldNameToFind, SPFormContext formContext, string clientID)
         {
             foreach (Control control in formContext.FieldControlCollection)
             {
@@ -27,26 +28,34 @@ namespace ASPL.SharePoint2010.Core
                     }
                 }
             }
+
             return null;
         }
 
-        public static void SetValidationError(BaseFieldControl fieldControl, String errorMessage)
+        public static void SetValidationError(
+            BaseFieldControl fieldControl, String errorMessage)
         {
             fieldControl.ErrorMessage = errorMessage;
             fieldControl.IsValid = false;
         }
 
-        public static Microsoft.SharePoint.WebControls.ListFieldIterator GetIteratorByFieldControl(BaseFieldControl fieldControl)
+        public static Microsoft.SharePoint.WebControls.ListFieldIterator
+            GetIteratorByFieldControl(BaseFieldControl fieldControl)
         {
-            return (Microsoft.SharePoint.WebControls.ListFieldIterator)fieldControl.Parent.Parent.Parent.Parent.Parent;
+            return (Microsoft.SharePoint.WebControls.ListFieldIterator)
+                fieldControl.Parent.Parent.Parent.Parent.Parent;
         }
 
-        public static bool InvalidColumnValue(object fieldValue, Enums.Operator op, string valueToCompare, Type fieldValueType)
+        public static bool InvalidColumnValue(
+            object fieldValue, Enums.Operator op,
+            string valueToCompare, Type fieldValueType)
         {
-            return ConditionEvaluator.MatchItemValueBasedOnOperatorAndValueType(op, valueToCompare, fieldValue, fieldValueType);
+            return ConditionEvaluator.MatchItemValueBasedOnOperatorAndValueType(
+                op, valueToCompare, fieldValue, fieldValueType);
         }
 
-        public static bool InvalidLengthValue(int length, Enums.Operator op, string lengthToCompare)
+        public static bool InvalidLengthValue(int length, Enums.Operator op,
+            string lengthToCompare)
         {
             int intlengthToCompare;
 
