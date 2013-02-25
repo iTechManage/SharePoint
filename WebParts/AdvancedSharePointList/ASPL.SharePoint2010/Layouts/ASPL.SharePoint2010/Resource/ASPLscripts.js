@@ -164,6 +164,7 @@ var SLFE_TabToElementIDHash = {};
 
 var g_selectedTab = "";
 function SLFE_SelectTab(tabName) {
+
     var requestResultTabsInfoHidden = $get(g_RequestResultTabsInfoHidden);
 
     var data = new SLFE_QuerystringFormated(requestResultTabsInfoHidden.value);
@@ -172,6 +173,7 @@ function SLFE_SelectTab(tabName) {
     else tabName = unescape(tabName).replace(/\+/g, " ");
 
     try {
+    // TODO: Check if we need to call this only in begining or on every tab select
         if (SLFE_TabHideEmpty) {
             for (var i = 1; i < data.length; i++) {
                 //get tab name
@@ -184,10 +186,13 @@ function SLFE_SelectTab(tabName) {
                     el = document.getElementById(selID);
                     if (el != null) {
                         //if fields empty - hide tab
-                        if (tabfields == null || tabfields == "")
+                        if (tabfields == null || tabfields == "" ||
+                            (isTabNonEmpty(tabfields) == false)) {
                             el.style.display = "none";
-                        else
+                        }
+                        else {
                             el.style.display = "";
+                        }
                     }
                 }
             }
@@ -339,6 +344,26 @@ function SLFE_SelectTab(tabName) {
     try { moveToParentTd(); }
     catch (e) { }
 }
+
+function isTabNonEmpty(tabFields) {
+
+    if (typeof (allFieldsArray) == "undefined" || allFieldsArray == null) {
+        return false;
+    }
+
+    var fieldArray = tabFields.split("|");
+
+    for (var i = 0; i < fieldArray.length; i++) {
+        for (var j = 0; j < allFieldsArray.length; j++) {
+            if (fieldArray[i] == allFieldsArray[j]) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 function SLFE_SelectNext(currentTab) {
     var tabCtrl = document.getElementById('SLFE_TabControl');
     if (tabCtrl != null) {
