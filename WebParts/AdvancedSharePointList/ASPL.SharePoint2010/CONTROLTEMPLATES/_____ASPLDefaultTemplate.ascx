@@ -28,7 +28,7 @@
             </div>
             <SharePoint:FormToolBar ID="FormToolBar1" runat="server" />
             <SharePoint:ItemValidationFailedMessage ID="ItemValidationFailedMessage1" runat="server" />
-            <table class="ms-formtable" style="margin-top: 8px;" border="0" cellpadding="0" cellspacing="0"
+            <table id="TableTabCtrl" class="ms-formtable" style="margin-top: 8px;" border="0" cellpadding="0" cellspacing="0"
                 width="100%">
                 <SharePoint:ChangeContentType ID="ChangeContentType1" runat="server" />
                 <SharePoint:FolderFormFields ID="FolderFormFields1" runat="server" />

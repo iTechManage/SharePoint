@@ -23,7 +23,7 @@ namespace ASPL.SharePoint2010.Core
                                         <script>var SLFE_TabHideEmpty ='true'</script>
                                         <ul class='ms-cui-tts' unselectable='on' style='height:25px'>
                                             <li class='ms-cui-cg ms-cui-cg-db ms-cui-cg-s' style='height:25px'>
-                                                <ul class='ms-cui-ct-ul' style='100%'>";
+                                                <ul class='ms-cui-ct-ul' style='100%' id='ulTabCtrl'>";
 
                 string endHtml = "</ul></li></ul></td></tr>";
 

@@ -312,6 +312,7 @@ function SLFE_SelectTab(tabName) {
         }
     }
 
+    /*
     //for 2010 - resize dialog when changing tabs
     //debugger;
     try {
@@ -339,6 +340,7 @@ function SLFE_SelectTab(tabName) {
         }
     }
     catch (e) { }
+    */
 
     //move and resize update progress panel
     try { moveToParentTd(); }
@@ -600,3 +602,103 @@ SLFE_QuerystringFormated.prototype.contains = function (key) {
     var value = this.params[key];
     return (value != null);
 }
+
+
+var waitForFinalEvent = (function () {
+    var timers = {};
+    return function (callback, ms, uniqueId) {
+        if (!uniqueId) {
+            uniqueId = "Don't call this twice without a uniqueId";
+        }
+        if (timers[uniqueId]) {
+            clearTimeout(timers[uniqueId]);
+        }
+        timers[uniqueId] = setTimeout(callback, ms);
+    };
+})();
+
+$(window).resize(function () {
+    waitForFinalEvent(function () {
+        //alert('Resize...');
+        adjustTabCtrlWidths();
+        //...
+    }, 500, "449036AA-20B8-4115-A282-A3DF68C8912B");
+});
+
+
+function adjustTabCtrlWidths() {
+    var tbl = $('#TableTabCtrl');
+    var ul = $('#ulTabCtrl');
+    // alert(tbl.width());
+
+    // if size available is sufficient, just set the original width for tabs
+    var requiredWidth = getVisibleTabsOriginalWidth();
+    var availableWidth = tbl.width() - 10;
+    if (requiredWidth <= availableWidth) {
+        setOriginalTabWidths();
+        return;
+    }
+
+    var widthToReduce = Math.ceil((requiredWidth - availableWidth) / getVisibleTabsExceedingMinWidth()) + 10;
+
+    ul.children().each(function (index, value) {
+        var wd = hashTabOrigSize[$(this).attr('id')];
+        if (wd > 150 && $(this).css('display') != 'none') {
+            var newWd = wd - widthToReduce;
+            var anchor = $(this).find('a:first');
+            // var span = anchor.find('span:first');
+            anchor.css({ 'width': newWd });
+        }
+    });
+}
+
+function setOriginalTabWidths() {
+    var ul = $('#ulTabCtrl');
+
+    ul.children().each(function (index, value) {
+        //$(this).width(hashTabOrigSize[$(this).attr('id')]);
+        var anchor = $(this).find('a:first');
+        var newWd = hashTabOrigSize[$(this).attr('id')];
+        anchor.css({ 'width': newWd });
+    });
+}
+
+
+function getVisibleTabsOriginalWidth() {
+    var ul = $('#ulTabCtrl');
+    var widthToRet = 0;
+
+    ul.children().each(function (index, value) {
+        if ($(this).css('display') != 'none') {
+            widthToRet += hashTabOrigSize[$(this).attr('id')];
+        }
+    });
+
+    return widthToRet;
+}
+
+function getVisibleTabsExceedingMinWidth() {
+    var ul = $('#ulTabCtrl');
+    var countToRet = 0;
+
+    ul.children().each(function (index, value) {
+        if ($(this).width() > 150 && $(this).css('display') != 'none') {
+            countToRet += 1;
+        }
+    });
+
+    return countToRet;
+}
+
+var hashTabOrigSize = new Object();
+
+$(document).ready(function () {
+    var ul = $('#ulTabCtrl');
+
+    ul.children().each(function (index, value) {
+        //alert ($(this).attr('id'));
+        hashTabOrigSize[$(this).attr('id')] = $(this).width();
+    });
+
+    adjustTabCtrlWidths();
+});
