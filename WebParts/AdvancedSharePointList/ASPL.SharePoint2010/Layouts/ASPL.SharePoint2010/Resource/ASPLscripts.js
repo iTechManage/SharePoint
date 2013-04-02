@@ -633,17 +633,39 @@ function adjustTabCtrlWidths() {
 
     // if size available is sufficient, just set the original width for tabs
     var requiredWidth = getVisibleTabsOriginalWidth();
-    var availableWidth = tbl.width() - 10;
+    var availableWidth = tbl.width() - 30;
     if (requiredWidth <= availableWidth) {
         setOriginalTabWidths();
         return;
     }
 
-    var widthToReduce = Math.ceil((requiredWidth - availableWidth) / getVisibleTabsExceedingMinWidth()) + 10;
+    //var widthToReduce = Math.ceil((requiredWidth - availableWidth)/getVisibleTabsExceedingMinWidth()) + 10;
+    var totalWidthToReduce = requiredWidth - availableWidth + 10;
+    var bigTabs = getVisibleTabsExceedingMinWidth();
+
+    /* TODO
+    if(totalWidthToReduce > (bigTabs.Width - (100 * bigTabs.Count)))
+    {
+    // Big tabs don't have enough width available to reduce
+    var mediumTabs = getVisibleTabsWithMediumWidth();
+		
+    var mediumWidthToReduce = totalWidthToReduce - (bigTabs.Width - (100 * bigTabs.Count));
+    if(mediumWidthToReduce < (mediumTabs.Count * 35))
+    {
+    // TODO: Reduce width of medium tabs, taking more from bigger among them
+    }
+    else
+    {
+    // Too bad
+    }
+    }
+    */
 
     ul.children().each(function (index, value) {
         var wd = hashTabOrigSize[$(this).attr('id')];
         if (wd > 150 && $(this).css('display') != 'none') {
+            var widthToReduce = Math.ceil((wd / bigTabs.Width) * totalWidthToReduce);
+
             var newWd = wd - widthToReduce;
             var anchor = $(this).find('a:first');
             // var span = anchor.find('span:first');
@@ -656,10 +678,9 @@ function setOriginalTabWidths() {
     var ul = $('#ulTabCtrl');
 
     ul.children().each(function (index, value) {
-        //$(this).width(hashTabOrigSize[$(this).attr('id')]);
         var anchor = $(this).find('a:first');
-        var newWd = hashTabOrigSize[$(this).attr('id')];
-        anchor.css({ 'width': newWd });
+        // var span = anchor.find('span:first');
+        anchor.css({ 'width': hashTabOrigSize[$(this).attr('id')] });
     });
 }
 
@@ -680,20 +701,43 @@ function getVisibleTabsOriginalWidth() {
 function getVisibleTabsExceedingMinWidth() {
     var ul = $('#ulTabCtrl');
     var countToRet = 0;
+    var totalWidth = 0;
 
     ul.children().each(function (index, value) {
-        if ($(this).width() > 150 && $(this).css('display') != 'none') {
+        var originalWidth = hashTabOrigSize[$(this).attr('id')];
+        if (originalWidth > 150 && $(this).css('display') != 'none') {
             countToRet += 1;
+            totalWidth += hashTabOrigSize[$(this).attr('id')];
         }
     });
 
-    return countToRet;
+    return { Count: countToRet, Width: totalWidth };
 }
+
+function getVisibleTabsWithMediumWidth() {
+    var ul = $('#ulTabCtrl');
+    var countToRet = 0;
+    var totalWidth = 0;
+
+    ul.children().each(function (index, value) {
+        var originalWidth = hashTabOrigSize[$(this).attr('id')];
+        if (originalWidth <= 150 && originalWidth > 75 && $(this).css('display') != 'none') {
+            countToRet += 1;
+            totalWidth += hashTabOrigSize[$(this).attr('id')];
+        }
+    });
+
+    return { Count: countToRet, Width: totalWidth };
+}
+
+
 
 var hashTabOrigSize = new Object();
 
 $(document).ready(function () {
     var ul = $('#ulTabCtrl');
+
+    // debugger;
 
     ul.children().each(function (index, value) {
         //alert ($(this).attr('id'));
