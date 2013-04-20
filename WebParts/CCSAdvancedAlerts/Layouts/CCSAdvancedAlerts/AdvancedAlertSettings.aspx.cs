@@ -987,6 +987,12 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                 alert.WebId = ddlSite.SelectedValue;
                 alert.ListId = ddlList.SelectedValue;
 
+                // TODO
+                string strItemId = Request.QueryString["ID"];
+                if (string.IsNullOrEmpty(strItemId)) {
+                    strItemId = "0";
+                }
+                alert.ItemID = strItemId;
 
                 //Get Recipient Section
                 alert.ToAddress = txtTo.Text;

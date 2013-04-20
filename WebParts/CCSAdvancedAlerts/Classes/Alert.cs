@@ -47,6 +47,12 @@ namespace CCSAdvancedAlerts
             set { listId = value; }
         }
 
+        private string itemId;
+        public string ItemID
+        {
+            get { return itemId; }
+            set { itemId = value; }
+        }
 
         private SPUser owner;
         public SPUser Owner
@@ -263,7 +269,7 @@ namespace CCSAdvancedAlerts
         {
         }
 
-        public Alert(SPListItem listItem,MailTemplateManager mailTemplateManager)
+        public Alert(SPListItem listItem, MailTemplateManager mailTemplateManager)
         {
             try
             {
@@ -289,7 +295,8 @@ namespace CCSAdvancedAlerts
                 this.title = Convert.ToString(listItem["Title"]);
                 this.webId = Convert.ToString(listItem[ListAndFieldNames.settingsListWebIdFieldName]);
                 this.listId = Convert.ToString(listItem[ListAndFieldNames.settingsListListIdFieldName]);
-
+                this.itemId = Convert.ToString(listItem[ListAndFieldNames.settingsListItemIdFieldName]);
+                
 
                 //Event Type Registered
                 string stralerttype = Convert.ToString(listItem[ListAndFieldNames.settingsListEventTypeFieldName]);

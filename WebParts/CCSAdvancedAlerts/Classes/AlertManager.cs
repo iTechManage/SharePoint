@@ -80,7 +80,7 @@ namespace CCSAdvancedAlerts
             {
                 if (alertList != null)
                 {
-                    //TOD: write a caml query to get the alerts based eventtype
+                    //TODO: write a caml query to get the alerts based eventtype
                     StringBuilder stringBuilder = new StringBuilder();
                     stringBuilder.Append("<Where>");
                     stringBuilder.AppendFormat(
@@ -101,11 +101,17 @@ namespace CCSAdvancedAlerts
                                     "<Value Type=\"Choice\">{5}</Value>"+
                                "</Contains>"+
                             "</And>"+
-                            "<Eq>"+
-                                "<FieldRef Name=\"{6}\"/>"+
-                                "<Value Type=\"Text\">{7}</Value>"+
-                            "</Eq>"+ 
-                        "</And>", new object[] { "WebID", listItem.ParentList.ParentWeb.ID, "ListID", listItem.ParentList.ID, "EventType", eventType, "ItemID", "0" });
+                            "<Or>" +
+                                "<Eq>" +
+                                    "<FieldRef Name=\"{6}\"/>" +
+                                    "<Value Type=\"Text\">0</Value>" +
+                                "</Eq>" +
+                                "<Eq>" +
+                                    "<FieldRef Name=\"{6}\"/>" +
+                                    "<Value Type=\"Text\">{7}</Value>" +
+                                "</Eq>" +
+                            "</Or>" +
+                        "</And>", new object[] { "WebID", listItem.ParentList.ParentWeb.ID, "ListID", listItem.ParentList.ID, "EventType", eventType, "ItemID", listItem.ID });
                     stringBuilder.Append("</Where>");
 
                     SPQuery query = new SPQuery();
@@ -164,6 +170,7 @@ namespace CCSAdvancedAlerts
                 listItem["Title"] = alert.Title;
                 listItem[ListAndFieldNames.settingsListWebIdFieldName] = alert.WebId;
                 listItem[ListAndFieldNames.settingsListListIdFieldName] = alert.ListId;
+                listItem[ListAndFieldNames.settingsListItemIdFieldName] = alert.ItemID;
                 
                 //Event Type Registered
                 foreach(AlertEventType aType in   alert.AlertType )
