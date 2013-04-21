@@ -305,6 +305,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             try
             {
                 //Edit the existing alert
+                this.btnUpdateAlert.Visible = true;
                 int alertID = Convert.ToInt32(this.gvAlerts.DataKeys[this.gvAlerts.SelectedIndex][0]);
                 this.FillAlert(Convert.ToString(alertID));
             }
@@ -987,12 +988,6 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                 alert.WebId = ddlSite.SelectedValue;
                 alert.ListId = ddlList.SelectedValue;
 
-                // TODO
-                string strItemId = Request.QueryString["ID"];
-                if (string.IsNullOrEmpty(strItemId)) {
-                    strItemId = "0";
-                }
-                alert.ItemID = strItemId;
 
                 //Get Recipient Section
                 alert.ToAddress = txtTo.Text;
@@ -1193,7 +1188,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
         {
             try
             {
-
+               
                 AddUpdateTemplate("0");
             }
             catch { }
@@ -1214,7 +1209,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             try
             {
                 SPList mailTemplateList = SPContext.Current.Site.RootWeb.Lists.TryGetList(ListAndFieldNames.MTListName);
-
+             
                 if (mailTemplateList != null)
                 {
                     SPListItem listItem = null;
@@ -1222,7 +1217,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                     {
                         listItem = mailTemplateList.GetItemById(Convert.ToInt32(templateID));
                     }
-                    if(listItem==null)
+                    if (listItem == null)
                     {
                         listItem = mailTemplateList.AddItem();
                     }
@@ -1451,23 +1446,28 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
 
                 ddlUsersInColumn.Items.Clear();
                 ddlDateColumn.Items.Clear();
+                lstPlaceHolders.Items.Clear();
                 if (this.list != null)
                 {
                     foreach (SPField field in this.list.Fields)
                     {
-                        if (field.Type == SPFieldType.User)
+                        ListItem fields = new ListItem(field.Title);
+                        if (!this.lstPlaceHolders.Items.Contains(fields) && field != null && !field.Hidden)
                         {
-                            ListItem lItem = new ListItem(field.Title, field.InternalName);
-                            ddlUsersInColumn.Items.Add(field.Title);
-                        }
+                            if (field.Type == SPFieldType.User)
+                            {
+                                ListItem lItem = new ListItem(field.Title, field.InternalName);
+                                ddlUsersInColumn.Items.Add(field.Title);
+                            }
 
-                        if (field.Type == SPFieldType.DateTime)
-                        {
-                            ListItem lItem = new ListItem(field.Title, field.InternalName);
-                            ddlDateColumn.Items.Add(lItem);
-                        }
+                            if (field.Type == SPFieldType.DateTime)
+                            {
+                                ListItem lItem = new ListItem(field.Title, field.InternalName);
+                                ddlDateColumn.Items.Add(lItem);
+                            }
 
-                        lstPlaceHolders.Items.Add(field.Title);
+                            lstPlaceHolders.Items.Add(field.Title);
+                        }
                     }
 
                     this.Conditions = null;

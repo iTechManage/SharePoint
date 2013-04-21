@@ -687,7 +687,7 @@
         </tr>
         <tr>
             <td align="center" valign="middle">
-                <asp:Button ID="btnUpdateAlert" runat="server" Text="Update Alert" Width="100%" CssClass="ms-ButtonHeightWidth" />
+                <asp:Button ID="btnUpdateAlert" runat="server" Text="Update Alert" Width="100%" CssClass="ms-ButtonHeightWidth" Visible=false />
             </td>
         </tr>
         <tr>
