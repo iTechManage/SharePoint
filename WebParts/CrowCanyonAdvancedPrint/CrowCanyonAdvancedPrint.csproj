@@ -1,0 +1,146 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F9A83C60-3ECD-42C2-BBD3-D980243F5D5A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CrowCanyonAdvancedPrint</RootNamespace>
+    <AssemblyName>CrowCanyonAdvancedPrint</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{BB1F664B-9266-4fd6-B973-E1E44974B511};{14822709-B5A1-4724-98CA-57A101D1B079};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <SandboxedSolution>False</SandboxedSolution>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>key.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="itextsharp, Version=5.1.2.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Microsoft.SharePoint" />
+    <Reference Include="Microsoft.SharePoint.Security" />
+    <Reference Include="wnvhtmlconvert, Version=7.0.0.0, Culture=neutral, PublicKeyToken=5b5f377bc08a4d32, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\wnvhtmlconvert.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Classes\CCSTemplate.cs" />
+    <Compile Include="Classes\Constants.cs" />
+    <Compile Include="Classes\Field.cs" />
+    <Compile Include="Classes\Helper.cs" />
+    <Compile Include="Classes\XMLHelper.cs" />
+    <Compile Include="Layouts\CrowCanyon.AdvancedPrint\PrintPage.aspx.cs">
+      <DependentUpon>PrintPage.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Layouts\CrowCanyon.AdvancedPrint\PrintPage.aspx.designer.cs">
+      <DependentUpon>PrintPage.aspx.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Layouts\CrowCanyon.AdvancedPrint\PrintSettingsPage.aspx.cs">
+      <DependentUpon>PrintSettingsPage.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Layouts\CrowCanyon.AdvancedPrint\PrintSettingsPage.aspx.designer.cs">
+      <DependentUpon>PrintSettingsPage.aspx.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Layouts\CrowCanyon.AdvancedPrint\PrintView.aspx.cs">
+      <DependentUpon>PrintView.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Layouts\CrowCanyon.AdvancedPrint\PrintView.aspx.designer.cs">
+      <DependentUpon>PrintView.aspx.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Layouts\CrowCanyon.AdvancedPrint\ViewPrint.aspx.cs">
+      <DependentUpon>ViewPrint.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Layouts\CrowCanyon.AdvancedPrint\ViewPrint.aspx.designer.cs">
+      <DependentUpon>ViewPrint.aspx.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="AdvancedPrintButton\SharePointProjectItem.spdata">
+      <SharePointProjectItemId>{e7e42388-e490-4824-86fc-30eb1911538d}</SharePointProjectItemId>
+    </None>
+    <None Include="Features\CrowCanyon Advanced Print\CrowCanyon Advanced Print.feature">
+      <FeatureId>{a89bfeef-9caf-4a2b-b24b-23d183119b87}</FeatureId>
+    </None>
+    <None Include="Images\SharePointProjectItem.spdata">
+      <SharePointProjectItemId>{b93acd82-28ef-4e60-9894-fd39b4d48aa0}</SharePointProjectItemId>
+    </None>
+    <None Include="key.snk" />
+    <None Include="Layouts\SharePointProjectItem.spdata">
+      <SharePointProjectItemId>{51a960b2-f437-4127-bea6-639b85467417}</SharePointProjectItemId>
+    </None>
+    <None Include="Package\Package.package">
+      <PackageId>{212e3a97-05ff-451f-bdcf-444b138941a7}</PackageId>
+    </None>
+    <None Include="Package\Package.Template.xml">
+      <DependentUpon>Package.package</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="AdvancedPrintButton\Elements.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Features\CrowCanyon Advanced Print\CrowCanyon Advanced Print.Template.xml">
+      <DependentUpon>CrowCanyon Advanced Print.feature</DependentUpon>
+    </Content>
+    <Content Include="Images\CrowCanyon.AdvancedPrint\crowcanyonlogo.png" />
+    <Content Include="Images\CrowCanyon.AdvancedPrint\pdf.png" />
+    <Content Include="Images\CrowCanyon.AdvancedPrint\printer.png" />
+    <Content Include="Images\CrowCanyon.AdvancedPrint\printer1.png" />
+    <Content Include="Images\CrowCanyon.AdvancedPrint\printer2.png" />
+    <Content Include="Layouts\CrowCanyon.AdvancedPrint\PrintPage.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Layouts\CrowCanyon.AdvancedPrint\PrintSettingsPage.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Layouts\CrowCanyon.AdvancedPrint\PrintView.aspx" />
+    <Content Include="Layouts\CrowCanyon.AdvancedPrint\ViewPrint.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\SharePointTools\Microsoft.VisualStudio.SharePoint.targets" />
+</Project>

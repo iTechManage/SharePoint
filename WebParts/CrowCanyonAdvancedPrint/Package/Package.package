@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="212e3a97-05ff-451f-bdcf-444b138941a7" solutionId="212e3a97-05ff-451f-bdcf-444b138941a7" resetWebServer="false" name="CrowCanyonAdvancedPrint" xmlns="http://schemas.microsoft.com/VisualStudio/2008/SharePointTools/PackageModel">
+  <features>
+    <featureReference itemId="a89bfeef-9caf-4a2b-b24b-23d183119b87" />
+  </features>
+  <projectItems>
+    <projectItemReference itemId="51a960b2-f437-4127-bea6-639b85467417" />
+    <projectItemReference itemId="b93acd82-28ef-4e60-9894-fd39b4d48aa0" />
+  </projectItems>
+</package>

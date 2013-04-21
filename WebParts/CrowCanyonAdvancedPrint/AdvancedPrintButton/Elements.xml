@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Elements xmlns="http://schemas.microsoft.com/sharepoint/">
+  <CustomAction
+          Id="CrowCanyon.AdvancedPrint.PrintSettingsPage"
+          GroupId="Permissions"
+          Location="Microsoft.SharePoint.ListEdit"
+          RequireSiteAdministrator="FALSE"
+          Sequence="100"
+          Title="Crow Canyon Print Settings">
+    <UrlAction Url="javascript:window.location= '{SiteUrl}/_layouts/CrowCanyon.AdvancedPrint/PrintSettingsPage.aspx?List={ListId}&amp;Source=' + window.location"/>
+  </CustomAction>
+  <CustomAction
+      Id="CrowCanyon.AdvancedPrint.Print"
+      Location="CommandUI.Ribbon"
+      Sequence="1001"
+      RegistrationId="0x01"
+      RegistrationType="ContentType">
+    <CommandUIExtension>
+      <CommandUIDefinitions>
+        <CommandUIDefinition Location="Ribbon.ListForm.Display.Actions.Controls._children">
+          <Button Id="Ribbon.ListForm.Display.Actions.PrintPage"
+                  CommandType="General"
+                  Image16by16="/_layouts/images/CrowCanyon.AdvancedPrint/printer1.png"
+                  Image32by32="/_layouts/images/CrowCanyon.AdvancedPrint/printer2.png"
+                  LabelText="Print"
+                  Sequence="1"
+                  ToolTipTitle="Print"
+                  ToolTipDescription="Click to Print1"
+                  TemplateAlias="o2"
+                  Command="Print"/>
+        </CommandUIDefinition>
+        <CommandUIDefinition Location="Ribbon.ListItem.Share.Controls._children">
+          <Button
+          Id="Ribbon.ListItem.Share.CCSPrintPage"
+          ToolTipTitle="Print"
+          ToolTipDescription="Click to Print."
+          Sequence="5"
+          Command="EditMultipleItems"
+          Image16by16="/_layouts/images/CrowCanyon.AdvancedPrint/printer1.png"
+          Image32by32="/_layouts/images/CrowCanyon.AdvancedPrint/printer2.png"
+          LabelText="Print"
+          TemplateAlias="o1" />
+        </CommandUIDefinition>
+        <CommandUIDefinition Location="Ribbon.List.Share.Controls._children">
+          <Button
+          Id="Ribbon.List.Share.CCSPrintPages"
+          ToolTipTitle="Print"
+          ToolTipDescription="Click to Print."
+          Sequence="5"
+          Command="ViewPrint"
+          Image16by16="/_layouts/images/CrowCanyon.AdvancedPrint/printer1.png"
+          Image32by32="/_layouts/images/CrowCanyon.AdvancedPrint/printer2.png"
+          LabelText="Print"
+          TemplateAlias="o1" />
+        </CommandUIDefinition>
+      </CommandUIDefinitions>
+      <CommandUIHandlers>
+        <CommandUIHandler
+          Command="Print"
+          CommandAction="~site/_layouts/CrowCanyon.AdvancedPrint/PrintView.aspx?List={ListId}&amp;ID={ItemId}"
+         />
+        <CommandUIHandler
+          Command="PrintAction"
+          CommandAction="javascript:function openDialog(){var options = {url: ctx.HttpRoot + '/_layouts/CrowCanyon.AdvancedPrint/PrintPage.aspx?List={ListId}&amp;ID=' + SP.ListOperation.Selection.getSelectedItems()[0].id+'&amp;Type=RibbonButton&amp;SiteUrl={SiteUrl}', 
+                          title:'Print',allowMaximize: true,showClose: true,width:550};
+                          SP.UI.ModalDialog.commonModalDialogOpen(options.url, options, null, null);};
+                          openDialog();"
+        EnabledScript="javascript:function checkIsEnabled(){
+              var selectedItems = SP.ListOperation.Selection.getSelectedItems();
+              var count = CountDictionary(selectedItems);return (count> 0);};checkIsEnabled();"/>
+        <CommandUIHandler
+          Command="EditMultipleItems"
+          CommandAction="javascript:function demoCallback(dialogResult, returnValue){SP.UI.Notify.addNotification('Operation Successful!');}
+              var currentCtx = SP.ClientContext.get_current();var items = SP.ListOperation.Selection.getSelectedItems(currentCtx);var myItems = '';var k;
+              for (k in items){myItems += '|' + items[k].id;}
+              var options = {              
+                url: ctx.HttpRoot + '/_layouts/CrowCanyon.AdvancedPrint/PrintPage.aspx?items=' + myItems + '&amp;source=' + SP.ListOperation.Selection.getSelectedList()+'&amp;SiteUrl={SiteUrl}&amp;ID=' + SP.ListOperation.Selection.getSelectedItems()[0].id+'&amp;Type=RibbonButton',
+                title: 'Print Items',
+                allowMaximize: true,
+                showClose: true,
+                width: 800,
+                height: 600,
+                dialogReturnValueCallback: demoCallback };
+              SP.UI.ModalDialog.commonModalDialogOpen(options.url, options, demoCallback, null);"
+        EnabledScript="javascript:function checkIsEnabled(){
+              var selectedItems = SP.ListOperation.Selection.getSelectedItems();
+              var count = CountDictionary(selectedItems);return (count > 0);};checkIsEnabled();"/>
+        <CommandUIHandler Command="ViewPrint"
+                        CommandAction="javascript:function openDialog() {var options = {url: ctx.HttpRoot + '/_layouts/CrowCanyon.AdvancedPrint/ViewPrint.aspx?List={ListId}', width:800,height: 565,title:'CrowCanyon Advanced Print Pro'};SP.UI.ModalDialog.commonModalDialogOpen(options.url, options, null, null);};openDialog();"/>
+      </CommandUIHandlers>
+        
+    </CommandUIExtension>
+  </CustomAction>
+  <CustomAction
+    Id="CrowCanyon.AdvancedPrint.PrintPage"
+    Location="EditControlBlock"
+    Sequence="1001"
+    Title="Print"
+    ImageUrl="/_layouts/images/CrowCanyon.AdvancedPrint/printer1.png"
+    RegistrationType="ContentType"
+    RegistrationId="0x01">
+    <UrlAction Url="javascript:function openDialog(){var options = {url: ctx.HttpRoot + '/_layouts/CrowCanyon.AdvancedPrint/PrintView.aspx?List={ListId}&amp;ID={ItemId}&amp;Type=EditControlBlockButton&amp;SiteUrl={SiteUrl}', title:'Print',allowMaximize: true,showClose: true,width:550};SP.UI.ModalDialog.commonModalDialogOpen(options.url, options, null, null);};openDialog();"/>
+  </CustomAction>
+</Elements>
