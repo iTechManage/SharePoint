@@ -112,16 +112,16 @@ namespace CCSAdvancedAlerts
                     }
                 }
 
-                return MatchItemValueBasedOnOperatorAndValueType(fieldValue, field.FieldValueType, eventType, item);
+                return MatchItemValueBasedOnOperatorAndValueType(fieldValue, field.FieldValueType, eventType,item.ParentList.ParentWeb);
             }
 
             return false;
         }
 
-        public bool MatchItemValueBasedOnOperatorAndValueType(object fieldValue, Type fieldValueType, AlertEventType eventType, SPListItem item)
+        public bool MatchItemValueBasedOnOperatorAndValueType(object fieldValue, Type fieldValueType, AlertEventType eventType, SPWeb web)
         {
-            SPWeb web = item.ParentList.ParentWeb;
-            string strComputedValue = GetConditionComputedValue(item);
+            //SPWeb web = item.ParentList.ParentWeb;
+            //string strComputedValue = GetConditionComputedValue(item);
 
             if (fieldValue != null && !string.IsNullOrEmpty(fieldValue.ToString()))
             {
@@ -129,7 +129,7 @@ namespace CCSAdvancedAlerts
                 {
                     SPFieldUrlValue fieldUrlValue = new SPFieldUrlValue(fieldValue.ToString());
                     bool isDescMatched = CompareValuesBasedOnOperator(fieldUrlValue.Description, this.comparisionOperator, this.strValue);
-                    bool isUrlMatched = CompareValuesBasedOnOperator(fieldUrlValue.Url, this.comparisionOperator, strComputedValue);
+                    bool isUrlMatched = CompareValuesBasedOnOperator(fieldUrlValue.Url, this.comparisionOperator, strValue);
 
                     return isDescMatched || isUrlMatched;
                 }
@@ -141,8 +141,8 @@ namespace CCSAdvancedAlerts
                     string userLoginName = fieldUserValue.User.LoginName;
                     string userDispalyName = fieldUserValue.User.Name;
 
-                    bool isLoginMatched = CompareValuesBasedOnOperator(userLoginName, this.comparisionOperator, strComputedValue);
-                    bool isDisplayNameMatched = CompareValuesBasedOnOperator(userLoginName, this.comparisionOperator, strComputedValue);
+                    bool isLoginMatched = CompareValuesBasedOnOperator(userLoginName, this.comparisionOperator, strValue);
+                    bool isDisplayNameMatched = CompareValuesBasedOnOperator(userLoginName, this.comparisionOperator, strValue);
 
                     return isLoginMatched || isDisplayNameMatched;
 
@@ -166,8 +166,8 @@ namespace CCSAdvancedAlerts
                     userLoginNames = userLoginNames.TrimEnd(ValueCollectionSeperator.ToCharArray());
                     userDispalyNames = userDispalyNames.TrimEnd(ValueCollectionSeperator.ToCharArray());
 
-                    bool isLoginMatched = CompareValuesBasedOnOperator(userLoginNames, this.comparisionOperator, strComputedValue);
-                    bool isDisplayNameMatched = CompareValuesBasedOnOperator(userLoginNames, this.comparisionOperator, strComputedValue);
+                    bool isLoginMatched = CompareValuesBasedOnOperator(userLoginNames, this.comparisionOperator, strValue);
+                    bool isDisplayNameMatched = CompareValuesBasedOnOperator(userLoginNames, this.comparisionOperator, strValue);
 
                     return isLoginMatched || isDisplayNameMatched;
 
@@ -179,7 +179,7 @@ namespace CCSAdvancedAlerts
                     SPFieldLookupValue fieldLookupValue = new SPFieldLookupValue(fieldValue.ToString());
 
                     string strFieldValue = fieldLookupValue.LookupValue;
-                    return CompareValuesBasedOnOperator(strFieldValue, this.comparisionOperator, strComputedValue);
+                    return CompareValuesBasedOnOperator(strFieldValue, this.comparisionOperator, strValue);
                 }
                 else if (fieldValueType == (typeof(SPFieldLookupValueCollection)))
                 {
@@ -192,13 +192,13 @@ namespace CCSAdvancedAlerts
                     }
 
                     strFieldValue = strFieldValue.TrimEnd(ValueCollectionSeperator.ToCharArray());
-                    return CompareValuesBasedOnOperator(strFieldValue, this.comparisionOperator, strComputedValue);
+                    return CompareValuesBasedOnOperator(strFieldValue, this.comparisionOperator, strValue);
                 }
                 else if (fieldValueType == (typeof(DateTime)))
                 {
                     DateTime sourceDT = DateTime.Parse(fieldValue.ToString());
                     DateTime targetDT = new DateTime();
-                    if (DateTime.TryParse(strComputedValue, out targetDT))
+                    if (DateTime.TryParse(strValue, out targetDT))
                     {
                         switch (this.comparisionOperator)
                         {
@@ -230,7 +230,7 @@ namespace CCSAdvancedAlerts
                 {
                     int sourceInt = int.Parse(fieldValue.ToString());
                     int targetInt;
-                    if (Int32.TryParse(strComputedValue, out targetInt))
+                    if (Int32.TryParse(strValue, out targetInt))
                     {
                         switch (this.comparisionOperator)
                         {
@@ -261,11 +261,11 @@ namespace CCSAdvancedAlerts
                     bool sourceBool = Boolean.Parse(fieldValue.ToString());
                     bool targetBool = false;
 
-                    if (strComputedValue.Equals("True", StringComparison.InvariantCultureIgnoreCase) || strComputedValue.Equals("Yes", StringComparison.InvariantCultureIgnoreCase))
+                    if (strValue.Equals("True", StringComparison.InvariantCultureIgnoreCase) || strValue.Equals("Yes", StringComparison.InvariantCultureIgnoreCase))
                     {
                         targetBool = true;
                     }
-                    else if (strComputedValue.Equals("False", StringComparison.InvariantCultureIgnoreCase) || strComputedValue.Equals("No", StringComparison.InvariantCultureIgnoreCase))
+                    else if (strValue.Equals("False", StringComparison.InvariantCultureIgnoreCase) || strValue.Equals("No", StringComparison.InvariantCultureIgnoreCase))
                     {
                         targetBool = false;
                     }
@@ -292,7 +292,7 @@ namespace CCSAdvancedAlerts
                 else // default matching will be performed with string type
                 {
                     string strFieldValue = fieldValue.ToString();
-                    return CompareValuesBasedOnOperator(strFieldValue, this.comparisionOperator, strComputedValue);
+                    return CompareValuesBasedOnOperator(strFieldValue, this.comparisionOperator, strValue);
                 }
             }
             else

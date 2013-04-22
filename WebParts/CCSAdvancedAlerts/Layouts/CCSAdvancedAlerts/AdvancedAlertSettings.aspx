@@ -625,8 +625,8 @@
                                         <asp:Literal ID="Literal13" runat="server" Text="Mail Body:"></asp:Literal>
                                     </td>
                                     <td>
-                                        <SharePoint:InputFormTextBox ID="txtBody" runat="server" TextMode="MultiLine" RichTextMode="FullHtml"
-                                            RichText="true" Rows="10" Width="100%" />
+                                    <SharePoint:InputFormTextBox ID="txtBody" runat="server" TextMode="MultiLine"
+                                             RichTextMode="FullHtml" RichText="true" Rows="10" Width="100%" Visible="true" />
                                     </td>
                                     <td>
                                     </td>
@@ -687,7 +687,7 @@
         </tr>
         <tr>
             <td align="center" valign="middle">
-                <asp:Button ID="btnUpdateAlert" runat="server" Text="Update Alert" Width="100%" CssClass="ms-ButtonHeightWidth" Visible=false />
+                <asp:Button ID="btnUpdateAlert" runat="server" Text="Update Alert" Width="100%" CssClass="ms-ButtonHeightWidth" Visible="false" />
             </td>
         </tr>
         <tr>

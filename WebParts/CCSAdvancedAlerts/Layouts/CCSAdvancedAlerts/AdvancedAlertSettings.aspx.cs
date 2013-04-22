@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Web.UI;
 using System.Xml;
 using System.Globalization;
+using System.Linq.Expressions;
 
 namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
 {
@@ -203,9 +204,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
 
             this.btnUpdateAlert.Click += new EventHandler(btnUpdateAlert_Click);
             this.btnTemplateUpdate.Click +=new EventHandler(btnTemplateUpdate_Click);
-
         }
-
         #region OnStartUp
 
         void populateStaticDropDowns()
@@ -304,17 +303,15 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
         {
             try
             {
+
                 //Edit the existing alert
                 this.btnUpdateAlert.Visible = true;
                 int alertID = Convert.ToInt32(this.gvAlerts.DataKeys[this.gvAlerts.SelectedIndex][0]);
                 this.FillAlert(Convert.ToString(alertID));
+               
             }
             catch { }
         }
-
-      
-
-
 
         #endregion
 
@@ -540,6 +537,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                         this.AddUpdateCondition(ddlField, ddlWhen, ddlOperator, txtValue, -1);
                     }
                 }
+               
             }
             catch (Exception exception)
             {
@@ -819,13 +817,16 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             {
                 PrepareAlert("0");
                 this.gvAlerts.DataBind();
+                btnOK_Click(sender, e);
             }
             catch { }
         }
 
         void btnUpdateAlert_Click(object sender, EventArgs e)
         {
+            this.btnUpdateAlert.Visible = false;
             PrepareAlert(this.hiddenAlertID.Text);
+            btnOK_Click(sender, e);
         }
 
         protected void FillAlert(string alertID)
@@ -987,7 +988,13 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                 alert.Title = txtTitle.Text;
                 alert.WebId = ddlSite.SelectedValue;
                 alert.ListId = ddlList.SelectedValue;
-
+                // TODO
+                string strItemId = Request.QueryString["ID"];
+                if (string.IsNullOrEmpty(strItemId))
+                {
+                    strItemId = "0";
+                }
+                alert.ItemID = strItemId;
 
                 //Get Recipient Section
                 alert.ToAddress = txtTo.Text;
@@ -1071,41 +1078,40 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                         alert.DailyBusinessDays.Add(WeekDays.sat);
                     }
                 }
-
+               
                 //alert.ImmediateBusinessDays = DesrializeDays(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.ImmediateBusinessDays).InnerText);
                 alert.ImmediateBusinessDays = new List<WeekDays>();
                 if (alert.SendType == SendType.Immediate)
                 {
-                    if (chkImmediateSun.Checked)
-                    {
-                        alert.ImmediateBusinessDays.Add(WeekDays.sun);
-                    }
-                    if (chkImmediateMon.Checked)
-                    {
-                        alert.ImmediateBusinessDays.Add(WeekDays.mon);
-                    }
-                    if (chkImmediateThu.Checked)
-                    {
-                        alert.ImmediateBusinessDays.Add(WeekDays.tue);
-                    }
-                    if (chkImmediateWed.Checked)
-                    {
-                        alert.ImmediateBusinessDays.Add(WeekDays.wed);
-                    }
-                    if (chkImmediateThu.Checked)
-                    {
-                        alert.ImmediateBusinessDays.Add(WeekDays.thu);
-                    }
-                    if (chkImmediateFri.Checked)
-                    {
-                        alert.ImmediateBusinessDays.Add(WeekDays.fri);
-                    }
-                    if (chkImmediateSat.Checked)
-                    {
-                        alert.ImmediateBusinessDays.Add(WeekDays.sat);
-                    }
+                        if (chkImmediateSun.Checked)
+                        {
+                            alert.ImmediateBusinessDays.Add(WeekDays.sun);
+                        }
+                        if (chkImmediateMon.Checked)
+                        {
+                            alert.ImmediateBusinessDays.Add(WeekDays.mon);
+                        }
+                        if (chkImmediateThu.Checked)
+                        {
+                            alert.ImmediateBusinessDays.Add(WeekDays.tue);
+                        }
+                        if (chkImmediateWed.Checked)
+                        {
+                            alert.ImmediateBusinessDays.Add(WeekDays.wed);
+                        }
+                        if (chkImmediateThu.Checked)
+                        {
+                            alert.ImmediateBusinessDays.Add(WeekDays.thu);
+                        }
+                        if (chkImmediateFri.Checked)
+                        {
+                            alert.ImmediateBusinessDays.Add(WeekDays.fri);
+                        }
+                        if (chkImmediateSat.Checked)
+                        {
+                            alert.ImmediateBusinessDays.Add(WeekDays.sat);
+                        }
                 }
-
                 //TODO
                 alert.CombineAlerts = true;
                 alert.SummaryMode = true;
@@ -1190,6 +1196,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             {
                
                 AddUpdateTemplate("0");
+                this.ClearItems();
             }
             catch { }
         }
@@ -1199,48 +1206,64 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             try
             {
                 AddUpdateTemplate(this.hiddenTemplateID.Text);
+                this.ClearItems();
             }
             catch { }
 
+        }
+        void ClearItems()
+        {
+            txtMailTemplateName.Text = string.Empty;
+            txtMailSubject.Text = string.Empty;
+            txtBody.Text = string.Empty;
+            chkIncludeUpdatedColumns.Checked = false;
+            chkHighlightUpdatedColumns.Checked = false;
+            chkInsertAttachments.Checked = false;
         }
 
         void AddUpdateTemplate(string templateID)
         {
+          
             try
             {
-                SPList mailTemplateList = SPContext.Current.Site.RootWeb.Lists.TryGetList(ListAndFieldNames.MTListName);
-             
-                if (mailTemplateList != null)
+                if (txtMailTemplateName.Text != "")
                 {
-                    SPListItem listItem = null;
-                    if (templateID != "0")
+                    SPList mailTemplateList = SPContext.Current.Site.RootWeb.Lists.TryGetList(ListAndFieldNames.MTListName);
+
+                    if (mailTemplateList != null)
                     {
-                        listItem = mailTemplateList.GetItemById(Convert.ToInt32(templateID));
+                        SPListItem listItem = null;
+                        if (templateID != "0")
+                        {
+                            listItem = mailTemplateList.GetItemById(Convert.ToInt32(templateID));
+                        }
+                        if (listItem == null)
+                        {
+                            listItem = mailTemplateList.AddItem();
+                        }
+
+                        listItem["Title"] = txtMailTemplateName.Text;
+                        listItem[ListAndFieldNames.MTListMailSubjectFieldName] = txtMailSubject.Text;
+                        listItem[ListAndFieldNames.MTListMailBodyFieldName] = txtBody.Text;
+                        listItem[ListAndFieldNames.MTListInsertUpdatedFieldsFieldName] = chkIncludeUpdatedColumns.Checked;
+                        listItem[ListAndFieldNames.MTListInsertAttachmentsFieldName] = chkInsertAttachments.Checked;
+                        listItem[ListAndFieldNames.MTListHighLightUpdatedFieldsFieldName] = chkHighlightUpdatedColumns.Checked;
+                        listItem[ListAndFieldNames.MTListOwnerFieldName] = SPContext.Current.Web.CurrentUser;
+
+
+                        listItem.Update();
+                        PopulateTemplates();
                     }
-                    if (listItem == null)
-                    {
-                        listItem = mailTemplateList.AddItem();
-                    }
-
-                    listItem["Title"] = txtMailTemplateName.Text;
-                    listItem[ListAndFieldNames.MTListMailSubjectFieldName] = txtMailSubject.Text;
-                    listItem[ListAndFieldNames.MTListMailBodyFieldName] = txtBody.Text;
-                    listItem[ListAndFieldNames.MTListInsertUpdatedFieldsFieldName] = chkIncludeUpdatedColumns.Checked;
-                    listItem[ListAndFieldNames.MTListInsertAttachmentsFieldName] = chkInsertAttachments.Checked;
-                    listItem[ListAndFieldNames.MTListHighLightUpdatedFieldsFieldName] = chkHighlightUpdatedColumns.Checked;
-                    listItem[ListAndFieldNames.MTListOwnerFieldName] = SPContext.Current.Web.CurrentUser;
-
-
-                    listItem.Update();
-                    PopulateTemplates();
                 }
             }
-            catch { }
+            catch(Exception ex) {
+              
+            }
         }
 
         void btnTemplateCancel_Click(object sender, EventArgs e)
         {
-
+            this.ClearItems();
         }
 
         void CreateMailTemplateUsageObjects(int alertID)

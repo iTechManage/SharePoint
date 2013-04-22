@@ -84,34 +84,28 @@ namespace CCSAdvancedAlerts
                     StringBuilder stringBuilder = new StringBuilder();
                     stringBuilder.Append("<Where>");
                     stringBuilder.AppendFormat(
-                        "<And>"+
-                            "<And>"+
-                                "<And>"+
-                                    "<Eq>"+
-                                        "<FieldRef Name=\"{0}\"/>"+
-                                        "<Value Type=\"Text\">{1}</Value>"+
-                                   "</Eq>"+
-                                   "<Eq>"+
-                                        "<FieldRef Name=\"{2}\"/>"+
-                                        "<Value Type=\"Text\">{3}</Value>"+
-                                   "</Eq>"+
-                                "</And>"+
-                                "<Contains>"+
-                                    "<FieldRef Name=\"{4}\"/>"+
-                                    "<Value Type=\"Choice\">{5}</Value>"+
-                               "</Contains>"+
-                            "</And>"+
-                            "<Or>" +
-                                "<Eq>" +
-                                    "<FieldRef Name=\"{6}\"/>" +
-                                    "<Value Type=\"Text\">0</Value>" +
-                                "</Eq>" +
-                                "<Eq>" +
-                                    "<FieldRef Name=\"{6}\"/>" +
-                                    "<Value Type=\"Text\">{7}</Value>" +
-                                "</Eq>" +
-                            "</Or>" +
-                        "</And>", new object[] { "WebID", listItem.ParentList.ParentWeb.ID, "ListID", listItem.ParentList.ID, "EventType", eventType, "ItemID", listItem.ID });
+                       "<And>" +
+                            "<And>" +
+                                "<And>" +
+                                    "<Eq>" +
+                                        "<FieldRef Name=\"{0}\"/>" +
+                                        "<Value Type=\"Text\">{1}</Value>" +
+                                   "</Eq>" +
+                                   "<Eq>" +
+                                        "<FieldRef Name=\"{2}\"/>" +
+                                        "<Value Type=\"Text\">{3}</Value>" +
+                                   "</Eq>" +
+                                "</And>" +
+                                "<Contains>" +
+                                    "<FieldRef Name=\"{4}\"/>" +
+                                    "<Value Type=\"Choice\">{5}</Value>" +
+                               "</Contains>" +
+                            "</And>" +
+                            "<Eq>" +
+                                "<FieldRef Name=\"{6}\"/>" +
+                                "<Value Type=\"Text\">{7}</Value>" +
+                            "</Eq>" +
+                        "</And>", new object[] { "WebID", listItem.ParentList.ParentWeb.ID, "ListID", listItem.ParentList.ID, "EventType", eventType, "ItemID", "0" });
                     stringBuilder.Append("</Where>");
 
                     SPQuery query = new SPQuery();
@@ -329,10 +323,10 @@ namespace CCSAdvancedAlerts
 
                         }
 
-                        if (alert != null && !alert.ImmidiateAlways)
-                        {
-                            alert = null;
-                        }
+                        //if (alert != null && !alert.ImmidiateAlways)
+                        //{
+                        //    alert = null;
+                        //}
 
                         modifiedAlerts.Add(item.Id, alert);
                     }
