@@ -101,10 +101,16 @@ namespace CCSAdvancedAlerts
                                     "<Value Type=\"Choice\">{5}</Value>" +
                                "</Contains>" +
                             "</And>" +
+                             "<Or>" +
                             "<Eq>" +
                                 "<FieldRef Name=\"{6}\"/>" +
-                                "<Value Type=\"Text\">{7}</Value>" +
+                                "<Value Type=\"Text\">0</Value>" + 
                             "</Eq>" +
+                             "<Eq>" +
+                             "<FieldRef Name=\"{6}\"/>" +
+                             "<Value Type=\"Text\">{7}</Value>" +
+                             "</Eq>" +
+                             "</Or>" + 
                         "</And>", new object[] { "WebID", listItem.ParentList.ParentWeb.ID, "ListID", listItem.ParentList.ID, "EventType", eventType, "ItemID", "0" });
                     stringBuilder.Append("</Where>");
 
