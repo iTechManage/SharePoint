@@ -242,7 +242,7 @@ namespace CCSAdvancedAlerts
 
             string strDiplayName = string.Empty;
             string Email = string.Empty;
-            if (!string.IsNullOrEmpty(fieldName) && fieldName.IndexOf(',') != -1)
+            if (!string.IsNullOrEmpty(fieldName)) //&& fieldName.IndexOf(',') != -1
             {
                 string[] fieldNames = fieldName.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -290,7 +290,12 @@ namespace CCSAdvancedAlerts
                 foreach (Match match in re.Matches(template))
                 {
                     string placeHolder = match.Value.Replace("[", string.Empty).Replace("]", string.Empty);
-                    SPField field = listItem.Fields.TryGetFieldByStaticName(placeHolder);
+                    SPField field = null;
+                    try
+                    {
+                        field = listItem.Fields[placeHolder];
+                    }
+                    catch { }
                     if (field != null)
                     {
                         object fieldValue = listItem[placeHolder];
@@ -329,7 +334,7 @@ namespace CCSAdvancedAlerts
                     string userLoginName = fieldUserValue.User.LoginName;
                     string userDispalyName = fieldUserValue.User.Name;
 
-                    return userLoginName;
+                    return userDispalyName;
 
                 }
                 else if (fieldValueType == (typeof(SPFieldUserValueCollection)))

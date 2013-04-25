@@ -364,13 +364,14 @@
                 padding-top: 4px;" nowrap="nowrap" width="576">
                 <b>Conditions</b>
             </td>
-        </tr>
+        </tr>    
         <tr>
             <td>
                 <table>
                     <tr>
                         <td class="ms-descriptiontext">
-                            <asp:UpdatePanel ID="UpdatePanel1" runat="server">
+                            <asp:CheckBox ID="ConditionCase1" Text="Case1" runat="server" AutoPostBack="true" />
+                            <asp:UpdatePanel ID="UpdatePanel1" runat="server" Visible="false">
                                 <ContentTemplate>
                                     <SharePoint:SPGridView ID="gvConditions" runat="server" AutoGenerateColumns="false"
                                         ShowFooter="true" FooterStyle-CssClass="ms-vb2" CellPadding="1" CellSpacing="0"
@@ -482,6 +483,16 @@
                     </tr>
                 </table>
             </td>
+        </tr>
+        <tr>
+        <td class="ms-descriptiontext">
+       <asp:CheckBox ID="ConditionCase2" Text="Case2" runat="server" AutoPostBack="true" />
+        </td>
+        </tr>
+        <tr>
+        <td>
+     <textarea ID="ConditionEditor" rows="10" cols="20" style="width:80%;" runat="server" Visible="false"/>
+        </td>
         </tr>
         <tr>
             <td class="ms-linksectionheader" style="padding-right: 4px; padding-left: 4px; padding-bottom: 4px;
@@ -626,7 +637,7 @@
                                     </td>
                                     <td>
                                     <SharePoint:InputFormTextBox ID="txtBody" runat="server" TextMode="MultiLine"
-                                             RichTextMode="FullHtml" RichText="true" Rows="10" Width="100%" Visible="true" />
+                                             RichTextMode="FullHtml" RichText="true" Rows="10" Width="100%"/>
                                     </td>
                                     <td>
                                     </td>

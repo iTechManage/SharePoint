@@ -32,8 +32,35 @@ namespace CCSAdvancedAlerts.Features.CrowCanyonAdvancedAlerts
 
             try
             {
-                //Creating Hidden List1
                 SPSite site = properties.Feature.Parent as SPSite;
+                jobTitle = jobTitle + site.Url.ToString();
+                // Delete Existing Timer Job If Installed 
+                foreach (SPJobDefinition job in site.WebApplication.JobDefinitions)
+                {
+
+                    if (job.Name.Equals(jobTitle, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        job.Delete();
+                    }
+                }
+
+
+                AlertJobdefinition objArchivalJob = new AlertJobdefinition(jobTitle, site.WebApplication);
+
+                SPMinuteSchedule schedule = new SPMinuteSchedule();
+
+                if (schedule != null)
+                {
+                    schedule.BeginSecond = 0;
+                    schedule.EndSecond = 59;
+                    schedule.Interval = 30;
+
+                    objArchivalJob.Properties.Add(WebSiteURL_KeyName, site.Url);
+                    objArchivalJob.Schedule = schedule;
+                    objArchivalJob.Update();
+                }
+
+                //Creating Hidden List1
                 SPWeb web = site.OpenWeb();
                 SPListCollection lists = web.Lists;
                 lists.Add("CCSAdvancedAlertsList", "CrowCanyon Advanced Alerts List", SPListTemplateType.GenericList);
@@ -242,33 +269,6 @@ namespace CCSAdvancedAlerts.Features.CrowCanyonAdvancedAlerts
                 view4.Update();
                 newList4.Hidden = true;
                 newList4.Update();
-
-                jobTitle = jobTitle + site.Url.ToString();
-                // Delete Existing Timer Job If Installed 
-                foreach (SPJobDefinition job in site.WebApplication.JobDefinitions)
-                {
-
-                    if (job.Name.Equals(jobTitle, StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        job.Delete();
-                    }
-                }
-
-
-                AlertJobdefinition objArchivalJob = new AlertJobdefinition(jobTitle, site.WebApplication);
-
-                SPMinuteSchedule schedule = new SPMinuteSchedule();
-
-                if (schedule != null)
-                {
-                    schedule.BeginSecond = 0;
-                    schedule.EndSecond = 59;
-                    schedule.Interval = 30;
-
-                    objArchivalJob.Properties.Add(WebSiteURL_KeyName, site.Url);
-                    objArchivalJob.Schedule = schedule;
-                    objArchivalJob.Update();
-                }
             }
             catch (System.Exception Ex)
             {

@@ -205,6 +205,22 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             this.btnUpdateAlert.Click += new EventHandler(btnUpdateAlert_Click);
             this.btnTemplateUpdate.Click += new EventHandler(btnTemplateUpdate_Click);
             this.ddlUserID.SelectedIndexChanged+=new EventHandler(ddlUserID_SelectedIndexChanged);
+            this.ConditionCase1.CheckedChanged += new EventHandler(ConditionCase1_CheckedChanged);
+            this.ConditionCase2.CheckedChanged += new EventHandler(ConditionCase2_CheckedChanged);
+        }
+
+        void ConditionCase2_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdatePanel1.Visible = false;
+            ConditionCase1.Checked = false;
+            ConditionEditor.Visible = ConditionCase2.Checked;      
+        }
+
+        void ConditionCase1_CheckedChanged(object sender, EventArgs e)
+        {
+            ConditionEditor.Visible = false;
+            ConditionCase2.Checked = false;
+            UpdatePanel1.Visible = ConditionCase1.Checked;
         }
         #region OnStartUp
 
@@ -250,11 +266,11 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             if (currentUser.IsSiteAdmin)
             {
                 Dictionary<string, string> allAlerOwners = AlertMngr.GetAlertOwners();
-                foreach (string key in allAlerOwners.Values)
+                foreach (string key in allAlerOwners.Keys)
                 {
-                    if (key != currentUser.Name)
+                    if (key != currentUser.ID.ToString())
                     {
-                        this.ddlUserID.Items.Add(new ListItem(key));
+                        this.ddlUserID.Items.Add(new ListItem(allAlerOwners[key],key));
                     }
                 }
             }
@@ -1455,6 +1471,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                         {
                             SPWebCollection allWebs = site.RootWeb.GetSubwebsForCurrentUser();
                             this.ddlSite.Items.Clear();
+                            this.ddlSite.Items.Add(new ListItem(site.RootWeb.Title, site.RootWeb.ID.ToString()));
                             foreach (SPWeb web in allWebs)
                             {
                                 ListItem newWebItem = new ListItem(web.Title, web.ID.ToString());
@@ -1548,7 +1565,15 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             try
             {
                 //SPListCollection allLists = SPContext.Current.Site.AllWebs[new Guid(webid)].Lists;
-                SPListCollection allLists = SPContext.Current.Site.RootWeb.GetSubwebsForCurrentUser()[new Guid(webid)].Lists;
+                SPListCollection allLists = null;
+                if (SPContext.Current.Site.RootWeb.ID.ToString() == webid)
+                {
+                    allLists = SPContext.Current.Site.RootWeb.Lists;
+                }
+                else
+                {
+                     allLists = SPContext.Current.Site.RootWeb.GetSubwebsForCurrentUser()[new Guid(webid)].Lists;
+                }
                 this.ddlList.Items.Clear();
                 if (allLists != null)
                 {
@@ -1563,6 +1588,8 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                     }
                     ListChanged();
                 }
+
+
             }
             catch
             {
