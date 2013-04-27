@@ -706,6 +706,15 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts {
         protected global::System.Web.UI.WebControls.DropDownList ddlAlertTime;
         
         /// <summary>
+        /// ConditionCase1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox ConditionCase1;
+        
+        /// <summary>
         /// UpdatePanel1 control.
         /// </summary>
         /// <remarks>
@@ -722,6 +731,24 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::Microsoft.SharePoint.WebControls.SPGridView gvConditions;
+        
+        /// <summary>
+        /// ConditionCase2 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox ConditionCase2;
+        
+        /// <summary>
+        /// ConditionEditor control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlTextArea ConditionEditor;
         
         /// <summary>
         /// litItemAdded control.
