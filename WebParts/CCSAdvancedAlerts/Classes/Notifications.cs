@@ -24,7 +24,7 @@ namespace CCSAdvancedAlerts
 
         static string SMTPServerName;
 
-     
+
 
         public string siteCollectionURL;
 
@@ -44,16 +44,12 @@ namespace CCSAdvancedAlerts
                     }
 
                 }
-
                 MailTemplateUsageObject mtObject = alert.GetMailTemplateUsageObjectForEventType(delayedAlert.AlertType);
-
                 string toAddress = GetRecipientEmailAddresses(alert.ToAddress, item);
                 string ccAddress = GetRecipientEmailAddresses(alert.CcAddress, item);
                 string fromAddress = GetRecipientEmailAddresses(alert.FromAdderss, item);
-
                 string subject = ReplacePlaceHolders(mtObject.Template.Subject, item);
                 string body = ReplacePlaceHolders(mtObject.Template.Body, item);
-
                 string smtpSName = GetSMTPServer(item);
                 SendMail(smtpSName,
                          toAddress,
@@ -96,7 +92,6 @@ namespace CCSAdvancedAlerts
             //{
             //}
         }
-
         internal static bool SendMail(string SmtpServer, string To, string From, string CC, string Subject, string Body, List<Attachment> Attachments)
         {
             bool succes = false;
@@ -145,36 +140,87 @@ namespace CCSAdvancedAlerts
             return succes;
         }
 
-        internal bool SendMail(Alert alert, AlertEventType eventType, SPListItem item)
+        internal bool SendMail(Alert alert, AlertEventType eventType, SPListItem item, string strAfterProperties)
         {
             bool succes = true;
+            string body = string.Empty;
             try
             {
                 MailTemplateUsageObject mtObject = alert.GetMailTemplateUsageObjectForEventType(eventType);
+                List<Attachment> attachmentsToSend = null;
 
+                if (mtObject.Template.InsertAttachments)
+                {
+                    if (item.Attachments != null && item.Attachments.Count > 0)
+                    {
+                        if (attachmentsToSend == null)
+                        {
+                            attachmentsToSend = new List<Attachment>();
+                        }
+
+                        foreach (string fileName in item.Attachments)
+                        {
+                            SPFile file = item.ParentList.ParentWeb.GetFile(item.Attachments.UrlPrefix + fileName);
+                            System.Net.Mail.Attachment attachment = new System.Net.Mail.Attachment(file.OpenBinaryStream(), fileName, string.Empty);
+                            attachmentsToSend.Add(attachment);
+                        }
+                    }
+                }
                 string toAddress = GetRecipientEmailAddresses(alert.ToAddress, item);
                 string ccAddress = GetRecipientEmailAddresses(alert.CcAddress, item);
                 string fromAddress = GetRecipientEmailAddresses(alert.FromAdderss, item);
-
                 string subject = ReplacePlaceHolders(mtObject.Template.Subject, item);
-                string body = ReplacePlaceHolders(mtObject.Template.Body, item);
+                if (mtObject.Template.InsertUpdatedFields)
+                {
+                     body = ReplacePlaceHolders(mtObject.Template.Body, item) + "<br>" + "<br>" + strAfterProperties;
+                }
+                else
+                {
+                     body = ReplacePlaceHolders(mtObject.Template.Body, item);
+                }
 
                 string smtpSName = GetSMTPServer(item);
-
                 SendMail(smtpSName,
                          toAddress,
                          fromAddress,
                          ccAddress,
                          subject,
                          body,
-                         null);
+                         attachmentsToSend);
             }
             catch { succes = false; }
-
             return succes;
-
         }
 
+        internal bool SendMail(Alert alert, AlertEventType eventType, SPListItem item)
+        {
+            //bool succes = true;
+            //try
+            //{
+            //    MailTemplateUsageObject mtObject = alert.GetMailTemplateUsageObjectForEventType(eventType);
+
+            //    string toAddress = GetRecipientEmailAddresses(alert.ToAddress, item);
+            //    string ccAddress = GetRecipientEmailAddresses(alert.CcAddress, item);
+            //    string fromAddress = GetRecipientEmailAddresses(alert.FromAdderss, item);
+
+            //    string subject = ReplacePlaceHolders(mtObject.Template.Subject, item);
+            //    string body = ReplacePlaceHolders(mtObject.Template.Body, item);
+
+            //    string smtpSName = GetSMTPServer(item);
+
+            //    SendMail(smtpSName,
+            //             toAddress,
+            //             fromAddress,
+            //             ccAddress,
+            //             subject,
+            //             body,
+            //             null);
+            //}
+            //catch { succes = false; }
+
+            //return succes;
+            return SendMail(alert, eventType, item, string.Empty);
+        }
         string GetRecipientEmailAddresses(string addresses, SPListItem item)
         {
             string emailAddresses = string.Empty;
@@ -209,7 +255,7 @@ namespace CCSAdvancedAlerts
             }
             return emailAddresses;
         }
-        
+
         bool isEmailAddress(string address)
         {
             return address.Contains("@");
@@ -456,7 +502,7 @@ namespace CCSAdvancedAlerts
             }
             return emailAddressToReturn;
         }
-        
+
         static string GetSMTPServer(SPListItem lItem)
         {
             if (string.IsNullOrEmpty(SMTPServerName))
@@ -468,7 +514,7 @@ namespace CCSAdvancedAlerts
                         SMTPServerName = lItem.ParentList.ParentWeb.Site.WebApplication.OutboundMailServiceInstance.Server.Address;
                     });
                 }
-                catch 
+                catch
                 { }
             }
             return SMTPServerName;
