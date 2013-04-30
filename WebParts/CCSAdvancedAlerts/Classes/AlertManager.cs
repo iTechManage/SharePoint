@@ -301,13 +301,23 @@ namespace CCSAdvancedAlerts
             Dictionary<int, Alert> modifiedAlerts =   new Dictionary<int, Alert>();
             try
             {
-                if (since < alertList.Created)
+                if (since < alertList.Created || since < DateTime.UtcNow.AddDays(-60))
                 {
-                    since = alertList.Created;
+                    //By default, the change log retains data for 60 days. You can configure the retention period by setting the ChangeLogRetentionPeriod property.
+                    since =   alertList.Created;
+
+                    //since = DateTime.UtcNow.AddDays(-30);
                 }
+
+                //SPChangeToken startToken = new SPChangeToken(SPChangeCollection.CollectionScope.List, list.ID, DateTime.UtcNow);
+
+                //SPChangeToken endToken = new SPChangeToken(SPChangeCollection.CollectionScope.List,list.ID, new DateTime(2008, 10, 18));
+
+
+
                 SPChangeToken token = new SPChangeToken(SPChangeCollection.CollectionScope.List, this.alertList.ID, since.ToUniversalTime());
                 //Dictionary<int,Alert> modifiedAlerts = new Dictionary<int,Alert>();
-                foreach (SPChange change in this.alertList.GetChanges(token))
+                foreach (SPChange change in alertList.GetChanges(token))
                 {
                     if (!(change is SPChangeItem))
                     {
