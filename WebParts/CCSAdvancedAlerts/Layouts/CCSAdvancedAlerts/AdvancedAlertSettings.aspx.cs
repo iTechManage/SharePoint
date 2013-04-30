@@ -323,6 +323,9 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
 
                 //Edit the existing alert
                 this.btnUpdateAlert.Visible = true;
+                this.rdImmediately.Checked = false;
+                this.pnSubImmediately.Visible = false;
+                this.rdImmediateAlways.Checked = false;
                 int alertID = Convert.ToInt32(this.gvAlerts.DataKeys[this.gvAlerts.SelectedIndex][0]);
                 this.FillAlert(Convert.ToString(alertID));
 
@@ -403,8 +406,15 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             ddlField.Items.Clear();
             if (this.list == null)
             {
-                //this.list = SPContext.Current.Site.AllWebs[new Guid(this.ddlSite.SelectedValue)].Lists[new Guid(ddlList.SelectedValue)];
-                this.list = SPContext.Current.Site.RootWeb.GetSubwebsForCurrentUser()[new Guid(this.ddlSite.SelectedValue)].Lists[new Guid(ddlList.SelectedValue)];
+                if (SPContext.Current.Site.RootWeb.ID.ToString() == this.ddlSite.SelectedValue)
+                {
+                    this.list = SPContext.Current.Site.RootWeb.Lists[new Guid(ddlList.SelectedValue)];
+                }
+                else
+                {
+                    //this.list = SPContext.Current.Site.AllWebs[new Guid(this.ddlSite.SelectedValue)].Lists[new Guid(ddlList.SelectedValue)];
+                    this.list = SPContext.Current.Site.RootWeb.GetSubwebsForCurrentUser()[new Guid(this.ddlSite.SelectedValue)].Lists[new Guid(ddlList.SelectedValue)];
+                }
             }
 
             if (this.list != null)
@@ -833,15 +843,58 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
         {
             try
             {
-                PrepareAlert("0");
+                if (string.IsNullOrEmpty(txtTitle.Text))
+                {
+                    ErrorMessageLabel2.Text = "• Missing alert title";                  
+                }
+                else if (!chkItemAdded.Checked && !chkItemUpdated.Checked && !chkItemDeleted.Checked && !chkDateColumn.Checked)
+                {
+                    ErrorMessageLabel2.Text = "• You must select at least one event type to send alerts";
+                }
+                else if (string.IsNullOrEmpty(txtTo.Text))
+                {
+                    ErrorMessageLabel2.Text = "• You must specify at least one recipient";
+                }
+                else if (string.IsNullOrEmpty(txtFrom.Text))
+                {
+                    ErrorMessageLabel2.Text = "Please enter the From Address";
+                }
+                else if (ddlItemAdded.SelectedItem == null || ddlItemUpdate.SelectedItem == null || ddlItemDelete.SelectedItem == null || ddlDateTime.SelectedItem == null)
+                {
+                    ErrorMessageLabel2.Text = " Please select atleast one template for Alerts";
+                }
+                else
+                {
+                PrepareAlert("0");       
                 this.gvAlerts.DataBind();
                 btnOK_Click(sender, e);
+                }
             }
             catch { }
         }
 
         void btnUpdateAlert_Click(object sender, EventArgs e)
         {
+            if (string.IsNullOrEmpty(txtTitle.Text))
+            {
+                ErrorMessageLabel2.Text = "• Missing alert title";
+            }
+            else if (!chkItemAdded.Checked && !chkItemUpdated.Checked && !chkItemDeleted.Checked && !chkDateColumn.Checked)
+            {
+                ErrorMessageLabel2.Text = "• You must select at least one event type to send alerts";
+            }
+            else if (string.IsNullOrEmpty(txtTo.Text))
+            {
+                ErrorMessageLabel2.Text = "• You must specify at least one recipient";
+            }
+            else if (string.IsNullOrEmpty(txtFrom.Text))
+            {
+                ErrorMessageLabel2.Text = "• Please enter the From Address";
+            }
+            else if (ddlItemAdded.SelectedItem == null || ddlItemUpdate.SelectedItem == null || ddlItemDelete.SelectedItem == null || ddlDateTime.SelectedItem == null)
+            {
+                ErrorMessageLabel2.Text = "• Please select atleast one template for Alerts";
+            }
             this.btnUpdateAlert.Visible = false;
             PrepareAlert(this.hiddenAlertID.Text);
             btnOK_Click(sender, e);
@@ -892,16 +945,26 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                 if (alert.ImmidiateAlways)
                 {
                     rdImmediately.Checked = true;
-                    rdImmediateBusinessdays.Checked = !rdImmediately.Checked;
-                    pnImmediateBusinessDays.Visible = rdImmediateBusinessdays.Checked;
+                    pnSubImmediately.Visible = true;
+                    rdImmediateAlways.Checked = true;
+                    //rdImmediateBusinessdays.Checked = !rdImmediateAlways.Checked;
+                    //pnImmediateBusinessDays.Visible = rdImmediateBusinessdays.Checked;
                 }
+                else if (alert.ImmediateBusinessDays.Count > 0)
+                {
+                    rdImmediately.Checked = true;
+                    rdImmediateBusinessdays.Checked = true;
+                    pnImmediateBusinessDays.Visible = true;
+                }
+
                 else if (alert.DailyBusinessDays.Count > 0)
                 {
                     rdDaily.Checked = true;
                     pnSubDaily.Visible = rdDaily.Checked;
                 }
                 else
-                { rdWeekly.Checked = true; 
+                {
+                    rdWeekly.Checked = true;
 
                 }
 
@@ -1176,8 +1239,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
 
             }
             catch { }
-
-            return alert;
+                return alert;
         }
 
         void btnAlertcancel_Click(object sender, EventArgs e)
@@ -1215,9 +1277,20 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
         {
             try
             {
-
-                AddUpdateTemplate("0");
-                this.ClearItems();
+                if (string.IsNullOrEmpty(txtMailTemplateName.Text))
+                {
+                    ErrorMessageLabel2.Text = "• Missing Mail Template title";
+                }
+                else if (string.IsNullOrEmpty(txtMailSubject.Text))
+                {
+                    ErrorMessageLabel2.Text = "• Missing Mail Template Subject";
+                }
+                else
+                {
+                    AddUpdateTemplate("0");
+                    this.ClearItems();
+                    ErrorMessageLabel2.Text = string.Empty;
+                }
             }
             catch { }
         }
@@ -1226,8 +1299,20 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
         {
             try
             {
-                AddUpdateTemplate(this.hiddenTemplateID.Text);
-                this.ClearItems();
+                 if (string.IsNullOrEmpty(txtMailTemplateName.Text))
+                {
+                    ErrorMessageLabel2.Text = "• Missing Mail Template title";
+                }
+                 else if (string.IsNullOrEmpty(txtMailSubject.Text))
+                 {
+                     ErrorMessageLabel2.Text = "• Missing Mail Template Subject";
+                 }
+                 else
+                 {
+                     AddUpdateTemplate(this.hiddenTemplateID.Text);
+                     this.ClearItems();
+                     ErrorMessageLabel2.Text = string.Empty;
+                 }
             }
             catch { }
 
@@ -1521,7 +1606,14 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             try
             {
                 //this.list = SPContext.Current.Site.AllWebs[new Guid(this.ddlSite.SelectedValue)].Lists[new Guid(ddlList.SelectedValue)];
-                this.list = SPContext.Current.Site.RootWeb.GetSubwebsForCurrentUser()[new Guid(this.ddlSite.SelectedValue)].Lists[new Guid(ddlList.SelectedValue)];
+                if (SPContext.Current.Site.RootWeb.ID.ToString() == this.ddlSite.SelectedValue)
+                {
+                    this.list = SPContext.Current.Site.RootWeb.Lists[new Guid(ddlList.SelectedValue)];
+                }
+                else
+                {
+                    this.list = SPContext.Current.Site.RootWeb.GetSubwebsForCurrentUser()[new Guid(this.ddlSite.SelectedValue)].Lists[new Guid(ddlList.SelectedValue)];
+                }
 
                 ddlUsersInColumn.Items.Clear();
                 ddlDateColumn.Items.Clear();
@@ -1662,11 +1754,27 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
 
         void setDefaultValues()
         {
+            
             try
             {
+                string smtpServerAddress = string.Empty;
+                string curuser = string.Empty;
                 this.txtPeriodQty.Text = "30";
                 this.txtRepeatInterval.Text = "30";
                 this.txtRepeatCount.Text = "1";
+                smtpServerAddress = SPContext.Current.Site.WebApplication.OutboundMailSenderAddress;
+                if (!string.IsNullOrEmpty(smtpServerAddress))
+                {
+                    this.txtFrom.Text= smtpServerAddress;
+                }
+                curuser = SPContext.Current.Web.CurrentUser.Email;
+                if(!string.IsNullOrEmpty(curuser))
+                {
+                    this.txtTo.Text=curuser;
+                }
+                this.rdImmediately.Checked = true;
+                this.pnSubImmediately.Visible = rdImmediately.Checked;
+                this.rdImmediateAlways.Checked = true;
             }
             catch { }
         }

@@ -691,6 +691,11 @@
                 </table>
             </td>
         </tr>
+                           <tr>
+                                <td class="ms-descriptiontext ms-inputformdescription">
+                                   <asp:Label ID="ErrorMessageLabel2" runat="server" ForeColor="Red"></asp:Label>
+                                </td>
+                           </tr>
         <tr>
             <td align="center" valign="middle">
                 <asp:Button ID="btnAlertsave" runat="server" Text="Create Alert" Width="100%" CssClass="ms-ButtonHeightWidth" /><br />
