@@ -5,7 +5,6 @@ using System.Text;
 
 namespace CCSAdvancedAlerts
 {
-
     public enum ConditionComparisionType
     {
         Always,
@@ -19,6 +18,7 @@ namespace CCSAdvancedAlerts
         ItemDeleted,
         DateColumn
     }
+
     public enum WeekDays
     {
         sun,
@@ -28,10 +28,9 @@ namespace CCSAdvancedAlerts
         thu,
         fri,
         sat
-        
     }
 
-      public enum PeriodType
+    public enum PeriodType
     {
         Minutes,
         Hours,
@@ -40,7 +39,6 @@ namespace CCSAdvancedAlerts
         Months,
         Years
     }
-
 
     public enum PeriodPosition
     {
@@ -94,4 +92,9 @@ namespace CCSAdvancedAlerts
         Invalid
     }
 
+    public enum GroupEvalType
+    {
+        And,
+        Or
+    }
 }

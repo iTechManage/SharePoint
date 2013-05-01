@@ -201,4 +201,13 @@
   <data name="ConditionsComparisionType" xml:space="preserve">
     <value>ComparisionType</value>
   </data>
+  <data name="CustomEvaluationData" xml:space="preserve">
+    <value>CustomEvaluationData</value>
+  </data>
+  <data name="EvaluationCriteria" xml:space="preserve">
+    <value>EvaluationCriteria</value>
+  </data>
+  <data name="EvaluationCustom" xml:space="preserve">
+    <value>Custom</value>
+  </data>
 </root>

@@ -248,6 +248,20 @@ namespace CCSAdvancedAlerts
             }
         }
 
+        private bool custom_evaluation = false;
+        internal bool CustomEvaluation
+        {
+            get { return custom_evaluation; }
+            set { custom_evaluation = value; }
+        }
+
+        private string custom_evaluation_data;
+        internal string CustomEvaluationData
+        {
+            get { return custom_evaluation_data; }
+            set { custom_evaluation_data = value; }
+        }
+
         private IList<MailTemplateUsageObject> templateObjects;
         internal IList<MailTemplateUsageObject> TemplateObjects
         {
@@ -352,11 +366,21 @@ namespace CCSAdvancedAlerts
                 
 
                //Get the conditions
-                XmlNodeList xNodes = xmlDoc.DocumentElement.SelectNodes("Conditions/*");
-                this.conditions = new List<Condition>();
-                foreach (XmlNode xNode in xNodes)
+                XmlNode xEval = xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.EvaluationCriteria);
+                this.CustomEvaluation = Convert.ToBoolean(xEval.Attributes[XMLElementNames.EvaluationCustom].Value);
+                if (this.CustomEvaluation)
                 {
-                    this.conditions.Add(new Condition(xNode));
+                    XmlNode xData = xEval.SelectSingleNode(XMLElementNames.CustomEvaluationData);
+                    this.CustomEvaluationData = xData.InnerXml;
+                }
+                else
+                {
+                    XmlNodeList xNodes = xEval.SelectNodes("Conditions/*");
+                    this.conditions = new List<Condition>();
+                    foreach (XmlNode xNode in xNodes)
+                    {
+                        this.conditions.Add(new Condition(xNode));
+                    }
                 }
 
                 //General information
@@ -444,17 +468,26 @@ namespace CCSAdvancedAlerts
 
         internal bool IsValid(SPListItem item, AlertEventType eventType, SPItemEventProperties properties)
         {
-            foreach(Condition condition in this.conditions)
+            if (!this.CustomEvaluation)
             {
-                if (condition != null)
+                foreach (Condition condition in this.conditions)
                 {
-                    if (!condition.isValid(item, eventType,properties))
+                    if (condition != null)
                     {
-                        return false;
+                        if (!condition.isValid(item, eventType, properties))
+                        {
+                            return false;
+                        }
                     }
                 }
+
+                return true;
             }
-            return true;
+            else
+            {
+                ConditionGroup group = new ConditionGroup(this.CustomEvaluationData);
+                return group.isValid(item, eventType, properties);
+            }
         }
 
     

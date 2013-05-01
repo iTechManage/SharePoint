@@ -222,6 +222,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             ConditionCase2.Checked = false;
             UpdatePanel1.Visible = ConditionCase1.Checked;
         }
+
         #region OnStartUp
 
         void populateStaticDropDowns()
@@ -355,6 +356,20 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                 this.gvConditions.DataSource = value;
                 this.gvConditions.DataBind();
                 this.EnsureConditionInsertRow();
+            }
+        }
+
+        internal string CustomEvaluationData
+        {
+            get
+            {
+                // TODO, get data from UI
+                return "";
+            }
+            
+            set
+            {
+                // TODO: set data in UI
             }
         }
 
@@ -1010,8 +1025,22 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                 rdImmediately.Checked = (alert.SendType == SendType.Immediate);
                 rdWeekly.Checked = (alert.SendType == SendType.Weekely);
 
-                //Conditions
+                // Evaluation Criteria
+                // TODO: Confirm working
+                if (alert.CustomEvaluation)
+                {
+                    this.ConditionCase2.Checked = true;
+                    // TODO: Do we need to fire this or above statement does it
+                    ConditionCase2_CheckedChanged(null, null);
+                }
+                else
+                {
+                    this.ConditionCase1.Checked = true;
+                    ConditionCase1_CheckedChanged(null, null);
+                }
+
                 this.Conditions = alert.Conditions as List<Condition>;
+                this.CustomEvaluationData = alert.CustomEvaluationData;
 
                 //Populate Mail Templates
                 FillSelectedTemplates(alertID);
@@ -1224,8 +1253,12 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                 else
                 { alert.RepeatCount = 0; }
 
-                //Conditions
+
+                // Conditions
+                // TODO: Verify with Avinash
+                alert.CustomEvaluation = !this.ConditionEditor.Visible;
                 alert.Conditions = this.Conditions;
+                alert.CustomEvaluationData = this.CustomEvaluationData;
 
                 //Add alert owner
                 alert.Owner = SPContext.Current.Web.CurrentUser;

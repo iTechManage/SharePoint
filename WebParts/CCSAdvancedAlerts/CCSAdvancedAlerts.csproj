@@ -61,6 +61,7 @@
     <Compile Include="Classes\Alert.cs" />
     <Compile Include="Classes\AlertManager.cs" />
     <Compile Include="Classes\Column.cs" />
+    <Compile Include="Classes\ConditionGroup.cs" />
     <Compile Include="Classes\DelayedAlert.cs" />
     <Compile Include="Classes\Notifications.cs" />
     <Compile Include="Classes\Condition.cs" />
@@ -74,7 +75,6 @@
     </Compile>
     <Compile Include="Layouts\CCSAdvancedAlerts\AdvancedAlertSettings.aspx.cs">
       <DependentUpon>AdvancedAlertSettings.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Layouts\CCSAdvancedAlerts\AdvancedAlertSettings.aspx.designer.cs">
       <DependentUpon>AdvancedAlertSettings.aspx.cs</DependentUpon>

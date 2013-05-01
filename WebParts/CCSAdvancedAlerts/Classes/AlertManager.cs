@@ -216,18 +216,27 @@ namespace CCSAdvancedAlerts
                 rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.CcAddress, alert.CcAddress));
                 rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.BccAddress, alert.BccAddress));
 
-
-                //Create Conditions
-                XmlNode xConditions = rootNode.AppendChild(xmlDoc.CreateElement(XMLElementNames.ConditionsRootNodeName));
-                foreach (Condition condition in alert.Conditions)
+                // Create evaluation criteria
+                XmlNode xEvaluation = rootNode.AppendChild(xmlDoc.CreateElement(XMLElementNames.EvaluationCriteria));
+                xEvaluation.Attributes.Append(XMLHelper.AppendAttribute(xmlDoc, XMLElementNames.EvaluationCustom, alert.CustomEvaluation ? "true" : "false"));
+                if (alert.CustomEvaluation)
                 {
-                    XmlNode xCondition = xConditions.AppendChild(xmlDoc.CreateElement(XMLElementNames.ConditionChildNodeName));
-                    xCondition.Attributes.Append(XMLHelper.AppendAttribute(xmlDoc, XMLElementNames.ConditionFieldTagName, condition.FieldName));
-                    xCondition.Attributes.Append(XMLHelper.AppendAttribute(xmlDoc, XMLElementNames.ConditionOperatorTagName, Convert.ToString(condition.ComparisionOperator)));
-                    xCondition.Attributes.Append(XMLHelper.AppendAttribute(xmlDoc, XMLElementNames.ConditionValueTagName, condition.StrValue));
-                    xCondition.Attributes.Append(XMLHelper.AppendAttribute(xmlDoc, XMLElementNames.ConditionsComparisionType, Convert.ToString(condition.ComparisionType)));
+                    XmlNode xCustomData = xEvaluation.AppendChild(xmlDoc.CreateElement(XMLElementNames.CustomEvaluationData));
+                    xCustomData.InnerXml = alert.CustomEvaluationData;
                 }
-
+                else
+                {
+                    //Create Conditions
+                    XmlNode xConditions = xEvaluation.AppendChild(xmlDoc.CreateElement(XMLElementNames.ConditionsRootNodeName));
+                    foreach (Condition condition in alert.Conditions)
+                    {
+                        XmlNode xCondition = xConditions.AppendChild(xmlDoc.CreateElement(XMLElementNames.ConditionChildNodeName));
+                        xCondition.Attributes.Append(XMLHelper.AppendAttribute(xmlDoc, XMLElementNames.ConditionFieldTagName, condition.FieldName));
+                        xCondition.Attributes.Append(XMLHelper.AppendAttribute(xmlDoc, XMLElementNames.ConditionOperatorTagName, Convert.ToString(condition.ComparisionOperator)));
+                        xCondition.Attributes.Append(XMLHelper.AppendAttribute(xmlDoc, XMLElementNames.ConditionValueTagName, condition.StrValue));
+                        xCondition.Attributes.Append(XMLHelper.AppendAttribute(xmlDoc, XMLElementNames.ConditionsComparisionType, Convert.ToString(condition.ComparisionType)));
+                    }
+                }
 
                 //General Information
                 rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.BlockedUsers, alert.BlockedUsers));//
