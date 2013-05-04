@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Diagnostics;
+using Microsoft.SharePoint;
 
 namespace CCSAdvancedAlerts
 {
@@ -63,7 +64,7 @@ namespace CCSAdvancedAlerts
             {
                 this.GroupEvaluationType =
                     (GroupEvalType)Enum.Parse(typeof(GroupEvalType),
-                    xmlElement.GetAttribute(""));
+                    xmlElement.GetAttribute("Evaluation"));
 
                 // Group must have sub-groups and/or conditions
                 Debug.Assert(xmlElement.HasChildNodes);
@@ -87,7 +88,16 @@ namespace CCSAdvancedAlerts
 
         internal bool isValid(SPListItem item, AlertEventType eventType, SPItemEventProperties properties)
         {
-            bool bReturn = true;
+            bool bReturn;
+
+            if (evalType == GroupEvalType.And)
+            {
+                  bReturn = true;
+            }
+            else
+            {
+                  bReturn = false;
+            }
 
             foreach (Condition cond in conditions)
             {

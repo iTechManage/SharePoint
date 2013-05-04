@@ -364,12 +364,14 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             get
             {
                 // TODO, get data from UI
-                return "";
+                string text = this.ConditionEditor.InnerText;
+                return text;
             }
             
             set
             {
                 // TODO: set data in UI
+                this.ConditionEditor.InnerText = value;
             }
         }
 
@@ -1256,7 +1258,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
 
                 // Conditions
                 // TODO: Verify with Avinash
-                alert.CustomEvaluation = !this.ConditionEditor.Visible;
+                alert.CustomEvaluation = this.ConditionEditor.Visible;
                 alert.Conditions = this.Conditions;
                 alert.CustomEvaluationData = this.CustomEvaluationData;
 

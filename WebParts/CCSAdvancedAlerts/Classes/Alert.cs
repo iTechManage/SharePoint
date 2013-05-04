@@ -470,13 +470,16 @@ namespace CCSAdvancedAlerts
         {
             if (!this.CustomEvaluation)
             {
-                foreach (Condition condition in this.conditions)
+                if (this.conditions != null)
                 {
-                    if (condition != null)
+                    foreach (Condition condition in this.conditions)
                     {
-                        if (!condition.isValid(item, eventType, properties))
+                        if (condition != null)
                         {
-                            return false;
+                            if (!condition.isValid(item, eventType, properties))
+                            {
+                                return false;
+                            }
                         }
                     }
                 }
