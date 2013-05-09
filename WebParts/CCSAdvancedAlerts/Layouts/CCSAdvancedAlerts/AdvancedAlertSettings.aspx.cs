@@ -207,6 +207,25 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             this.ddlUserID.SelectedIndexChanged+=new EventHandler(ddlUserID_SelectedIndexChanged);
             this.ConditionCase1.CheckedChanged += new EventHandler(ConditionCase1_CheckedChanged);
             this.ConditionCase2.CheckedChanged += new EventHandler(ConditionCase2_CheckedChanged);
+            this.rdWeekly.CheckedChanged += new EventHandler(rdWeekly_CheckedChanged);
+            this.rdImmediateAlways.CheckedChanged += new EventHandler(rdImmediateAlways_CheckedChanged);
+
+        }
+
+        void rdImmediateAlways_CheckedChanged(object sender, EventArgs e)
+        {
+            sendAsSingleMessage.Checked = false;
+            sendAsSingleMessage.Enabled = rdImmediateBusinessdays.Checked;
+            ddlAlertWeekday.Enabled = false;
+            ddlAlertTime.Enabled = false;
+        }
+
+        void rdWeekly_CheckedChanged(object sender, EventArgs e)
+        {
+            sendAsSingleMessage.Enabled = true;
+            sendAsSingleMessage.Checked = false;
+            ddlAlertWeekday.Enabled = true;
+            ddlAlertTime.Enabled = true;
         }
 
         void ConditionCase2_CheckedChanged(object sender, EventArgs e)
@@ -947,7 +966,6 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                 chkItemUpdated.Checked = alert.AlertType.Contains(AlertEventType.ItemUpdated);
                 chkDateColumn.Checked = alert.AlertType.Contains(AlertEventType.DateColumn);
 
-
                 //------------------------------------------------------------------
                 //this.BlockedUsers = ;
                 if (this.ddlDateColumn.Items.FindByText(alert.DateColumnName) != null)
@@ -969,6 +987,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                 }
                 else if (alert.ImmediateBusinessDays.Count > 0)
                 {
+                    sendAsSingleMessage.Enabled = true;
                     rdImmediately.Checked = true;
                     rdImmediateBusinessdays.Checked = true;
                     pnImmediateBusinessDays.Visible = true;
@@ -976,12 +995,17 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
 
                 else if (alert.DailyBusinessDays.Count > 0)
                 {
+                    sendAsSingleMessage.Enabled = true;
                     rdDaily.Checked = true;
                     pnSubDaily.Visible = rdDaily.Checked;
                 }
                 else
                 {
                     rdWeekly.Checked = true;
+                    if (rdWeekly.Checked)
+                    {
+                        sendAsSingleMessage.Visible = true;
+                    }
 
                 }
 
@@ -1011,7 +1035,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                 chkImmediateThu.Checked = alert.ImmediateBusinessDays.Contains(WeekDays.thu);
                 chkImmediateFri.Checked = alert.ImmediateBusinessDays.Contains(WeekDays.fri);
                 chkImmediateSat.Checked = alert.ImmediateBusinessDays.Contains(WeekDays.sat);
-
+                sendAsSingleMessage.Checked = alert.SendAsSingleMessage.Equals(true);
 
                 //alert.CombineAlerts = true;
                 //alert.SummaryMode = true;
@@ -1149,6 +1173,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                 alert.BusinessendtHour = Convert.ToInt32(ddlImmediateBusinessEndTime.SelectedValue);
                 alert.SendDay = Convert.ToInt32(ddlAlertWeekday.SelectedValue);
                 alert.SendHour = Convert.ToInt32(ddlAlertTime.SelectedValue);
+                alert.SendAsSingleMessage = Convert.ToBoolean(sendAsSingleMessage.Checked);
 
 
                 //when To Send
@@ -1302,7 +1327,12 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
 
         void btnAddToSubject_Click(object sender, EventArgs e)
         {
-            if (lstPlaceHolders.SelectedItem != null)
+            if(lstPlaceHolders.SelectedItem.Text.Equals("------------"))
+            {
+
+            }
+
+            else if (lstPlaceHolders.SelectedItem != null)
             {
                 txtMailSubject.Text += " " + "[" + lstPlaceHolders.SelectedItem.Text + "]";
             }
@@ -1544,20 +1574,30 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
         void rdDaily_CheckedChanged(object sender, EventArgs e)
         {
             pnSubDaily.Visible = rdDaily.Checked;
+            sendAsSingleMessage.Enabled = true;
+            sendAsSingleMessage.Checked = false;
             pnSubImmediately.Visible = !rdDaily.Checked;
-
+            ddlAlertTime.Enabled = true;
+            ddlAlertWeekday.Enabled = false;
             //pnSubDaily
         }
 
         void rdImmediateBusinessdays_CheckedChanged(object sender, EventArgs e)
         {
-            pnImmediateBusinessDays.Visible = rdImmediateBusinessdays.Checked;
-
+            sendAsSingleMessage.Enabled = true;
+            sendAsSingleMessage.Checked = false;
+            ddlAlertTime.Enabled = false;
+            ddlAlertWeekday.Enabled = false;
+            pnImmediateBusinessDays.Visible = rdImmediateBusinessdays.Checked; 
             //pnImmediateBusinessDays
         }
 
         void rdImmediately_CheckedChanged(object sender, EventArgs e)
         {
+            ddlAlertTime.Enabled = false;
+            ddlAlertWeekday.Enabled = false;
+            sendAsSingleMessage.Enabled = rdImmediateBusinessdays.Checked;
+            sendAsSingleMessage.Checked = false;
             pnSubImmediately.Visible = rdImmediately.Checked;
             pnSubDaily.Visible = !rdImmediately.Checked;
             //pnSubImmediately
@@ -1640,6 +1680,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
         {
             try
             {
+                
                 //this.list = SPContext.Current.Site.AllWebs[new Guid(this.ddlSite.SelectedValue)].Lists[new Guid(ddlList.SelectedValue)];
                 if (SPContext.Current.Site.RootWeb.ID.ToString() == this.ddlSite.SelectedValue)
                 {
@@ -1653,6 +1694,15 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                 ddlUsersInColumn.Items.Clear();
                 ddlDateColumn.Items.Clear();
                 lstPlaceHolders.Items.Clear();
+                lstPlaceHolders.Items.Add("Site Link");
+                lstPlaceHolders.Items.Add("Site Title");
+                lstPlaceHolders.Items.Add("List Link");
+                lstPlaceHolders.Items.Add("List Title");
+                lstPlaceHolders.Items.Add("Item Link");
+                lstPlaceHolders.Items.Add("Item Title");
+                lstPlaceHolders.Items.Add("Edit Item");
+                lstPlaceHolders.Items.Add("Edit Alerts");
+                lstPlaceHolders.Items.Add("------------");
                 if (this.list != null)
                 {
                     foreach (SPField field in this.list.Fields)
@@ -1813,6 +1863,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             }
             catch { }
         }
+     
 
         #endregion
 

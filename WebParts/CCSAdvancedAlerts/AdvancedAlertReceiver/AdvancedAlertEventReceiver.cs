@@ -50,8 +50,7 @@ namespace CCSAdvancedAlerts
            catch (System.Exception Ex)
            {
                LogManager.write("error occured whule executing itemadded event : " + Ex.Message);
-           }
-          
+           }          
        }
 
        /// <summary>
@@ -183,13 +182,26 @@ namespace CCSAdvancedAlerts
            //, SPWeb web
            try
            {
-               //Need to get the Alert instances
-               MailTemplateUsageObject mtObject = alert.GetMailTemplateUsageObjectForEventType(eventType);
-               string subject = mtObject.Template.Subject;
-               string body = mtObject.Template.Body+"<br>"+"<br>"+FinalBody;
-               string parentItemId = Convert.ToString(properties.ListItem.ID);
-               DelayedAlert dAlert = new DelayedAlert(subject, body, alert.Id, parentItemId, eventType);
-               alertManager.AddDelayedAlert(dAlert);
+               if (!alert.SendAsSingleMessage)
+               {
+                   //Need to get the Alert instances
+                   MailTemplateUsageObject mtObject = alert.GetMailTemplateUsageObjectForEventType(eventType);
+                   string subject = mtObject.Template.Subject;
+                   string body = mtObject.Template.Body + "<br>" + "<br>" + FinalBody;
+                   string parentItemId = Convert.ToString(properties.ListItem.ID);
+                   DelayedAlert dAlert = new DelayedAlert(subject, body, alert.Id, parentItemId, eventType);
+                   alertManager.AddDelayedAlert(dAlert);
+               }
+               else
+               {
+                   Notifications notificationSender = new Notifications();
+                   MailTemplateUsageObject mtObject = alert.GetMailTemplateUsageObjectForEventType(eventType);
+                   string subject = properties.ListTitle;
+                   string body = notificationSender.ReplacePlaceHolders(mtObject.Template.Subject, properties.ListItem) + "<br>" + "<br>" +notificationSender.ReplacePlaceHolders(mtObject.Template.Body,properties.ListItem) + "<br>" + "<br>" + FinalBody;
+                   string parentItemId = Convert.ToString(properties.ListItem.ID);
+                   DelayedAlert dAlert = new DelayedAlert(subject, body, alert.Id, parentItemId, eventType);
+                   alertManager.AddDelayedAlert(dAlert);
+               }
            }
            catch { }
        }

@@ -229,6 +229,12 @@ namespace CCSAdvancedAlerts
             get { return sendHour; }
             set { sendHour = value; }
         }
+        bool sendAsSingleMessage;
+        public bool SendAsSingleMessage
+        {
+            get { return sendAsSingleMessage; }
+            set { sendAsSingleMessage = value; }
+        }
 
 
         private IList<Condition> conditions;
@@ -422,6 +428,8 @@ namespace CCSAdvancedAlerts
                 this.sendDay = Utilities.ParseToInt(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.SendDay));
 
                 this.SendHour = Utilities.ParseToInt(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.SendHour));
+
+                this.SendAsSingleMessage = Utilities.ParseToBool(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.SendAsSingleMessage));
             }
             catch 
             {

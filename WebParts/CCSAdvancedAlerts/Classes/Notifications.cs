@@ -221,7 +221,7 @@ namespace CCSAdvancedAlerts
             //return succes;
             return SendMail(alert, eventType, item, string.Empty);
         }
-        string GetRecipientEmailAddresses(string addresses, SPListItem item)
+        public string GetRecipientEmailAddresses(string addresses, SPListItem item)
         {
             string emailAddresses = string.Empty;
             if (!string.IsNullOrEmpty(addresses))
@@ -273,7 +273,7 @@ namespace CCSAdvancedAlerts
             return false;
         }
 
-        string GetEmailAddressFromField(SPListItem listItem, string fieldName)
+       public string GetEmailAddressFromField(SPListItem listItem, string fieldName)
         {
             //string strDiplayName = string.Empty;
             //string Email = string.Empty;
@@ -327,7 +327,7 @@ namespace CCSAdvancedAlerts
         /// <param name="template"></param>
         /// <param name="listItem"></param>
         /// <returns></returns>
-        string ReplacePlaceHolders(string template, SPListItem listItem)
+       public string ReplacePlaceHolders(string template, SPListItem listItem)
         {
             string afterTemplate = string.Empty;
             try
@@ -336,17 +336,161 @@ namespace CCSAdvancedAlerts
                 foreach (Match match in re.Matches(template))
                 {
                     string placeHolder = match.Value.Replace("[", string.Empty).Replace("]", string.Empty);
-                    SPField field = null;
-                    try
+                    if (placeHolder.Equals("Item Link"))
                     {
-                        field = listItem.Fields[placeHolder];
+                        string linkToTicket = string.Empty;
+                        try
+                        {
+                            string currentURL = listItem.ParentList.ParentWeb.Site.MakeFullUrl(listItem.ParentList.Forms[PAGETYPE.PAGE_DISPLAYFORM].ServerRelativeUrl) +
+                                "?ID=" + listItem.ID + "&Source=" + listItem.ParentList.ParentWeb.Site.MakeFullUrl(listItem.ParentList.ParentWeb.ServerRelativeUrl);
+
+                            if (!string.IsNullOrEmpty(currentURL))
+                            {
+                                SPSecurity.RunWithElevatedPrivileges(delegate
+                                {
+                                    string name = listItem.Title;
+                                
+                                linkToTicket = "<a href=\"" + currentURL + "\">"+name+"</a>"+"<br>";
+                                    });
+                            }
+                        }
+
+                        catch (System.Exception ex)
+                        {
+
+                        }
+                        template = template.Replace(match.Value, linkToTicket);
+
                     }
-                    catch { }
-                    if (field != null)
+                    else if (placeHolder.Equals("Item Title"))
                     {
-                        object fieldValue = listItem[placeHolder];
-                        string strValue = GetFieldValue(fieldValue, field.FieldValueType, listItem.ParentList.ParentWeb);
-                        template = template.Replace(match.Value, strValue);
+                        string itemTitle = listItem.Title+"<br>";
+                        
+                        template = template.Replace(match.Value, itemTitle);
+
+                    }
+                    else if (placeHolder.Equals("Site Link"))
+                    {
+                        string linkToSite = string.Empty;
+                        try
+                        {
+                            string currentURL = listItem.ParentList.ParentWeb.Site.Url;
+
+                            if (!string.IsNullOrEmpty(currentURL))
+                            {
+                                SPSecurity.RunWithElevatedPrivileges(delegate
+                                {
+                                    string name = listItem.ParentList.ParentWeb.Site.RootWeb.Title;
+
+                                    linkToSite = "<a href=\"" + currentURL + "\">" + name + "</a>"+"<br>";
+                                });
+                            }
+                        }
+
+                        catch (System.Exception ex)
+                        {
+
+                        }
+                        template = template.Replace(match.Value, linkToSite);
+                    }
+                    else if (placeHolder.Equals("Site Title"))
+                    {
+                        string siteTitle = listItem.ParentList.ParentWeb.Site.RootWeb.Title+"<br>";
+
+                        template = template.Replace(match.Value, siteTitle);
+
+                    }
+                    else if (placeHolder.Equals("List Link"))
+                    {
+                        string linkToList = string.Empty;
+                        try
+                        {
+                            string currentURL = listItem.ParentList.DefaultViewUrl;
+
+                            if (!string.IsNullOrEmpty(currentURL))
+                            {
+                                SPSecurity.RunWithElevatedPrivileges(delegate
+                                {
+                                    string name = listItem.ParentList.Title;
+
+                                    linkToList = "<a href=\"" + currentURL + "\">" + name + "</a>"+"<br>";
+                                });
+                            }
+                        }
+
+                        catch (System.Exception ex)
+                        {
+
+                        }
+                        template = template.Replace(match.Value, linkToList);
+                    }
+                    else if (placeHolder.Equals("List Title"))
+                    {
+                        string listTitle = listItem.ParentList.Title+"<br>";
+
+                        template = template.Replace(match.Value, listTitle);
+
+                    }
+                    else if (placeHolder.Equals("Edit Item"))
+                    {
+                        string editItem = string.Empty;
+                        try
+                        {
+                            string currentURL = listItem.ParentList.ParentWeb.Site.MakeFullUrl(listItem.ParentList.Forms[PAGETYPE.PAGE_EDITFORM].ServerRelativeUrl) +
+                                "?ID=" + listItem.ID + "&Source=" + listItem.ParentList.ParentWeb.Site.MakeFullUrl(listItem.ParentList.ParentWeb.ServerRelativeUrl);
+
+                            if (!string.IsNullOrEmpty(currentURL))
+                            {
+                                SPSecurity.RunWithElevatedPrivileges(delegate
+                                {
+                                    editItem = "<a href=\"" + currentURL + "\">Edit Item</a>"+"<br>";
+                                });
+                            }
+                        }
+
+                        catch (System.Exception ex)
+                        {
+
+                        }
+                        template = template.Replace(match.Value, editItem);
+                    }
+                    else if (placeHolder.Equals("Edit Alerts"))
+                    {
+                        string editAlert = string.Empty;
+                        try
+                        {
+                            string currentURL = listItem.ParentList.ParentWeb.Site.Url +
+                                "/_layouts/CCSAdvancedAlerts/AdvancedAlertSettings.aspx?" + "Source=" + listItem.ParentList.ParentWeb.Site.Url+"/SitePages/Home.aspx";
+
+                            if (!string.IsNullOrEmpty(currentURL))
+                            {
+                                SPSecurity.RunWithElevatedPrivileges(delegate
+                                {
+                                    editAlert = "<a href=\"" + currentURL + "\">Edit Alerts</a>"+"<br>";
+                                });
+                            }
+                        }
+
+                        catch (System.Exception ex)
+                        {
+
+                        }
+                        template = template.Replace(match.Value, editAlert);
+                    }
+                    else
+                    {
+                        SPField field = null;
+                        try
+                        {
+                            field = listItem.Fields[placeHolder];
+                        }
+                        catch { }
+                        if (field != null)
+                        {
+                            object fieldValue = listItem[placeHolder];
+                            string strValue = GetFieldValue(fieldValue, field.FieldValueType, listItem.ParentList.ParentWeb);
+                            template = template.Replace(match.Value, strValue);
+                        }
                     }
                 }
             }
@@ -355,7 +499,6 @@ namespace CCSAdvancedAlerts
             }
             return template;
         }
-
         /// <summary>
         /// Pass the field value and value type to get the value in string format
         /// </summary>
@@ -433,7 +576,6 @@ namespace CCSAdvancedAlerts
             {
                 return "";
             }
-
         }
 
         string GetUserEmailFromField(string strUserFieldValue, SPField personOrGroupField)
@@ -503,7 +645,7 @@ namespace CCSAdvancedAlerts
             return emailAddressToReturn;
         }
 
-        static string GetSMTPServer(SPListItem lItem)
+       public string GetSMTPServer(SPListItem lItem)
         {
             if (string.IsNullOrEmpty(SMTPServerName))
             {

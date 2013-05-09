@@ -1,4 +1,4 @@
-<%@ Assembly Name="CCSAdvancedAlerts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d0e8c94870369eea" %>
+<%@ Assembly Name="CCSAdvancedAlerts, Version=1.0.0.1, Culture=neutral, PublicKeyToken=d0e8c94870369eea" %>
 <%@ Import Namespace="Microsoft.SharePoint.ApplicationPages" %>
 <%@ Register TagPrefix="SharePoint" Namespace="Microsoft.SharePoint.WebControls"
     Assembly="Microsoft.SharePoint, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" %>
@@ -14,27 +14,27 @@
 <asp:Content ID="PageHead" ContentPlaceHolderID="PlaceHolderAdditionalPageHead" runat="server">
 </asp:Content>
 <asp:Content ID="Main" ContentPlaceHolderID="PlaceHolderMain" runat="server">
-<script type="text/javascript">
-    function CopyToClipboard(controlId) {
-        var control = document.getElementById(controlId);
-        if (control == null && controlId != null) {
-            control = document.getElementById(controlId.id);
-        }
+    <asp:UpdatePanel ID="UpdatePanel2" runat="server">
+    <ContentTemplate>
+    <script type="text/javascript">
+        function CopyToClipboard(controlId) {
+            var control = document.getElementById(controlId);
+            if (control == null && controlId != null) {
+                control = document.getElementById(controlId.id);
+            }
 
-        if (control != null) {
-            //determine the value of the control
-            var controlValue = control.value;
-            //copy to clipboard
-            window.clipboardData.setData("Text", "[" + controlValue + "]");
+            if (control != null) {
+                //determine the value of the control
+                var controlValue = control.value;
+                //copy to clipboard
+                window.clipboardData.setData("Text", "[" + controlValue + "]");
+            }
         }
-    }
-</script>
+    </script>
     <table style="width: 600px">
         <tr>
-          
-           <asp:TextBox Style="display: none" runat="server" ID="hiddenAlertID" />
-           <asp:TextBox Style="display: none" runat="server" ID="hiddenTemplateID" />
-
+            <asp:TextBox Style="display: none" runat="server" ID="hiddenAlertID" />
+            <asp:TextBox Style="display: none" runat="server" ID="hiddenTemplateID" />
             <td colspan="2" class="ms-linksectionheader" style="padding-right: 4px; padding-left: 4px;
                 padding-bottom: 4px; padding-top: 4px;" nowrap="nowrap" width="576">
                 <b>Existing Alerts </b>
@@ -53,7 +53,7 @@
                     OnRowDeleting="gvAlerts_RowDeleting" OnSelectedIndexChanged="gvAlerts_SelectedIndexChanged"
                     AutoGenerateColumns="false" runat="server" EmptyDataText="No Data to show">
                     <Columns>
-                       <%-- <asp:TemplateField ControlStyle-Width="25px">
+                        <%-- <asp:TemplateField ControlStyle-Width="25px">
                             <ItemTemplate>
                                 <input type="checkbox" name="chkalert" id='alert<%#Eval("Id") %>' />
                             </ItemTemplate>
@@ -306,7 +306,7 @@
                             <asp:RadioButton ID="rdImmediately" runat="server" Text="Immediately" AutoPostBack="true"
                                 GroupName="rdSendType"></asp:RadioButton>
                             <asp:Panel ID="pnSubImmediately" runat="server" Visible="false">
-                                &nbsp;&nbsp;<asp:RadioButton ID="rdImmediateAlways" runat="server" Text="Always"
+                                &nbsp;&nbsp;<asp:RadioButton ID="rdImmediateAlways" runat="server" Text="Always" AutoPostBack="true"
                                     GroupName="rdSubSendTypeAlways"></asp:RadioButton>
                                 <br />
                                 &nbsp;&nbsp;<asp:RadioButton ID="rdImmediateBusinessdays" runat="server" AutoPostBack="true"
@@ -349,21 +349,33 @@
                             </asp:RadioButton>
                         </td>
                     </tr>
+                    <tr>
+                        <td>
+                            &nbsp;&nbsp;<asp:Label ID="Label3" runat="server" Text="Time:" />
+                            &nbsp;&nbsp;<asp:DropDownList ID="ddlAlertWeekday" runat="server" Enabled="false" />
+                            &nbsp;&nbsp;<asp:DropDownList ID="ddlAlertTime" runat="server" Enabled="false" />
+                        </td>
+                    </tr>
                 </table>
             </td>
+        </tr>
+        <tr>
+        <td><asp:CheckBox ID="sendAsSingleMessage" runat="server" Enabled="false" Text="Send As Single Message" />
+        </td>
         </tr>
         <tr>
             <td class="ms-linksectionheader" style="padding-right: 4px; padding-left: 4px; padding-bottom: 4px;
                 padding-top: 4px;" nowrap="nowrap" width="576">
                 <b>Conditions</b>
             </td>
-        </tr>
+        </tr>    
         <tr>
             <td>
                 <table>
                     <tr>
                         <td class="ms-descriptiontext">
-                            <asp:UpdatePanel ID="UpdatePanel1" runat="server">
+                            <asp:CheckBox ID="ConditionCase1" Text="Case1" runat="server" AutoPostBack="true" />
+                            <asp:UpdatePanel ID="UpdatePanel1" runat="server" Visible="false">
                                 <ContentTemplate>
                                     <SharePoint:SPGridView ID="gvConditions" runat="server" AutoGenerateColumns="false"
                                         ShowFooter="true" FooterStyle-CssClass="ms-vb2" CellPadding="1" CellSpacing="0"
@@ -375,6 +387,9 @@
                                                 <tr>
                                                     <td class="ms-vb2" width="150">
                                                         <asp:DropDownList ID="ddlConditionField" runat="server" Width="150" />
+                                                    </td>
+                                                    <td class="ms-vb2" width="100">
+                                                        <asp:DropDownList ID="ddlConditionCompareType" runat="server" Width="100" />
                                                     </td>
                                                     <td class="ms-vb2" width="100">
                                                         <asp:DropDownList ID="ddlConditionOperator" runat="server" Width="100" />
@@ -400,6 +415,17 @@
                                                 </EditItemTemplate>
                                                 <FooterTemplate>
                                                     <asp:DropDownList runat="server" ID="ddlConditionField" Width="150" />
+                                                </FooterTemplate>
+                                            </asp:TemplateField>
+                                            <asp:TemplateField HeaderText="When" HeaderStyle-CssClass="ms-vh2-nofilter" ItemStyle-Width="150">
+                                                <ItemTemplate>
+                                                    <%# Eval("ComparisionType")%>
+                                                </ItemTemplate>
+                                                <EditItemTemplate>
+                                                    <asp:DropDownList runat="server" ID="ddlConditionCompareType" Width="150" />
+                                                </EditItemTemplate>
+                                                <FooterTemplate>
+                                                    <asp:DropDownList runat="server" ID="ddlConditionCompareType" Width="150" />
                                                 </FooterTemplate>
                                             </asp:TemplateField>
                                             <asp:TemplateField HeaderText="Operator" HeaderStyle-CssClass="ms-vh2-nofilter" ItemStyle-Width="150">
@@ -463,6 +489,16 @@
             </td>
         </tr>
         <tr>
+        <td class="ms-descriptiontext">
+       <asp:CheckBox ID="ConditionCase2" Text="Case2" runat="server" AutoPostBack="true" />
+        </td>
+        </tr>
+        <tr>
+        <td>
+     <textarea ID="ConditionEditor" rows="10" cols="20" style="width:80%;" runat="server" Visible="false"/>
+        </td>
+        </tr>
+        <tr>
             <td class="ms-linksectionheader" style="padding-right: 4px; padding-left: 4px; padding-bottom: 4px;
                 padding-top: 4px;" nowrap="nowrap" width="576">
                 <b>Mail Templates </b>
@@ -470,7 +506,7 @@
         </tr>
         <tr>
             <td>
-                <table width="100%" class="ms-authoringcontrols" cellpadding="4" cellspacing="0">
+                <table width="100%" cellpadding="2" cellspacing="2">
                     <tr>
                         <td>
                             <table cellpadding="2" cellspacing="2">
@@ -502,7 +538,6 @@
                                         <asp:LinkButton ID="lnkItemUpdateDelete" runat="server" Text="Delete" CssClass="ms-addnew" />
                                     </td>
                                 </tr>
-
                                 <tr>
                                     <td>
                                         <asp:Literal ID="litItemDelted" runat="server" Text="Item Delete"></asp:Literal>
@@ -517,7 +552,6 @@
                                         <asp:LinkButton ID="lnkItemDeleteDelete" runat="server" Text="Delete" CssClass="ms-addnew" />
                                     </td>
                                 </tr>
-
                                 <tr>
                                     <td>
                                         <asp:Literal ID="litDateTime" runat="server" Text="Date"></asp:Literal>
@@ -532,13 +566,12 @@
                                         <asp:LinkButton ID="linkDateTimeDelete" runat="server" Text="Delete" CssClass="ms-addnew" />
                                     </td>
                                 </tr>
-
                             </table>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            <table cellpadding="2" cellspacing="2">
+                            <table width="100%" class="ms-authoringcontrols" cellpadding="4" cellspacing="0">
                                 <tr>
                                     <td colspan="2">
                                         <h3 class="ms-standardheader">
@@ -607,8 +640,8 @@
                                         <asp:Literal ID="Literal13" runat="server" Text="Mail Body:"></asp:Literal>
                                     </td>
                                     <td>
-                                        <SharePoint:InputFormTextBox ID="txtBody" runat="server" TextMode="MultiLine" RichTextMode="FullHtml"
-                                            RichText="true" Rows="10" Width="100%" />
+                                    <SharePoint:InputFormTextBox ID="txtBody" runat="server" TextMode="MultiLine"
+                                             RichTextMode="FullHtml" RichText="true" Rows="10" Width="100%"/>
                                     </td>
                                     <td>
                                     </td>
@@ -662,6 +695,11 @@
                 </table>
             </td>
         </tr>
+                           <tr>
+                                <td class="ms-descriptiontext ms-inputformdescription">
+                                   <asp:Label ID="ErrorMessageLabel2" runat="server" ForeColor="Red"></asp:Label>
+                                </td>
+                           </tr>
         <tr>
             <td align="center" valign="middle">
                 <asp:Button ID="btnAlertsave" runat="server" Text="Create Alert" Width="100%" CssClass="ms-ButtonHeightWidth" /><br />
@@ -669,7 +707,7 @@
         </tr>
         <tr>
             <td align="center" valign="middle">
-                <asp:Button ID="btnUpdateAlert" runat="server" Text="Update Alert" Width="100%" CssClass="ms-ButtonHeightWidth" />
+                <asp:Button ID="btnUpdateAlert" runat="server" Text="Update Alert" Width="100%" CssClass="ms-ButtonHeightWidth" Visible="false" />
             </td>
         </tr>
         <tr>
@@ -686,6 +724,8 @@
             </td>
         </tr>
     </table>
+    </ContentTemplate>
+    </asp:UpdatePanel>
 </asp:Content>
 <asp:Content ID="PageTitle" ContentPlaceHolderID="PlaceHolderPageTitle" runat="server">
     Alert Settings

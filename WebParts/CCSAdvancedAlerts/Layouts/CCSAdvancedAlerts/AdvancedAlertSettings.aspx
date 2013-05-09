@@ -306,7 +306,7 @@
                             <asp:RadioButton ID="rdImmediately" runat="server" Text="Immediately" AutoPostBack="true"
                                 GroupName="rdSendType"></asp:RadioButton>
                             <asp:Panel ID="pnSubImmediately" runat="server" Visible="false">
-                                &nbsp;&nbsp;<asp:RadioButton ID="rdImmediateAlways" runat="server" Text="Always"
+                                &nbsp;&nbsp;<asp:RadioButton ID="rdImmediateAlways" runat="server" Text="Always" AutoPostBack="true"
                                     GroupName="rdSubSendTypeAlways"></asp:RadioButton>
                                 <br />
                                 &nbsp;&nbsp;<asp:RadioButton ID="rdImmediateBusinessdays" runat="server" AutoPostBack="true"
@@ -352,12 +352,16 @@
                     <tr>
                         <td>
                             &nbsp;&nbsp;<asp:Label ID="Label3" runat="server" Text="Time:" />
-                            &nbsp;&nbsp;<asp:DropDownList ID="ddlAlertWeekday" runat="server" />
-                            &nbsp;&nbsp;<asp:DropDownList ID="ddlAlertTime" runat="server" />
+                            &nbsp;&nbsp;<asp:DropDownList ID="ddlAlertWeekday" runat="server" Enabled="false" />
+                            &nbsp;&nbsp;<asp:DropDownList ID="ddlAlertTime" runat="server" Enabled="false" />
                         </td>
                     </tr>
                 </table>
             </td>
+        </tr>
+        <tr>
+        <td><asp:CheckBox ID="sendAsSingleMessage" runat="server" Enabled="false" Text="Send As Single Message" />
+        </td>
         </tr>
         <tr>
             <td class="ms-linksectionheader" style="padding-right: 4px; padding-left: 4px; padding-bottom: 4px;

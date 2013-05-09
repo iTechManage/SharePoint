@@ -6,6 +6,7 @@ using Microsoft.SharePoint;
 using Microsoft.SharePoint.Security;
 using System.Collections;
 using System.Xml;
+using System.Net.Mail;
 
 namespace CCSAdvancedAlerts
 {
@@ -37,6 +38,13 @@ namespace CCSAdvancedAlerts
 
 
         #region Alert Related
+        public string siteCollectionURL;
+        string body = string.Empty;
+        string toAddress =string.Empty;
+        string ccAddress =string.Empty;
+        string fromAddress = string.Empty;
+        string subject = string.Empty;
+        string smtpSName= string.Empty;
       
         /// <summary>
         /// Check Alerts list is existed in the site collection or not
@@ -255,7 +263,8 @@ namespace CCSAdvancedAlerts
                 rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.DailyBusinessDays, ConvertDaysToString(alert.DailyBusinessDays)));//
                 rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.SummaryMode, alert.SummaryMode.ToString())); //
                 rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.SendDay, alert.SendDay.ToString()));//
-                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.SendHour, alert.SendHour.ToString()));//
+                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.SendHour, alert.SendHour.ToString()));
+                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.SendAsSingleMessage, alert.SendAsSingleMessage.ToString()));
             
                 //if (alert.PeriodQty > 0)
                 {
@@ -460,9 +469,18 @@ namespace CCSAdvancedAlerts
                         {
                             try
                             {
-                                DelayedAlert delayedAlert = new DelayedAlert(item);
-                                Notifications notificationSender = new Notifications();
-                                notificationSender.SendDelayedMessage(delayedAlert, alert);
+                                if (alert.SendAsSingleMessage)
+                                {
+                                    DelayedAlert delayedAlert = new DelayedAlert(item);
+                                    Notifications notificationSender = new Notifications();
+                                    SendDelayedMessage2(delayedAlert, alert);
+                                }
+                                else
+                                {
+                                    DelayedAlert delayedAlert = new DelayedAlert(item);
+                                    Notifications notificationSender = new Notifications();
+                                    notificationSender.SendDelayedMessage(delayedAlert, alert);
+                                }
                             }
                             catch 
                             {
@@ -478,6 +496,10 @@ namespace CCSAdvancedAlerts
                             catch { }
                         }
                     }
+                    if (alert.SendAsSingleMessage)
+                    {
+                        SendMail(smtpSName, toAddress, fromAddress,ccAddress,subject,body,null);
+                    }
                 }
                 else
                 {
@@ -492,6 +514,88 @@ namespace CCSAdvancedAlerts
 
 
         #region Common methods
+
+        internal static bool SendMail(string SmtpServer, string To, string From, string CC, string Subject, string Body, List<Attachment> Attachments)
+        {
+            bool succes = false;
+            try
+            {
+                if (string.IsNullOrEmpty(To) && string.IsNullOrEmpty(CC))
+                    return false;
+
+                SmtpClient smtp = new SmtpClient(SmtpServer);
+                Utilities.LogManager.write("smtp client created ");
+
+                MailMessage msg = new MailMessage();
+                msg.IsBodyHtml = true;
+                msg.To.Add(To);
+                msg.From = new MailAddress(From);
+                if (!string.IsNullOrEmpty(CC))
+                {
+                    msg.CC.Add(CC);
+                }
+                if (!string.IsNullOrEmpty(Subject))
+                {
+                    msg.Subject = Subject;
+                }
+                if (!string.IsNullOrEmpty(Body))
+                {
+                    msg.Body = Body;
+                }
+                if (Attachments != null)
+                {
+                    if (Attachments.Count > 0)
+                    {
+                        foreach (Attachment attach in Attachments)
+                        {
+                            msg.Attachments.Add(attach);
+                        }
+                    }
+                }
+
+                smtp.Send(msg);
+                succes = true;
+            }
+            catch
+            {
+                succes = false;
+            }
+            return succes;
+        }
+        public void SendDelayedMessage2(DelayedAlert delayedAlert, Alert alert)
+        {
+            
+            Notifications notificationSender = new Notifications();
+            try
+            {
+                SPListItem item = null;
+                using (SPSite site = new SPSite(this.siteCollectionURL))
+                {
+                    site.CatchAccessDeniedException = false;
+                    using (SPWeb web = site.OpenWeb(alert.WebId))
+                    {
+                        SPList list = web.Lists[new Guid(alert.ListId)];
+                        item = list.GetItemById(Convert.ToInt32(delayedAlert.ParentItemID));
+                    }
+
+                }
+                MailTemplateUsageObject mtObject = alert.GetMailTemplateUsageObjectForEventType(delayedAlert.AlertType);
+                toAddress = notificationSender.GetRecipientEmailAddresses(alert.ToAddress, item);
+                ccAddress = notificationSender.GetRecipientEmailAddresses(alert.CcAddress, item);
+                fromAddress = notificationSender.GetRecipientEmailAddresses(alert.FromAdderss, item);
+                subject = delayedAlert.Subject;
+                body += notificationSender.ReplacePlaceHolders(delayedAlert.Body, item);
+                smtpSName = notificationSender.GetSMTPServer(item);
+                //SendMail(smtpSName,
+                //         toAddress,
+                //         fromAddress,
+                //         ccAddress,
+                //         subject,
+                //         body,
+                //         null);
+            }
+            catch { }
+        }
 
         internal Dictionary<string,string> GetAlertOwners()
         {

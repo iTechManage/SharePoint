@@ -210,4 +210,7 @@
   <data name="EvaluationCustom" xml:space="preserve">
     <value>Custom</value>
   </data>
+  <data name="SendAsSingleMessage" xml:space="preserve">
+    <value>SendAsSingleMessage</value>
+  </data>
 </root>
