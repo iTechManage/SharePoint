@@ -6,6 +6,7 @@ using Microsoft.SharePoint.Utilities;
 using Microsoft.SharePoint.Workflow;
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml;
 
 namespace CCSAdvancedAlerts 
 {
@@ -17,7 +18,6 @@ namespace CCSAdvancedAlerts
         string FinalBody = string.Empty;
 
         LoggingManager LogManager = new LoggingManager();
-        
 
        ///// <summary>
        ///// An item is being added.
@@ -67,13 +67,20 @@ namespace CCSAdvancedAlerts
                LogManager.write("entered in to ItemUpdated event");
                foreach (SPField field in properties.ListItem.Fields)
                {
-                   if (field != null || field.Hidden)
+                   if(!field.Hidden &&
+                        field.Type != SPFieldType.Attachments &&
+                        field.Type != SPFieldType.ContentTypeId &&
+                        field.Type != SPFieldType.Guid &&
+                        field.Type != SPFieldType.ThreadIndex &&
+                        field.Type != SPFieldType.Threading)
+                   //if (field != null || field.Hidden)
                    {
-                       if (Convert.ToString(properties.ListItem[field.Id]) != Convert.ToString(properties.AfterProperties[field.Title]))
-                       {
-                           temp = Convert.ToString(properties.AfterProperties[field.Title]);
-                           temp2 = Convert.ToString(properties.ListItem[field.Id]);
-                           if (!string.IsNullOrEmpty(temp))
+                       temp = Convert.ToString(properties.AfterProperties[field.Title]);
+                       temp2 = Convert.ToString(properties.ListItem[field.Id]);
+                       if(temp2!=temp)
+                       //if (Convert.ToString(properties.ListItem[field.Id]) != Convert.ToString(properties.AfterProperties[field.Title]))
+                       {              
+                         if (!string.IsNullOrEmpty(temp))
                            {
                                if (temp.Equals("0;#"))
                                {
@@ -97,14 +104,14 @@ namespace CCSAdvancedAlerts
                                }
 
                            }
-                           if(!string.IsNullOrEmpty(temp) && !body.Contains(field.Title))
+                           if(!body.Contains(field.Title))
                            {
                            body += "<tr>" + "<td>" + field.Title +"</td>"+ "<td bgcolor='#F0F0F0'>" + "<strike>"+temp2+"</strike>"+"&nbsp;"+"&nbsp;"+"&nbsp;"+temp+"</td>"+"</tr>";
                            }
                        }
                    }
                }
-               FinalBody = "<b>"+body1+"</b>" + "<br>" + "<br>" + "<table border='1' style=\"border:1px solid #cccccc;margin-top:10px;margin-bottom:10px;border-collapse:collapse\" width='100%'>" + body + "</table>";
+               FinalBody = "<b>"+body1+"</b>" + "<br>" + "<br>" + "<table border='1' style=\"border:1px solid #cccccc;margin-top:10px;margin-bottom:10px;border-collapse:collapse\" width='40%'>" + body + "</table>";
                ExecuteReceivedEvent(AlertEventType.ItemUpdated, properties);
            }
            catch (System.Exception Ex)
@@ -137,8 +144,7 @@ namespace CCSAdvancedAlerts
        {
            LogManager.write("Entered in to ExecuteReceivedEvent with event type" + eventType);
            try
-           {
-               
+           { 
                using (SPWeb web = properties.OpenWeb())
                {
                    //TODO we have to check is feature activated for this site or not
@@ -153,17 +159,35 @@ namespace CCSAdvancedAlerts
 
                            if (alert.IsValid(properties.ListItem, eventType, properties))
                            {
-                               
-
-                               if (alert.SendType == SendType.Immediate)
+                               try
                                {
+                                   if (alert.SendType == SendType.ImmediateAlways)
+                                   {
 
-                                   notifications.SendMail(alert, eventType, properties.ListItem, FinalBody);
+                                       notifications.SendMail(alert, eventType, properties.ListItem, FinalBody);
+                                   }
+                                   else if (alert.SendType == SendType.ImmediateBusinessDays)
+                                   {
+                                       if (alert.ImmediateBusinessDays.Contains((WeekDays)DateTime.UtcNow.DayOfWeek))
+                                       {
+                                           if (alert.BusinessStartHour <= Convert.ToInt32(DateTime.UtcNow.Hour) && alert.BusinessendtHour >= Convert.ToInt32(DateTime.UtcNow.Hour))
+                                           {
+                                               notifications.SendMail(alert, eventType, properties.ListItem, FinalBody);
+                                           }
+                                           else
+                                           {
+                                               return;
+                                           }
+
+                                       }
+                                   }
+
+                                   else
+                                   {
+                                       CreateDelayedAlert(alert, eventType, properties, alertManager);
+                                   }
                                }
-                               else
-                               {
-                                   CreateDelayedAlert(alert, eventType, properties, alertManager);
-                               }
+                               catch { }
                            }
                        }
                    }
@@ -176,6 +200,19 @@ namespace CCSAdvancedAlerts
 
        }
 
+       private List<WeekDays> DesrializeDays(string serializedDays)
+       {
+           List<WeekDays> days = new List<WeekDays>();
+           if (!string.IsNullOrEmpty(serializedDays))
+           {
+               string[] strdays = serializedDays.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+               foreach (string strday in strdays)
+               {
+                   days.Add((WeekDays)Enum.Parse(typeof(WeekDays), strday));
+               }
+           }
+           return days;
+       }
 
        private void CreateDelayedAlert(Alert alert, AlertEventType eventType, SPItemEventProperties properties, AlertManager alertManager)
        {
@@ -184,10 +221,13 @@ namespace CCSAdvancedAlerts
            {
                if (!alert.SendAsSingleMessage)
                {
+                   Notifications notificationSender = new Notifications();
                    //Need to get the Alert instances
                    MailTemplateUsageObject mtObject = alert.GetMailTemplateUsageObjectForEventType(eventType);
-                   string subject = mtObject.Template.Subject;
-                   string body = mtObject.Template.Body + "<br>" + "<br>" + FinalBody;
+                   //string subject = mtObject.Template.Subject;
+                   //string body = mtObject.Template.Body + "<br>" + "<br>" + FinalBody;
+                   string subject = notificationSender.ReplacePlaceHolders(mtObject.Template.Subject, properties.ListItem);
+                   string body = notificationSender.ReplacePlaceHolders(mtObject.Template.Body, properties.ListItem) + "<br>" + "<br>" + FinalBody;
                    string parentItemId = Convert.ToString(properties.ListItem.ID);
                    DelayedAlert dAlert = new DelayedAlert(subject, body, alert.Id, parentItemId, eventType);
                    alertManager.AddDelayedAlert(dAlert);

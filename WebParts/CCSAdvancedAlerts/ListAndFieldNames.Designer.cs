@@ -61,6 +61,15 @@ namespace CCSAdvancedAlerts {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Author.
+        /// </summary>
+        internal static string createdBy {
+            get {
+                return ResourceManager.GetString("createdBy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Alert.
         /// </summary>
         internal static string DelayedAlertLookupFieldName {
@@ -228,6 +237,15 @@ namespace CCSAdvancedAlerts {
         internal static string MTUListName {
             get {
                 return ResourceManager.GetString("MTUListName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ShareTemplateWithAllUsers.
+        /// </summary>
+        internal static string MTUShareTemplateWithAllUsers {
+            get {
+                return ResourceManager.GetString("MTUShareTemplateWithAllUsers", resourceCulture);
             }
         }
         

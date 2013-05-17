@@ -180,11 +180,13 @@ namespace CCSAdvancedAlerts
                 listItem[ListAndFieldNames.settingsListListIdFieldName] = alert.ListId;
                 listItem[ListAndFieldNames.settingsListItemIdFieldName] = alert.ItemID;
                 
-                //Event Type Registered
+                //Event Type Registered  
+                string eventType = string.Empty;
                 foreach(AlertEventType aType in   alert.AlertType )
                 {
-                    listItem[ListAndFieldNames.settingsListEventTypeFieldName] += aType + ";#";
+                    eventType += aType + ";#";
                 }
+                listItem[ListAndFieldNames.settingsListEventTypeFieldName] = eventType;
 
                 //Send type
                 listItem[ListAndFieldNames.settingsListWhenToSendFieldName] = alert.SendType;
@@ -256,15 +258,41 @@ namespace CCSAdvancedAlerts
                 rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.RType, alert.RepeatType.ToString()));//
                 rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.RCount, alert.RepeatCount.ToString()));//
                 rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.CombineAlerts, alert.CombineAlerts.ToString())); //
-                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.ImmediateAlways, alert.ImmidiateAlways.ToString()));
-                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.ImmediateBusinessDays, ConvertDaysToString(alert.ImmediateBusinessDays)));//
-                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.ImmediateBusinessHoursStart, alert.BusinessStartHour.ToString()));//
-                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.ImmediateBusinessHoursFinish, alert.BusinessendtHour.ToString()));//
-                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.DailyBusinessDays, ConvertDaysToString(alert.DailyBusinessDays)));//
-                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.SummaryMode, alert.SummaryMode.ToString())); //
-                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.SendDay, alert.SendDay.ToString()));//
-                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.SendHour, alert.SendHour.ToString()));
-                rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.SendAsSingleMessage, alert.SendAsSingleMessage.ToString()));
+                    XmlNode xSendType = rootNode.AppendChild(xmlDoc.CreateElement(XMLElementNames.SendType));
+                    xSendType.Attributes.Append(XMLHelper.AppendAttribute(xmlDoc, XMLElementNames.Type, alert.SendType.ToString()));
+                    if (alert.ImmediateDays)
+                    {
+                        XmlNode xImmediate = xSendType.AppendChild(xmlDoc.CreateElement(XMLElementNames.SendTypeDetails));
+                        xImmediate.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.ImmediateBusinessDays, ConvertDaysToString(alert.ImmediateBusinessDays)));//
+                        xImmediate.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.ImmediateBusinessHoursStart, alert.BusinessStartHour.ToString()));//
+                        xImmediate.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.ImmediateBusinessHoursFinish, alert.BusinessendtHour.ToString()));//
+                        xImmediate.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.SendAsSingleMessage, alert.SendAsSingleMessage.ToString()));
+                    }
+                    else if (alert.SendType==SendType.Daily)
+                    {
+                        XmlNode xBusinessdays = xSendType.AppendChild(xmlDoc.CreateElement(XMLElementNames.SendTypeDetails));
+                        xBusinessdays.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.DailyBusinessDays, ConvertDaysToString(alert.DailyBusinessDays)));
+                        xBusinessdays.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.SendHour, alert.SendHour.ToString()));
+                        xBusinessdays.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.SendAsSingleMessage, alert.SendAsSingleMessage.ToString()));
+                    }
+                    else if (alert.SendType == SendType.Weekly)
+                    {
+                        XmlNode xWeekely = xSendType.AppendChild(xmlDoc.CreateElement(XMLElementNames.SendTypeDetails));
+                        xWeekely.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.SendDay, alert.SendDay.ToString()));//
+                        xWeekely.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.SendHour, alert.SendHour.ToString()));
+                        xWeekely.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.SendAsSingleMessage, alert.SendAsSingleMessage.ToString()));
+                    }
+
+                //rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.ImmediateAlways, alert.ImmidiateAlways.ToString()));
+                //rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.ImmediateDays, alert.ImmediateDays.ToString()));
+                //rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.ImmediateBusinessDays, ConvertDaysToString(alert.ImmediateBusinessDays)));//
+                //rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.ImmediateBusinessHoursStart, alert.BusinessStartHour.ToString()));//
+                //rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.ImmediateBusinessHoursFinish, alert.BusinessendtHour.ToString()));//
+                //rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.DailyBusinessDays, ConvertDaysToString(alert.DailyBusinessDays)));//
+                    rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.SummaryMode, alert.SummaryMode.ToString())); //
+                //rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.SendDay, alert.SendDay.ToString()));//
+                //rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.SendHour, alert.SendHour.ToString()));
+                //rootNode.AppendChild(XMLHelper.CreateNode(xmlDoc, XMLElementNames.SendAsSingleMessage, alert.SendAsSingleMessage.ToString()));
             
                 //if (alert.PeriodQty > 0)
                 {
@@ -473,13 +501,13 @@ namespace CCSAdvancedAlerts
                                 {
                                     DelayedAlert delayedAlert = new DelayedAlert(item);
                                     Notifications notificationSender = new Notifications();
-                                    SendDelayedMessage2(delayedAlert, alert);
+                                    SendDelayedMessage2(delayedAlert, alert,item);                          
                                 }
                                 else
                                 {
                                     DelayedAlert delayedAlert = new DelayedAlert(item);
                                     Notifications notificationSender = new Notifications();
-                                    notificationSender.SendDelayedMessage(delayedAlert, alert);
+                                    notificationSender.SendDelayedMessage(delayedAlert, alert,item);                            
                                 }
                             }
                             catch 
@@ -562,29 +590,19 @@ namespace CCSAdvancedAlerts
             }
             return succes;
         }
-        public void SendDelayedMessage2(DelayedAlert delayedAlert, Alert alert)
+        public void SendDelayedMessage2(DelayedAlert delayedAlert, Alert alert, SPListItem item)
         {
             
             Notifications notificationSender = new Notifications();
             try
             {
-                SPListItem item = null;
-                using (SPSite site = new SPSite(this.siteCollectionURL))
-                {
-                    site.CatchAccessDeniedException = false;
-                    using (SPWeb web = site.OpenWeb(alert.WebId))
-                    {
-                        SPList list = web.Lists[new Guid(alert.ListId)];
-                        item = list.GetItemById(Convert.ToInt32(delayedAlert.ParentItemID));
-                    }
-
-                }
+                
                 MailTemplateUsageObject mtObject = alert.GetMailTemplateUsageObjectForEventType(delayedAlert.AlertType);
                 toAddress = notificationSender.GetRecipientEmailAddresses(alert.ToAddress, item);
                 ccAddress = notificationSender.GetRecipientEmailAddresses(alert.CcAddress, item);
                 fromAddress = notificationSender.GetRecipientEmailAddresses(alert.FromAdderss, item);
                 subject = delayedAlert.Subject;
-                body += notificationSender.ReplacePlaceHolders(delayedAlert.Body, item);
+                body += delayedAlert.Body;
                 smtpSName = notificationSender.GetSMTPServer(item);
                 //SendMail(smtpSName,
                 //         toAddress,

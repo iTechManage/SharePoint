@@ -61,31 +61,31 @@ namespace CCSAdvancedAlerts
             bool isValid = false;
             foreach (WeekDays weekDay in days)
             {
-                if (weekDay == WeekDays.sun && day == 0)
+                if (weekDay == WeekDays.Sunday && day == 0)
                 {
                     return true;
                 }
-                else if (weekDay == WeekDays.mon && day == 1)
+                else if (weekDay == WeekDays.Monday && day == 1)
                 {
                     return true;
                 }
-                else if (weekDay == WeekDays.tue && day == 2)
+                else if (weekDay == WeekDays.Tuesday && day == 2)
                 {
                     return true;
                 }
-                else if (weekDay == WeekDays.wed && day == 3)
+                else if (weekDay == WeekDays.Wednesday && day == 3)
                 {
                     return true;
                 }
-                else if (weekDay == WeekDays.thu && day == 4)
+                else if (weekDay == WeekDays.Thursday && day == 4)
                 {
                     return true;
                 }
-                else if (weekDay == WeekDays.fri && day == 5)
+                else if (weekDay == WeekDays.Friday && day == 5)
                 {
                     return true;
                 }
-                else if (weekDay == WeekDays.sat && day == 6)
+                else if (weekDay == WeekDays.Saturday && day == 6)
                 {
                     return true;
                 }
@@ -132,9 +132,10 @@ namespace CCSAdvancedAlerts
 
                     string str2 = alertLst.Fields.Add("Timing", SPFieldType.Choice, true);
                     SPFieldChoice choice2 = (SPFieldChoice)alertLst.Fields[str2]; 
-                    choice2.Choices.Add(SendType.Immediate.ToString());
+                    choice2.Choices.Add(SendType.ImmediateAlways.ToString());
+                    choice2.Choices.Add(SendType.ImmediateBusinessDays.ToString());
                     choice2.Choices.Add(SendType.Daily.ToString());
-                    choice2.Choices.Add(SendType.Weekely.ToString());
+                    choice2.Choices.Add(SendType.Weekly.ToString());
                     choice2.Update();
 
 

@@ -27,29 +27,18 @@ namespace CCSAdvancedAlerts
 
 
         public string siteCollectionURL;
-
-        internal void SendDelayedMessage(DelayedAlert delayedAlert, Alert alert)
+        internal void SendDelayedMessage(DelayedAlert delayedAlert, Alert alert, SPListItem item)
         {
-
             try
-            {
-                SPListItem item = null;
-                using (SPSite site = new SPSite(this.siteCollectionURL))
-                {
-                    site.CatchAccessDeniedException = false;
-                    using (SPWeb web = site.OpenWeb(alert.WebId))
-                    {
-                        SPList list = web.Lists[new Guid(alert.ListId)];
-                        item = list.GetItemById(Convert.ToInt32(delayedAlert.ParentItemID));
-                    }
-
-                }
+            {               
                 MailTemplateUsageObject mtObject = alert.GetMailTemplateUsageObjectForEventType(delayedAlert.AlertType);
                 string toAddress = GetRecipientEmailAddresses(alert.ToAddress, item);
                 string ccAddress = GetRecipientEmailAddresses(alert.CcAddress, item);
                 string fromAddress = GetRecipientEmailAddresses(alert.FromAdderss, item);
-                string subject = ReplacePlaceHolders(mtObject.Template.Subject, item);
-                string body = ReplacePlaceHolders(mtObject.Template.Body, item);
+                string subject = delayedAlert.Subject;
+                string body = delayedAlert.Body;
+                //string subject = ReplacePlaceHolders(mtObject.Template.Subject, item);
+                //string body = ReplacePlaceHolders(mtObject.Template.Body, item);
                 string smtpSName = GetSMTPServer(item);
                 SendMail(smtpSName,
                          toAddress,
@@ -60,9 +49,6 @@ namespace CCSAdvancedAlerts
                          null);
             }
             catch { }
-
-
-
             //try
             //{
             //    SPListItem item = null;

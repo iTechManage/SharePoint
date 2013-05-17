@@ -90,6 +90,7 @@ namespace CCSAdvancedAlerts
                     listItem[ListAndFieldNames.MTListInsertUpdatedFieldsFieldName] = template.InsertUpdatedFields;
                     listItem[ListAndFieldNames.MTListInsertAttachmentsFieldName] = template.InsertAttachments;
                     listItem[ListAndFieldNames.MTListHighLightUpdatedFieldsFieldName] = template.HighLightUpdatedFields;
+                    listItem[ListAndFieldNames.MTUShareTemplateWithAllUsers] = template.ShareTemplateWithAllUsers;
                     //listItem[ListAndFieldNames.MTListOwnerFieldName] = template.;
                     listItem.Update();
                 }
@@ -110,12 +111,27 @@ namespace CCSAdvancedAlerts
             mTempalte.InsertUpdatedFields = Convert.ToBoolean(listItem[ListAndFieldNames.MTListInsertUpdatedFieldsFieldName]);
             mTempalte.InsertAttachments = Convert.ToBoolean(listItem[ListAndFieldNames.MTListInsertAttachmentsFieldName]);
             mTempalte.HighLightUpdatedFields = Convert.ToBoolean(listItem[ListAndFieldNames.MTListHighLightUpdatedFieldsFieldName]);
+            mTempalte.ShareTemplateWithAllUsers = Convert.ToBoolean(listItem[ListAndFieldNames.MTUShareTemplateWithAllUsers]);
+            mTempalte.Created = Convert.ToString(listItem[ListAndFieldNames.createdBy]);
+            //if (!string.IsNullOrEmpty(mTempalte.Created))
+            //{
+            //    if (mTempalte.Created.Equals("0;#"))
+            //    {
+            //        mTempalte.Created = string.Empty;
+            //    }
+            //    else if (mTempalte.Created.Contains(";#"))
+            //    {
+            //        mTempalte.Created = mTempalte.Created.Substring(mTempalte.Created.IndexOf(";#") + 2);
+            //    }
 
+            //}
+         
             return mTempalte;
         }
 
         internal Dictionary<string, string> GetTemplatesByUser(int userID)
         {
+            bool CanShareTemplate=false;
             Dictionary<string, string> templatesByUser = new Dictionary<string, string>();
             try
             {
@@ -123,14 +139,27 @@ namespace CCSAdvancedAlerts
                 foreach (SPListItem item in mailTemplateList.Items)
                 {
                     //Push them to Dict
-                    if (item["Owner"] != null)
+                    if (item.Fields.ContainsField(ListAndFieldNames.MTUShareTemplateWithAllUsers))
                     {
-                        SPUser user = new SPFieldUserValue(SPContext.Current.Web, item["Owner"].ToString()).User;
-                        if (user.ID == userID)
+                        CanShareTemplate = Convert.ToBoolean(item[ListAndFieldNames.MTUShareTemplateWithAllUsers]);
+                    }
+                    if (CanShareTemplate)
+                    {
+                        templatesByUser.Add(Convert.ToString(item.ID), Convert.ToString(item["Title"]));
+                    }
+                    else
+                    {
+
+                        if (item["Owner"] != null)
                         {
-                            templatesByUser.Add(Convert.ToString(item.ID), Convert.ToString(item["Title"]));
+                            SPUser user = new SPFieldUserValue(SPContext.Current.Web, item["Owner"].ToString()).User;
+
+                            if (user.ID == userID)
+                            {
+                                templatesByUser.Add(Convert.ToString(item.ID), Convert.ToString(item["Title"]));
+                            }
+
                         }
-                        
                     }
                 }
             }
@@ -140,7 +169,24 @@ namespace CCSAdvancedAlerts
             }
             return templatesByUser;
         }
-
+        internal Dictionary<string, string> GetAllTemplates()
+        {
+            Dictionary<string, string> allMailTemplates = new Dictionary<string, string>();
+            try
+            {
+                //Iterate througu all the alerts for the owners
+                foreach (SPListItem item in mailTemplateList.Items)
+                {
+                    //Push them to Dict         
+                    allMailTemplates.Add(Convert.ToString(item.ID), Convert.ToString(item["Title"]));                  
+                }
+            }
+            catch
+            {
+                //Error occured while getting all the owners of the alerts
+            }
+            return allMailTemplates;
+        }
         internal MailTemplate GetMailtemplateByID(string templateID)
         {
             MailTemplate mTemplate = null;
@@ -195,6 +241,7 @@ namespace CCSAdvancedAlerts
                         listItem[ListAndFieldNames.MTUHighLightUpdatedFieldsFieldName] = mObject.HighLightUpdatedFields;
                         listItem[ListAndFieldNames.MTUInsertAttachmentsFieldName] = mObject.InsertAttachments;
                         listItem[ListAndFieldNames.MTUInsertUpdatedFieldsFieldName] = mObject.InsertUpdatedFields;
+                        listItem[ListAndFieldNames.MTUShareTemplateWithAllUsers] = mObject.ShareTemplateWithAllUsers;
 
                         //Other information in xml format
                         listItem.Update();
@@ -239,6 +286,8 @@ namespace CCSAdvancedAlerts
             mObject.HighLightUpdatedFields = Convert.ToBoolean(listItem[ListAndFieldNames.MTUHighLightUpdatedFieldsFieldName]);
             mObject.InsertAttachments = Convert.ToBoolean(listItem[ListAndFieldNames.MTUInsertAttachmentsFieldName]);
             mObject.InsertUpdatedFields = Convert.ToBoolean(listItem[ListAndFieldNames.MTUInsertUpdatedFieldsFieldName]);
+            mObject.ShareTemplateWithAllUsers = Convert.ToBoolean(listItem[ListAndFieldNames.MTUShareTemplateWithAllUsers]);
+            mObject.Created = Convert.ToString(listItem[ListAndFieldNames.createdBy]);
 
             return mObject;
         }

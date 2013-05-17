@@ -11,6 +11,7 @@ namespace CCSAdvancedAlerts
 {
     class Alert
     {
+        private string sendtypes = string.Empty;
         private List<AlertEventType> alertType = new List<AlertEventType>();
         internal List<AlertEventType> AlertType
         {
@@ -194,12 +195,17 @@ namespace CCSAdvancedAlerts
             set { templateManager = value; }
         }
 
-
         private bool immidiateAlways;
         public bool ImmidiateAlways
         {
             get { return immidiateAlways; }
             set { immidiateAlways = value; }
+        }
+        private bool immediateDays;
+        public bool ImmediateDays
+        {
+            get { return immediateDays; }
+            set { immediateDays = value; }
         }
 
         private List<WeekDays> immediateBusinessDays;
@@ -357,7 +363,6 @@ namespace CCSAdvancedAlerts
   
         private  void DeSerializeMetaData(string xmlMetaData)
         {
-
             try
             {
                 XmlDocument xmlDoc = new XmlDocument();
@@ -411,25 +416,65 @@ namespace CCSAdvancedAlerts
                 
                 this.CombineAlerts =  Utilities.ParseToBool( XMLHelper.GetChildValue(xmlDoc, XMLElementNames.CombineAlerts));
 
-                this.ImmidiateAlways = Utilities.ParseToBool(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.ImmediateAlways));
+                XmlNode xSendType = xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.SendType);
 
-                this.immediateBusinessDays = DesrializeDays(XMLHelper.GetChildValue(xmlDoc,  XMLElementNames.ImmediateBusinessDays));
+                sendtypes = xSendType.Attributes[XMLElementNames.Type].Value.ToString();
 
-                this.BusinessStartHour = Utilities.ParseToInt(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.ImmediateBusinessHoursStart));
+                if (sendtypes == "ImmediateBusinessDays")
+                {
+                    XmlNode xSendTyeDetails = xSendType.SelectSingleNode(XMLElementNames.SendTypeDetails);
 
-                this.BusinessendtHour = Utilities.ParseToInt(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.ImmediateBusinessHoursFinish));
+                    this.immediateBusinessDays = DesrializeDays(XMLHelper.GetChildValue2(xSendTyeDetails, XMLElementNames.ImmediateBusinessDays));
 
-                this.DailyBusinessDays = DesrializeDays(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.DailyBusinessDays));
+                    this.BusinessStartHour = Utilities.ParseToInt(XMLHelper.GetChildValue2(xSendTyeDetails, XMLElementNames.ImmediateBusinessHoursStart));
+
+                    this.BusinessendtHour = Utilities.ParseToInt(XMLHelper.GetChildValue2(xSendTyeDetails, XMLElementNames.ImmediateBusinessHoursFinish));
+
+                    this.SendAsSingleMessage = Utilities.ParseToBool(XMLHelper.GetChildValue2(xSendTyeDetails, XMLElementNames.SendAsSingleMessage));
+                }
+                else if (sendtypes == "Daily")
+                {
+                    XmlNode xSendTyeDetails = xSendType.SelectSingleNode(XMLElementNames.SendTypeDetails);
+
+                    this.DailyBusinessDays = DesrializeDays(XMLHelper.GetChildValue2(xSendTyeDetails, XMLElementNames.DailyBusinessDays));
+
+                    this.SendHour = Utilities.ParseToInt(XMLHelper.GetChildValue2(xSendTyeDetails, XMLElementNames.SendHour));
+
+                    this.SendAsSingleMessage = Utilities.ParseToBool(XMLHelper.GetChildValue2(xSendTyeDetails, XMLElementNames.SendAsSingleMessage));
+                }
+                else if (sendtypes == "Weekly")
+                {
+                    XmlNode xSendTyeDetails = xSendType.SelectSingleNode(XMLElementNames.SendTypeDetails);
+
+                    this.sendDay = Utilities.ParseToInt(XMLHelper.GetChildValue2(xSendTyeDetails, XMLElementNames.SendDay));
+
+                    this.SendHour = Utilities.ParseToInt(XMLHelper.GetChildValue2(xSendTyeDetails, XMLElementNames.SendHour));
+
+                    this.SendAsSingleMessage = Utilities.ParseToBool(XMLHelper.GetChildValue2(xSendTyeDetails, XMLElementNames.SendAsSingleMessage));
+                }
+
+
+                //this.ImmidiateAlways = Utilities.ParseToBool(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.ImmediateAlways));
+
+                //this.immediateDays = Utilities.ParseToBool(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.ImmediateBusinessDays));
+
+                //this.immediateBusinessDays = DesrializeDays(XMLHelper.GetChildValue(xmlDoc,  XMLElementNames.ImmediateBusinessDays));
+
+                //this.BusinessStartHour = Utilities.ParseToInt(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.ImmediateBusinessHoursStart));
+
+                //this.BusinessendtHour = Utilities.ParseToInt(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.ImmediateBusinessHoursFinish));
+
+                //this.DailyBusinessDays = DesrializeDays(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.DailyBusinessDays));
 
                 this.SummaryMode = Convert.ToBoolean( XMLHelper.GetChildValue(xmlDoc,  XMLElementNames.SummaryMode));
 
                 this.PeriodQty = Utilities.ParseToInt(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.PQty));
 
-                this.sendDay = Utilities.ParseToInt(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.SendDay));
+                //this.sendDay = Utilities.ParseToInt(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.SendDay));
 
-                this.SendHour = Utilities.ParseToInt(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.SendHour));
+                //this.SendHour = Utilities.ParseToInt(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.SendHour));
 
-                this.SendAsSingleMessage = Utilities.ParseToBool(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.SendAsSingleMessage));
+                //this.SendAsSingleMessage = Utilities.ParseToBool(XMLHelper.GetChildValue(xmlDoc, XMLElementNames.SendAsSingleMessage));
             }
             catch 
             {
@@ -442,18 +487,24 @@ namespace CCSAdvancedAlerts
         {
             try
             {
-                if (this.ImmidiateAlways)
+
+                if (sendtypes == "ImmediateBusinessDays")
                 {
-                    this.sendType = SendType.Immediate;
+                    this.sendType = SendType.ImmediateBusinessDays;
                 }
-                else if (this.DailyBusinessDays.Count > 0)
+                else if (sendtypes == "Daily")
                 {
                     this.sendType = SendType.Daily;
                 }
+                else if (sendtypes == "Weekly")
+                {
+                    this.sendType = SendType.Weekly;
+                }
                 else
                 {
-                    this.sendType = SendType.Weekely;
+                    this.sendType = SendType.ImmediateAlways;
                 }
+
             }
             catch { }
         }

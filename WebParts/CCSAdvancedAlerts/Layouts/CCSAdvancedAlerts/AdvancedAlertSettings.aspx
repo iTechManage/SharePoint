@@ -679,6 +679,16 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                    <td colspan="2" class="ms-descriptiontext">
+                                        <asp:CheckBox ID="chkShareTemplateWithOtherUsers" Text="Share template with all users" runat="server">
+                                        </asp:CheckBox>
+                                    </td>
+                                    <td>
+                                    </td>
+                                    <td>
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td colspan="2">
                                         <asp:Button ID="btnTemplateAdd" runat="server" Text="Add" Width="30%" CssClass="ms-ButtonHeightWidth" />
                                         <asp:Button ID="btnTemplateUpdate" runat="server" Text="Update" Width="30%" CssClass="ms-ButtonHeightWidth" />

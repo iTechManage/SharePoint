@@ -78,44 +78,74 @@ namespace CCSAdvancedAlerts
                                                 catch
                                                 { continue; }
 
-                                                this.ExecuteTimerAlert(web, list, alert);
+                                                if (isValidTimerAlert(alert, web,dtWebTime))
+                                                {
+                                                    this.ExecuteTimerAlert(web, list, alert);
+                                                }
                                             }
-
+                                            if (alert.SendType == SendType.Daily)
+                                            {
+                                                if (alert.DailyBusinessDays.Contains((WeekDays)DateTime.UtcNow.DayOfWeek))
+                                                {
+                                                    if (alert.SendHour.Equals(DateTime.UtcNow.Hour))
+                                                    {
+                                                        if (alertManager == null)
+                                                        {
+                                                            alertManager = new AlertManager(site.Url);
+                                                        }
+                                                        alertManager.ExecuteDelayedMessages(alert);
+                                                    }
+                                                }
+                                            }
+                                            else if (alert.SendType == SendType.Weekly)
+                                            {
+                                                if (alert.SendDay.Equals((WeekDays)DateTime.UtcNow.Day))
+                                                {
+                                                    if (alert.SendHour.Equals(DateTime.UtcNow.Hour))
+                                                    {
+                                                        if (alertManager == null)
+                                                        {
+                                                            alertManager = new AlertManager(site.Url);
+                                                        }
+                                                        alertManager.ExecuteDelayedMessages(alert);
+                                                    }
+                                                }
+                                            }
                                             //2. Handling Delayed alerts for daily bu specific time and send as single message
                                             //if (alert.AlertType != SendType.Immediate)
-                                            if (alert.SendType != SendType.Immediate)
-                                            {
-                                                //if (((info2.SendHour == time2.Hour) && (time2.Minute < 30)) && (((info2.Timing == SendTiming.Daily) && info2.DailyBusinessDays.Contains(time2.DayOfWeek)) || (info2.SendWeekday == time2.DayOfWeek)))
-                                                //  {
+                                            //if (alert.SendType != SendType.ImmediateAlways)
+                                            //{
+                                            //    //if (((info2.SendHour == time2.Hour) && (time2.Minute < 30)) && (((info2.Timing == SendTiming.Daily) && info2.DailyBusinessDays.Contains(time2.DayOfWeek)) || (info2.SendWeekday == time2.DayOfWeek)))
+                                            //    //  {
 
-                                                //if ((alert.SendHour == dtWebTime.Hour) && (((alert.SendType == SendType.Daily) && alert.DailyBusinessDays.Contains(dtWebTime.DayOfWeek)) || (alert.SendDay == dtWebTime.DayOfWeek)))
-                                                if ((alert.SendHour == dtWebTime.Hour) && (((alert.SendType == SendType.Daily) && Utilities.ContainsDay(alert.DailyBusinessDays, Convert.ToInt32(dtWebTime.DayOfWeek))) || (alert.SendDay == Convert.ToInt32(dtWebTime.DayOfWeek))))
-                                                {
-                                                    if (alertManager == null)
-                                                    {
-                                                        alertManager = new AlertManager(site.Url);
-                                                    }
-                                                    alertManager.ExecuteDelayedMessages(alert);
-                                                }
+                                            //    //if ((alert.SendHour == dtWebTime.Hour) && (((alert.SendType == SendType.Daily) && alert.DailyBusinessDays.Contains(dtWebTime.DayOfWeek)) || (alert.SendDay == dtWebTime.DayOfWeek)))
+                                            //    if ((alert.SendHour == dtWebTime.Hour) && (((alert.SendType == SendType.Daily) && Utilities.ContainsDay(alert.DailyBusinessDays, Convert.ToInt32(dtWebTime.DayOfWeek))) || (alert.SendDay == Convert.ToInt32(dtWebTime.DayOfWeek))))
+                                            //    {
+                                            //        if (alertManager == null)
+                                            //        {
+                                            //            alertManager = new AlertManager(site.Url);
+                                            //        }
+                                            //        alertManager.ExecuteDelayedMessages(alert);
+                                            //    }
 
 
-                                            }
+                                            //}
 
-                                            //3. Handling Delayed alerts based on weekdays and all the stuff
-                                            else if (!alert.ImmidiateAlways)
-                                            {
-                                                //Based on week days
-                                                //if ((alert.ImmediateBusinessDays.Contains(web.RegionalSettings.TimeZone.UTCToLocalTime(DateTime.UtcNow.DayOfWeek)) && (alert.BusinessStartHour <= web.RegionalSettings.TimeZone.UTCToLocalTime(DateTime.UtcNow).Hour)) && (alert.BusinessendtHour > web.RegionalSettings.TimeZone.UTCToLocalTime(DateTime.UtcNow).Hour))
-                                                if ((Utilities.ContainsDay(alert.ImmediateBusinessDays, Convert.ToInt32(web.RegionalSettings.TimeZone.UTCToLocalTime(DateTime.UtcNow).DayOfWeek))) && (alert.BusinessStartHour <= web.RegionalSettings.TimeZone.UTCToLocalTime(DateTime.UtcNow).Hour) && (alert.BusinessendtHour > web.RegionalSettings.TimeZone.UTCToLocalTime(DateTime.UtcNow).Hour))
-                                                {
-                                                    if (alertManager == null)
-                                                    {
-                                                        alertManager = new AlertManager(site.Url);
-                                                    }
-                                                    alertManager.ExecuteDelayedMessages(alert);
+                                            ////3. Handling Delayed alerts based on weekdays and all the stuff
+                                            //else if (!alert.ImmidiateAlways)
+                                            //{
+                                            //    //Based on week days
+                                            //    //if ((alert.ImmediateBusinessDays.Contains(web.RegionalSettings.TimeZone.UTCToLocalTime(DateTime.UtcNow.DayOfWeek)) && (alert.BusinessStartHour <= web.RegionalSettings.TimeZone.UTCToLocalTime(DateTime.UtcNow).Hour)) && (alert.BusinessendtHour > web.RegionalSettings.TimeZone.UTCToLocalTime(DateTime.UtcNow).Hour))
+                                            //    if ((Utilities.ContainsDay(alert.ImmediateBusinessDays, Convert.ToInt32(web.RegionalSettings.TimeZone.UTCToLocalTime(DateTime.UtcNow).DayOfWeek))) && (alert.BusinessStartHour <= web.RegionalSettings.TimeZone.UTCToLocalTime(DateTime.UtcNow).Hour) && (alert.BusinessendtHour > web.RegionalSettings.TimeZone.UTCToLocalTime(DateTime.UtcNow).Hour))
+                                            //    {
+                                            //        if (alertManager == null)
+                                            //        {
+                                            //            alertManager = new AlertManager(site.Url);
+                                            //        }
+                                            //        alertManager.ExecuteDelayedMessages(alert);
 
-                                                }
-                                            }
+                                            //    }
+                                            //}
 
                                         }
                                     }
@@ -216,6 +246,42 @@ namespace CCSAdvancedAlerts
                 //Error occured while executing timer alerts
             }
         }
+
+
+        bool isValidTimerAlert(Alert alert, SPWeb web, DateTime dtWebTime)
+        {
+
+            try
+            {
+                if (alert.ImmediateBusinessDays.Count > 0)
+                {
+                    if (!(Utilities.ContainsDay(alert.ImmediateBusinessDays, Convert.ToInt32(web.RegionalSettings.TimeZone.UTCToLocalTime(DateTime.UtcNow).DayOfWeek))) && (alert.BusinessStartHour <= web.RegionalSettings.TimeZone.UTCToLocalTime(DateTime.UtcNow).Hour) && (alert.BusinessendtHour > web.RegionalSettings.TimeZone.UTCToLocalTime(DateTime.UtcNow).Hour))
+                    {
+                        return false;
+                    }
+                }
+
+                else if (!alert.ImmidiateAlways)
+                {
+                    //if (!(Utilities.ContainsDay(alert.ImmediateBusinessDays, Convert.ToInt32(web.RegionalSettings.TimeZone.UTCToLocalTime(DateTime.UtcNow).DayOfWeek))) && (alert.BusinessStartHour <= web.RegionalSettings.TimeZone.UTCToLocalTime(DateTime.UtcNow).Hour) && (alert.BusinessendtHour > web.RegionalSettings.TimeZone.UTCToLocalTime(DateTime.UtcNow).Hour))
+                    if (!((alert.SendHour == dtWebTime.Hour) && (((alert.SendType == SendType.Daily) && Utilities.ContainsDay(alert.DailyBusinessDays, Convert.ToInt32(dtWebTime.DayOfWeek))) || (alert.SendDay == Convert.ToInt32(dtWebTime.DayOfWeek)))))
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return true;
+                }
+
+            }
+            catch
+            {
+
+            }
+            return true;
+        }
+
         #endregion
 
 

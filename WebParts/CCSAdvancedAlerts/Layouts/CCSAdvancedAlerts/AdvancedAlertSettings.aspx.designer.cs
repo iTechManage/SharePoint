@@ -1030,6 +1030,15 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts {
         protected global::System.Web.UI.WebControls.CheckBox chkInsertAttachments;
         
         /// <summary>
+        /// chkShareTemplateWithOtherUsers control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox chkShareTemplateWithOtherUsers;
+        
+        /// <summary>
         /// btnTemplateAdd control.
         /// </summary>
         /// <remarks>

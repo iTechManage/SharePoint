@@ -31,6 +31,13 @@ namespace CCSAdvancedAlerts
             set { body = value; }
         }
 
+        string created;
+        public string Created
+        {
+            get { return created; }
+            set { created = value; }
+        }
+
         string subject;
         public string Subject
         {
@@ -58,8 +65,12 @@ namespace CCSAdvancedAlerts
             get { return insertUpdatedFields; }
             set { insertUpdatedFields = value; }
         }
-
-
+        bool shareTemplateWithAllUsers;
+        public bool ShareTemplateWithAllUsers
+        {
+            get { return shareTemplateWithAllUsers; }
+            set { shareTemplateWithAllUsers = value; }
+        }
 
     }
 }

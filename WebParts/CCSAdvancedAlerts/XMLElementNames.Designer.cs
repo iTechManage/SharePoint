@@ -241,6 +241,15 @@ namespace CCSAdvancedAlerts {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ImmediateDays.
+        /// </summary>
+        internal static string ImmediateDays {
+            get {
+                return ResourceManager.GetString("ImmediateDays", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to PPosition.
         /// </summary>
         internal static string PPosition {
@@ -331,6 +340,24 @@ namespace CCSAdvancedAlerts {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to SendType.
+        /// </summary>
+        internal static string SendType {
+            get {
+                return ResourceManager.GetString("SendType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SendTypeDetails.
+        /// </summary>
+        internal static string SendTypeDetails {
+            get {
+                return ResourceManager.GetString("SendTypeDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to SummaryMode.
         /// </summary>
         internal static string SummaryMode {
@@ -345,6 +372,15 @@ namespace CCSAdvancedAlerts {
         internal static string ToAddress {
             get {
                 return ResourceManager.GetString("ToAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to type.
+        /// </summary>
+        internal static string Type {
+            get {
+                return ResourceManager.GetString("Type", resourceCulture);
             }
         }
     }

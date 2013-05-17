@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="createdBy" xml:space="preserve">
+    <value>Author</value>
+  </data>
   <data name="DelayedAlertLookupFieldName" xml:space="preserve">
     <value>Alert</value>
   </data>
@@ -173,6 +176,9 @@
   </data>
   <data name="MTUListName" xml:space="preserve">
     <value>CCSAdvancedTemplateForAlert</value>
+  </data>
+  <data name="MTUShareTemplateWithAllUsers" xml:space="preserve">
+    <value>ShareTemplateWithAllUsers</value>
   </data>
   <data name="MTUTemplateFieldName" xml:space="preserve">
     <value>Template</value>

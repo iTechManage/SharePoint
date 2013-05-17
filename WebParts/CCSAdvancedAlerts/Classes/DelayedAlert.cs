@@ -83,14 +83,18 @@ namespace CCSAdvancedAlerts
 
         public DelayedAlert(SPListItem item)
         {
-            this.subject = Convert.ToString(item[ListAndFieldNames.DelayedSubjectFieldName])  ;
-            this.body =Convert.ToString(item[ListAndFieldNames.DelayedBodyFieldName])  ;
-            SPFieldLookupValue lookupValue = (SPFieldLookupValue) item[ListAndFieldNames.DelayedAlertLookupFieldName];
-            this.parentAlertID = Convert.ToString(lookupValue.LookupId);
-            this.alertType = (AlertEventType)Enum.Parse(typeof(AlertEventType), Convert.ToString(item[ListAndFieldNames.DelayedEventTypeFieldName]));
-            this.item = item;
-            this.id = Convert.ToString(item.ID);
-            this.parentItemID = Convert.ToString(item[ListAndFieldNames.DelayedParentItemID]);
+            try
+            {
+                this.subject = Convert.ToString(item[ListAndFieldNames.DelayedSubjectFieldName]);
+                this.body = Convert.ToString(item[ListAndFieldNames.DelayedBodyFieldName]);
+                SPFieldLookupValue lookupValue = new SPFieldLookupValue(item[ListAndFieldNames.DelayedAlertLookupFieldName].ToString());
+                this.parentAlertID = Convert.ToString(lookupValue.LookupId);
+                this.alertType = (AlertEventType)Enum.Parse(typeof(AlertEventType), Convert.ToString(item[ListAndFieldNames.DelayedEventTypeFieldName]));
+                this.item = item;
+                this.id = Convert.ToString(item.ID);
+                this.parentItemID = Convert.ToString(item[ListAndFieldNames.DelayedParentItemID]);
+            }
+            catch { }
         }
 
 

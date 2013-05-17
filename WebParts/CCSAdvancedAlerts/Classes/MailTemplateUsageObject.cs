@@ -29,7 +29,12 @@ namespace CCSAdvancedAlerts
             get { return alertType; }
             set { alertType = value; }
         }
-
+        string created;
+        public string Created
+        {
+            get { return created; }
+            set { created = value; }
+        }
         bool highLightUpdatedFields;
         public bool HighLightUpdatedFields
         {
@@ -49,6 +54,13 @@ namespace CCSAdvancedAlerts
         {
             get { return insertUpdatedFields; }
             set { insertUpdatedFields = value; }
+        }
+
+        bool shareTemplateWithAllUsers;
+        public bool ShareTemplateWithAllUsers
+        {
+            get { return shareTemplateWithAllUsers; }
+            set { shareTemplateWithAllUsers = value; }
         }
 
 

@@ -21,13 +21,13 @@ namespace CCSAdvancedAlerts
 
     public enum WeekDays
     {
-        sun,
-        mon,
-        tue,
-        wed,
-        thu,
-        fri,
-        sat
+        Sunday,
+        Monday,
+        Tuesday,
+        Wednesday,
+        Thursday,
+        Friday,
+        Saturday
     }
 
     public enum PeriodType
@@ -58,9 +58,10 @@ namespace CCSAdvancedAlerts
 
     public enum SendType
     {
-        Immediate,
+        ImmediateAlways,
+        ImmediateBusinessDays,
         Daily,
-        Weekely
+        Weekly
     }
 
     public enum UnionType

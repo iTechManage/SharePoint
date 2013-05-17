@@ -222,6 +222,8 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
 
         void rdWeekly_CheckedChanged(object sender, EventArgs e)
         {
+            rdImmediateAlways.Checked = false;
+            rdImmediateBusinessdays.Checked = false;
             sendAsSingleMessage.Enabled = true;
             sendAsSingleMessage.Checked = false;
             ddlAlertWeekday.Enabled = true;
@@ -343,9 +345,6 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
 
                 //Edit the existing alert
                 this.btnUpdateAlert.Visible = true;
-                this.rdImmediately.Checked = false;
-                this.pnSubImmediately.Visible = false;
-                this.rdImmediateAlways.Checked = false;
                 int alertID = Convert.ToInt32(this.gvAlerts.DataKeys[this.gvAlerts.SelectedIndex][0]);
                 this.FillAlert(Convert.ToString(alertID));
 
@@ -436,6 +435,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                 }
             }
         }
+    
 
         private void FillConditionField(DropDownList ddlField, DropDownList ddlOperator, TextBox txtValue)
         {
@@ -601,7 +601,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                         this.AddUpdateCondition(ddlField, ddlWhen, ddlOperator, txtValue, -1);
                     }
                 }
-
+               
             }
             catch (Exception exception)
             {
@@ -664,6 +664,17 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             {
             }
         }
+        //protected void Conditions_SelectedIndexChanged(object sender, GridViewUpdateEventArgs e)
+        //{
+        //    try
+        //    {
+                
+                
+        //    }
+        //    catch
+        //    {
+        //    }
+        //}
 
         private void AddUpdateCondition(DropDownList ddlField, DropDownList ddlWhen, DropDownList ddlOperator, TextBox txtValue, int editIndex)
         {
@@ -679,6 +690,9 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                 condition2.ComparisionType = (ConditionComparisionType)Enum.Parse(typeof(ConditionComparisionType), ddlWhen.SelectedValue);
                 //condition2.OnChange = ddlWhen.SelectedValue != "Always";
                 condition2.ComparisionOperator = (Operators)Enum.Parse(typeof(Operators), ddlOperator.SelectedValue);
+                //Creating Dictionary to store field and operator values
+                //Dictionary<string, string> condValues = new Dictionary<string, string>();
+                //condValues.Add(Convert.ToString(ddlField), Convert.ToString(ddlOperator));
                 condition2.StrValue = txtValue.Text;
                 Condition item = condition2;
                 if ((editIndex == -1) || ((conditions.Count + 1) < editIndex))
@@ -938,7 +952,11 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
 
         protected void FillAlert(string alertID)
         {
-            //Populate Alert 
+            //Populate Alert
+            this.rdImmediately.Checked = false;
+            this.rdDaily.Checked = false;
+            this.rdWeekly.Checked = false;
+            pnSubImmediately.Visible = false;
             try
             {
                 this.hiddenAlertID.Text = alertID;
@@ -977,7 +995,13 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                 chkRepeat.Checked = alert.Repeat;
                 ddlRepeatType.SelectedValue = Convert.ToString(alert.RepeatType);
 
-                if (alert.ImmidiateAlways)
+                //when To Send
+                rdDaily.Checked = (alert.SendType == SendType.Daily);
+                rdImmediateAlways.Checked = (alert.SendType == SendType.ImmediateAlways);
+                rdImmediateBusinessdays.Checked = (alert.SendType == SendType.ImmediateBusinessDays);
+                rdWeekly.Checked = (alert.SendType == SendType.Weekly);
+
+                if (alert.SendType==SendType.ImmediateAlways)
                 {
                     rdImmediately.Checked = true;
                     pnSubImmediately.Visible = true;
@@ -985,57 +1009,65 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                     //rdImmediateBusinessdays.Checked = !rdImmediateAlways.Checked;
                     //pnImmediateBusinessDays.Visible = rdImmediateBusinessdays.Checked;
                 }
-                else if (alert.ImmediateBusinessDays.Count > 0)
+                else if (alert.ImmediateBusinessDays!=null)
                 {
                     sendAsSingleMessage.Enabled = true;
                     rdImmediately.Checked = true;
                     rdImmediateBusinessdays.Checked = true;
-                    pnImmediateBusinessDays.Visible = true;
+                    pnSubImmediately.Visible = true;
+                    pnImmediateBusinessDays.Visible = rdImmediateBusinessdays.Checked;
+                    ddlImmediateBusinessStartTime.SelectedValue = Convert.ToString(alert.BusinessStartHour);
+                    ddlImmediateBusinessEndTime.SelectedValue = Convert.ToString(alert.BusinessendtHour);
+                    chkImmediateSun.Checked = alert.ImmediateBusinessDays.Contains(WeekDays.Sunday);
+                    chkImmediateMon.Checked = alert.ImmediateBusinessDays.Contains(WeekDays.Monday);
+                    chkImmediateTue.Checked = alert.ImmediateBusinessDays.Contains(WeekDays.Tuesday);
+                    chkImmediateWed.Checked = alert.ImmediateBusinessDays.Contains(WeekDays.Wednesday);
+                    chkImmediateThu.Checked = alert.ImmediateBusinessDays.Contains(WeekDays.Thursday);
+                    chkImmediateFri.Checked = alert.ImmediateBusinessDays.Contains(WeekDays.Friday);
+                    chkImmediateSat.Checked = alert.ImmediateBusinessDays.Contains(WeekDays.Saturday);
+                    sendAsSingleMessage.Checked = alert.SendAsSingleMessage.Equals(true);
                 }
 
-                else if (alert.DailyBusinessDays.Count > 0)
+                else if (alert.DailyBusinessDays!=null)
                 {
                     sendAsSingleMessage.Enabled = true;
                     rdDaily.Checked = true;
                     pnSubDaily.Visible = rdDaily.Checked;
+                    this.ddlAlertTime.SelectedValue = Convert.ToString(alert.SendHour);
+                    chkDailySun.Checked = alert.DailyBusinessDays.Contains(WeekDays.Sunday);
+                    chkDailyMon.Checked = alert.DailyBusinessDays.Contains(WeekDays.Monday);
+                    chkDailyTue.Checked = alert.DailyBusinessDays.Contains(WeekDays.Tuesday);
+                    chkDailyThu.Checked = alert.DailyBusinessDays.Contains(WeekDays.Thursday);
+                    chkDailyWed.Checked = alert.DailyBusinessDays.Contains(WeekDays.Wednesday);
+                    chkDailyFri.Checked = alert.DailyBusinessDays.Contains(WeekDays.Friday);
+                    chkDailySat.Checked = alert.DailyBusinessDays.Contains(WeekDays.Saturday);
+                    sendAsSingleMessage.Checked = alert.SendAsSingleMessage.Equals(true);
+                    ddlAlertTime.Enabled = true;
                 }
                 else
                 {
                     rdWeekly.Checked = true;
                     if (rdWeekly.Checked)
                     {
-                        sendAsSingleMessage.Visible = true;
+                        sendAsSingleMessage.Enabled = true;
+                        this.ddlAlertWeekday.SelectedValue = Convert.ToString(alert.SendDay);
+                        this.ddlAlertTime.SelectedValue = Convert.ToString(alert.SendHour);
+                        sendAsSingleMessage.Checked = alert.SendAsSingleMessage.Equals(true);
+                        ddlAlertWeekday.Enabled = true;
+                        ddlAlertTime.Enabled = true;
                     }
 
                 }
 
                 //alert.BusinessStartHour = Convert.ToInt32(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.ImmediateBusinessHoursStart).InnerText);
-                ddlImmediateBusinessStartTime.SelectedValue = Convert.ToString(alert.BusinessStartHour);
-                ddlImmediateBusinessEndTime.SelectedValue = Convert.ToString(alert.BusinessendtHour);
-
-                this.ddlAlertWeekday.SelectedValue = Convert.ToString(alert.SendDay);
-                this.ddlAlertWeekday.SelectedValue = Convert.ToString(alert.SendHour);
 
 
-                //alert.DailyBusinessDays = DesrializeDays(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.DailyBusinessDays).InnerText);
-                chkDailySun.Checked = alert.DailyBusinessDays.Contains(WeekDays.sun);
-                chkDailyMon.Checked = alert.DailyBusinessDays.Contains(WeekDays.mon);
-                chkDailyTue.Checked = alert.DailyBusinessDays.Contains(WeekDays.tue);
-                chkDailyThu.Checked = alert.DailyBusinessDays.Contains(WeekDays.thu);
-                chkDailyWed.Checked = alert.DailyBusinessDays.Contains(WeekDays.wed);
-                chkDailyFri.Checked = alert.DailyBusinessDays.Contains(WeekDays.fri);
-                chkDailySat.Checked = alert.DailyBusinessDays.Contains(WeekDays.sat);
+               //alert.DailyBusinessDays = DesrializeDays(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.DailyBusinessDays).InnerText);
+               
 
 
                 //alert.ImmediateBusinessDays = DesrializeDays(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.ImmediateBusinessDays).InnerText);
-                chkImmediateSun.Checked = alert.ImmediateBusinessDays.Contains(WeekDays.sun);
-                chkImmediateMon.Checked = alert.ImmediateBusinessDays.Contains(WeekDays.mon);
-                chkImmediateTue.Checked = alert.ImmediateBusinessDays.Contains(WeekDays.tue);
-                chkImmediateWed.Checked = alert.ImmediateBusinessDays.Contains(WeekDays.wed);
-                chkImmediateThu.Checked = alert.ImmediateBusinessDays.Contains(WeekDays.thu);
-                chkImmediateFri.Checked = alert.ImmediateBusinessDays.Contains(WeekDays.fri);
-                chkImmediateSat.Checked = alert.ImmediateBusinessDays.Contains(WeekDays.sat);
-                sendAsSingleMessage.Checked = alert.SendAsSingleMessage.Equals(true);
+                
 
                 //alert.CombineAlerts = true;
                 //alert.SummaryMode = true;
@@ -1045,11 +1077,6 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                 txtRepeatInterval.Text = Convert.ToString(alert.RepeatInterval);
 
                 txtRepeatCount.Text = Convert.ToString(alert.RepeatCount);
-
-                //when To Send
-                rdDaily.Checked = (alert.SendType == SendType.Daily);
-                rdImmediately.Checked = (alert.SendType == SendType.Immediate);
-                rdWeekly.Checked = (alert.SendType == SendType.Weekely);
 
                 // Evaluation Criteria
                 // TODO: Confirm working
@@ -1168,7 +1195,8 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                 alert.PeriodPosition = (PeriodPosition)Enum.Parse(typeof(PeriodPosition), ddlPeriodPosition.SelectedValue); ;
                 alert.Repeat = Convert.ToBoolean(chkRepeat.Checked);
                 alert.RepeatType = (PeriodType)Enum.Parse(typeof(PeriodType), ddlRepeatType.SelectedValue);
-                alert.ImmidiateAlways = Convert.ToBoolean(rdImmediately.Checked);
+                alert.ImmidiateAlways = Convert.ToBoolean(rdImmediateAlways.Checked);
+                alert.ImmediateDays = Convert.ToBoolean(rdImmediateBusinessdays.Checked);
                 alert.BusinessStartHour = Convert.ToInt32(ddlImmediateBusinessStartTime.SelectedValue);
                 alert.BusinessendtHour = Convert.ToInt32(ddlImmediateBusinessEndTime.SelectedValue);
                 alert.SendDay = Convert.ToInt32(ddlAlertWeekday.SelectedValue);
@@ -1177,79 +1205,85 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
 
 
                 //when To Send
-                if (rdImmediately.Checked)
-                { alert.SendType = SendType.Immediate; }
+               
+                if(rdImmediateAlways.Checked)
+                { alert.SendType = SendType.ImmediateAlways; }
+                else if(rdImmediateBusinessdays.Checked)
+                { alert.SendType = SendType.ImmediateBusinessDays; }
                 else if (rdDaily.Checked)
                 { alert.SendType = SendType.Daily; }
                 else if (rdWeekly.Checked)
-                { alert.SendType = SendType.Weekely; }
-
+                { alert.SendType = SendType.Weekly; }
 
                 //alert.DailyBusinessDays = DesrializeDays(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.DailyBusinessDays).InnerText);
                 alert.DailyBusinessDays = new List<WeekDays>();
                 if (alert.SendType == SendType.Daily)
                 {
+                    //if (chkDailySun.Checked)
+                    //{
+                    //    alert.DailyBusinessDays.Add(WeekDays.Sunday);
+                    //}
                     if (chkDailySun.Checked)
                     {
-                        alert.DailyBusinessDays.Add(WeekDays.sun);
+                        alert.DailyBusinessDays.Add(WeekDays.Sunday);
                     }
                     if (chkDailyMon.Checked)
                     {
-                        alert.DailyBusinessDays.Add(WeekDays.mon);
+                        alert.DailyBusinessDays.Add(WeekDays.Monday);
                     }
                     if (chkDailyTue.Checked)
                     {
-                        alert.DailyBusinessDays.Add(WeekDays.tue);
+                        alert.DailyBusinessDays.Add(WeekDays.Tuesday);
                     }
                     if (chkDailyWed.Checked)
                     {
-                        alert.DailyBusinessDays.Add(WeekDays.wed);
+                        alert.DailyBusinessDays.Add(WeekDays.Wednesday);
                     }
                     if (chkDailyThu.Checked)
                     {
-                        alert.DailyBusinessDays.Add(WeekDays.thu);
+                        alert.DailyBusinessDays.Add(WeekDays.Thursday);
                     }
                     if (chkDailyFri.Checked)
                     {
-                        alert.DailyBusinessDays.Add(WeekDays.fri);
+                        alert.DailyBusinessDays.Add(WeekDays.Friday);
                     }
                     if (chkDailySat.Checked)
                     {
-                        alert.DailyBusinessDays.Add(WeekDays.sat);
+                        alert.DailyBusinessDays.Add(WeekDays.Saturday);
                     }
                 }
 
                 //alert.ImmediateBusinessDays = DesrializeDays(xmlDoc.DocumentElement.SelectSingleNode(XMLElementNames.ImmediateBusinessDays).InnerText);
                 alert.ImmediateBusinessDays = new List<WeekDays>();
-                if (alert.SendType == SendType.Immediate)
+                if (alert.SendType == SendType.ImmediateBusinessDays)
                 {
                     if (chkImmediateSun.Checked)
                     {
-                        alert.ImmediateBusinessDays.Add(WeekDays.sun);
+                        alert.ImmediateBusinessDays.Add(WeekDays.Sunday);
                     }
                     if (chkImmediateMon.Checked)
                     {
-                        alert.ImmediateBusinessDays.Add(WeekDays.mon);
+                        alert.ImmediateBusinessDays.Add(WeekDays.Monday);
                     }
                     if (chkImmediateThu.Checked)
                     {
-                        alert.ImmediateBusinessDays.Add(WeekDays.tue);
+                        alert.ImmediateBusinessDays.Add(WeekDays.Tuesday);
                     }
                     if (chkImmediateWed.Checked)
                     {
-                        alert.ImmediateBusinessDays.Add(WeekDays.wed);
+                        alert.ImmediateBusinessDays.Add(WeekDays.Wednesday);
                     }
                     if (chkImmediateThu.Checked)
                     {
-                        alert.ImmediateBusinessDays.Add(WeekDays.thu);
+                        alert.ImmediateBusinessDays.Add(WeekDays.Thursday);
                     }
                     if (chkImmediateFri.Checked)
                     {
-                        alert.ImmediateBusinessDays.Add(WeekDays.fri);
+                        alert.ImmediateBusinessDays.Add(WeekDays.Friday);
                     }
                     if (chkImmediateSat.Checked)
                     {
-                        alert.ImmediateBusinessDays.Add(WeekDays.sat);
+                        alert.ImmediateBusinessDays.Add(WeekDays.Saturday);
                     }
                 }
                 //TODO
@@ -1420,7 +1454,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                         listItem[ListAndFieldNames.MTListInsertAttachmentsFieldName] = chkInsertAttachments.Checked;
                         listItem[ListAndFieldNames.MTListHighLightUpdatedFieldsFieldName] = chkHighlightUpdatedColumns.Checked;
                         listItem[ListAndFieldNames.MTListOwnerFieldName] = SPContext.Current.Web.CurrentUser;
-
+                        listItem[ListAndFieldNames.MTUShareTemplateWithAllUsers] = chkShareTemplateWithOtherUsers.Checked;
 
                         listItem.Update();
                         PopulateTemplates();
@@ -1470,6 +1504,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
                     mtObject.HighLightUpdatedFields = true;
                     mtObject.InsertAttachments = true;
                     mtObject.InsertUpdatedFields = true;
+                    mtObject.ShareTemplateWithAllUsers = true;
                     MTManager.AddMailTemplateUsageObject(Convert.ToString(alertID), mtObject);
                 }
 
@@ -1484,20 +1519,20 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             SPSecurity.RunWithElevatedPrivileges(delegate
                {
                    //Dictionary<string, string> templatesByUser = MTManager.GetTemplatesByUser(Convert.ToInt32(this.ddlUserID.SelectedItem.Value));
-                   Dictionary<string, string> templatesByUser = MTManager.GetTemplatesByUser(Convert.ToInt32(this.ddlUserID.SelectedItem.Value));
-                   ddlItemAdded.Items.Clear();
-                   ddlItemUpdate.Items.Clear();
-                   ddlItemDelete.Items.Clear();
-                   ddlDateTime.Items.Clear();
-                   foreach (string keyId in templatesByUser.Keys)
-                   {
+                       Dictionary<string, string> templatesByUser = MTManager.GetTemplatesByUser(Convert.ToInt32(this.ddlUserID.SelectedItem.Value));
+                       ddlItemAdded.Items.Clear();
+                       ddlItemUpdate.Items.Clear();
+                       ddlItemDelete.Items.Clear();
+                       ddlDateTime.Items.Clear();
+                       foreach (string keyId in templatesByUser.Keys)
+                       {
 
-                       ListItem li = new ListItem(templatesByUser[keyId], keyId);
-                       ddlItemAdded.Items.Add(li);
-                       ddlItemUpdate.Items.Add(li);
-                       ddlItemDelete.Items.Add(li);
-                       ddlDateTime.Items.Add(li);
-                   }
+                           ListItem li = new ListItem(templatesByUser[keyId], keyId);
+                           ddlItemAdded.Items.Add(li);
+                           ddlItemUpdate.Items.Add(li);
+                           ddlItemDelete.Items.Add(li);
+                           ddlDateTime.Items.Add(li);
+                       }
                });
         }
 
@@ -1505,7 +1540,12 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
         {
             //Get the template by its id
             MailTemplate mTemplate = MTManager.GetMailtemplateByID(templateID);
-
+            string curUser = SPContext.Current.Web.CurrentUser.ID + ";#" + SPContext.Current.Web.CurrentUser.Name;
+            //SPUser curUser = SPContext.Current.Web.CurrentUser;
+            if (!curUser.Equals(mTemplate.Created))
+            {
+                chkShareTemplateWithOtherUsers.Enabled = false;
+            }
             //fill those values in to form
             txtMailTemplateName.Text = mTemplate.Name;
             txtMailSubject.Text = mTemplate.Subject;
@@ -1513,6 +1553,7 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
             chkIncludeUpdatedColumns.Checked = mTemplate.InsertUpdatedFields;
             chkInsertAttachments.Checked = mTemplate.InsertAttachments;
             chkHighlightUpdatedColumns.Checked = mTemplate.HighLightUpdatedFields;
+            chkShareTemplateWithOtherUsers.Checked = mTemplate.ShareTemplateWithAllUsers;
 
         }
 
@@ -1573,6 +1614,8 @@ namespace CCSAdvancedAlerts.Layouts.CCSAdvancedAlerts
 
         void rdDaily_CheckedChanged(object sender, EventArgs e)
         {
+            rdImmediateAlways.Checked = false;
+            rdImmediateBusinessdays.Checked = false;
             pnSubDaily.Visible = rdDaily.Checked;
             sendAsSingleMessage.Enabled = true;
             sendAsSingleMessage.Checked = false;

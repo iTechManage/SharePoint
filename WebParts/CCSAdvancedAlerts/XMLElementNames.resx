@@ -213,4 +213,16 @@
   <data name="SendAsSingleMessage" xml:space="preserve">
     <value>SendAsSingleMessage</value>
   </data>
+  <data name="ImmediateDays" xml:space="preserve">
+    <value>ImmediateDays</value>
+  </data>
+  <data name="SendType" xml:space="preserve">
+    <value>SendType</value>
+  </data>
+  <data name="SendTypeDetails" xml:space="preserve">
+    <value>SendTypeDetails</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>type</value>
+  </data>
 </root>
