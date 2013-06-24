@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" dslVersion="1.0.0.0" Id="e83df665-eef5-45b4-a021-c3e9740b3a9c" solutionId="e83df665-eef5-45b4-a021-c3e9740b3a9c" resetWebServer="false" name="CrowCanyon.CascadedLookup" xmlns="http://schemas.microsoft.com/VisualStudio/2008/SharePointTools/PackageModel">
+  <projectItems>
+    <projectItemReference itemId="4952aaf7-78a1-4aa1-9340-4e8d10114dac" />
+    <projectItemReference itemId="432cb777-c5fe-40bd-8bef-b76cbd629f53" />
+  </projectItems>
+</package>

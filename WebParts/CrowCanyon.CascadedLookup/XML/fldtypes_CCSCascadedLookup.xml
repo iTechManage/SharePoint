@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<FieldTypes>
+    <FieldType>
+        <Field Name="TypeName">CCSCascadedLookup</Field>
+        <Field Name="ParentType">Lookup</Field>
+        <Field Name="TypeDisplayName">Crow Canyon Cascaded Lookup</Field>
+        <Field Name="TypeShortDescription">Crow Canyon Advanced Cascaded Lookup</Field>
+        <Field Name="UserCreatable">TRUE</Field>
+        <Field Name="FieldTypeClass">CrowCanyon.CascadedLookup.CCSCascadedLookupField,$SharePoint.Project.AssemblyFullName$</Field>
+        <Field Name="FieldEditorUserControl">/_controltemplates/CrowCanyon/CascadedLookup/CCSCascadedLookupFieldEditor.ascx</Field>
+        <Field Name="BaseTypeRendering">TRUE</Field>
+        <PropertySchema>
+            <Fields>
+                <Field Name="SourceWebID" DisplayName="Source web ID" Type="Text" Hidden="TRUE"/>
+                <Field Name="LookupFieldListName" DisplayName="Lookup Field list" Type="Text" Hidden="TRUE"/>
+                <Field Name="LookupFieldName" DisplayName="Loorup column" Type="Text" Hidden="TRUE"/>
+                <Field Name="ParentLinkedColumnName" DisplayName="Parent Linked column" Type="Text" Hidden="TRUE"/>
+                <Field Name="AllowMultipleValues" DisplayName="Allow Multiple Values" Type="Text" Hidden="TRUE"/>
+                <Field Name="AdvancedSetting" DisplayName="Advanced Setting" Type="Boolean" Hidden="TRUE"/>
+                <Field Name="View" DisplayName="View" Type="Text" Hidden="TRUE"/>
+                <Field Name="LinkToParent" DisplayName="Link to Parent" Type="Boolean" Hidden="TRUE"/>
+                <Field Name="ShowAllOnEmpty" DisplayName="Show all on empty parent" Type="Boolean" Hidden="TRUE"/>
+                <Field Name="AllowNewEntry" DisplayName="Allow adding values" Type="Boolean" Hidden="TRUE"/>
+                <Field Name="UseNewForm" DisplayName="Use New form" Type="Boolean" Hidden="TRUE"/>
+                <Field Name="AdditionalFields" DisplayName="Additional Fields" Type="Text" Hidden="TRUE"/>
+                <Field Name="SortByView" DisplayName="Sort By View" Type="Boolean" Hidden="TRUE"/>
+                <Field Name="AllowAutocomplete" DisplayName="Allow autocomplete" Type="Boolean" Hidden="TRUE"/>
+                <Field Name="AdditionalFilters" DisplayName="AdditionalFilters" Type="Text" Hidden="TRUE"/>
+            </Fields>
+        </PropertySchema>
+    </FieldType>
+</FieldTypes>
