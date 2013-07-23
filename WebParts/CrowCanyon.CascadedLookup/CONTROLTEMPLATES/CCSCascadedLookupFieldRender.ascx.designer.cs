@@ -13,12 +13,12 @@ namespace CrowCanyon.CascadedLookup.CONTROLTEMPLATES {
     public partial class CCSCascadedLookupFieldRender {
         
         /// <summary>
-        /// CCSCascadeFieldControl control.
+        /// CCSCascadedLookupControl control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Microsoft.SharePoint.WebControls.RenderingTemplate CCSCascadeFieldControl;
+        protected global::Microsoft.SharePoint.WebControls.RenderingTemplate CCSCascadedLookupControl;
     }
 }

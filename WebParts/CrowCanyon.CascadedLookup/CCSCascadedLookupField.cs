@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml;
 using System.Reflection;
+using System.Web.UI.WebControls;
 
 using Microsoft.SharePoint;
 using Microsoft.SharePoint.Security;
@@ -28,14 +30,118 @@ namespace CrowCanyon.CascadedLookup
 
         #region Override methods
 
+        public override void OnAdded(SPAddFieldOptions op)
+        {
+            base.OnAdded(op);
+            Update();
+        }
+
+        public override void Update()
+        {
+            if (this.AllowMultipleValues)
+            {
+                XmlDocument doc = new XmlDocument();
+                doc.LoadXml(base.SchemaXml);
+                EnsureAttribute(doc, "Mult", "TRUE");
+                base.SchemaXml = doc.OuterXml;
+            }
+
+            base.Update();
+        }
+
+        public override void OnUpdated()
+        {
+            base.OnUpdated();
+
+            if (AdditionalFieldControlItems != null && AdditionalFieldControlItems.Count > 0)
+            {
+                foreach (ListItem li in AdditionalFieldControlItems)
+                {
+                    if (li.Selected)
+                    {
+                        if (!this.ParentList.Fields.ContainsField(this.Title + " : " + li.Text))
+                        {
+                            //create a new field
+                            string depLookUp = this.ParentList.Fields.AddDependentLookup(this.Title + " : " + li.Text, this.Id);
+                            SPFieldLookup fieldDepLookup = (SPFieldLookup)this.ParentList.Fields.GetFieldByInternalName(depLookUp);
+
+                            if (fieldDepLookup != null)
+                            {
+                                fieldDepLookup.LookupWebId = this.LookupWebId;
+                                fieldDepLookup.LookupField = li.Value;
+                                fieldDepLookup.Update();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (this.ParentList.Fields.ContainsField(this.Title + " : " + li.Text))
+                        {
+                            //delete field if exist
+                            this.ParentList.Fields.GetField(this.Title + " : " + li.Text).Delete();
+                        }
+                    }
+                }
+            }
+        }
+
+        public string GetAdditionalFields()
+        {
+            string additionalFieldsString = "";
+            if (this != null && this.ParentList != null)
+            {
+                for(int i=0; i < this.ParentList.Fields.Count; i++)
+                {
+                    SPFieldLookup field = this.ParentList.Fields[i] as SPFieldLookup;
+                    if(field != null && field.IsDependentLookup && field.PrimaryFieldId != null && field.PrimaryFieldId == this.Id.ToString())
+                    {
+                        additionalFieldsString = additionalFieldsString + ";#" + field.LookupField; 
+                    }
+                }
+            }
+
+            return additionalFieldsString;
+        }
+
+        private void EnsureAttribute(XmlDocument doc, string name, string value)
+        {
+            XmlAttribute attribute = doc.DocumentElement.Attributes[name];
+            if (attribute == null)
+            {
+                attribute = doc.CreateAttribute(name);
+                doc.DocumentElement.Attributes.Append(attribute);
+            }
+            doc.DocumentElement.Attributes[name].Value = value;
+        } 
+
         public override Microsoft.SharePoint.WebControls.BaseFieldControl FieldRenderingControl
         {
             [SharePointPermission(System.Security.Permissions.SecurityAction.LinkDemand, ObjectModel = true)]
             get
             {
                 Microsoft.SharePoint.WebControls.BaseFieldControl ccsCascadedLookupControl = new CCSCascadedLookupControl();
+                ccsCascadedLookupControl.FieldName = this.InternalName;
+
                 return ccsCascadedLookupControl;
             }
+        }
+
+        public override Type FieldValueType
+        {
+            get
+            {
+                if (this.AllowMultipleValues)
+                {
+                    return typeof(SPFieldLookupValueCollection);
+                }
+
+                return typeof(SPFieldLookupValue);
+            }
+        }
+
+        public override object GetFieldValue(string value)
+        {
+            return base.GetFieldValue(value);
         }
 
         #endregion
@@ -143,7 +249,7 @@ namespace CrowCanyon.CascadedLookup
             }
             set
             {
-                this.SetCustomProperty("AdvancedSetting", value);
+                this.SetCustomProperty("AdvancedSetting", value.ToString());
             }
         }
 
@@ -173,7 +279,7 @@ namespace CrowCanyon.CascadedLookup
             }
             set
             {
-                this.SetCustomProperty("LinkToParent", value);
+                this.SetCustomProperty("LinkToParent", value.ToString());
             }
         }
 
@@ -188,7 +294,7 @@ namespace CrowCanyon.CascadedLookup
             }
             set
             {
-                this.SetCustomProperty("ShowAllOnEmpty", value);
+                this.SetCustomProperty("ShowAllOnEmpty", value.ToString());
             }
         }
 
@@ -203,7 +309,7 @@ namespace CrowCanyon.CascadedLookup
             }
             set
             {
-                this.SetCustomProperty("AllowNewEntry", value);
+                this.SetCustomProperty("AllowNewEntry", value.ToString());
             }
         }
 
@@ -218,7 +324,7 @@ namespace CrowCanyon.CascadedLookup
             }
             set
             {
-                this.SetCustomProperty("UseNewForm", value);
+                this.SetCustomProperty("UseNewForm", value.ToString());
             }
         }
 
@@ -248,7 +354,7 @@ namespace CrowCanyon.CascadedLookup
             }
             set
             {
-                this.SetCustomProperty("SortByView", value);
+                this.SetCustomProperty("SortByView", value.ToString());
             }
         }
 
@@ -263,7 +369,7 @@ namespace CrowCanyon.CascadedLookup
             }
             set
             {
-                this.SetCustomProperty("AllowAutocomplete", value);
+                this.SetCustomProperty("AllowAutocomplete", value.ToString());
             }
         }
 
@@ -282,7 +388,40 @@ namespace CrowCanyon.CascadedLookup
             }
         }
 
+        public System.Web.UI.WebControls.ListItemCollection AdditionalFieldControlItems
+        {
+            get;
+            set;
+        }
+
         #endregion
+
+        public string GetParentColumnId()
+        {
+            if (!string.IsNullOrEmpty(ParentLinkedColumnName))
+            {
+                string[] vals = ParentLinkedColumnName.Split(new string[] { ";#" }, StringSplitOptions.None);
+                if (vals != null && vals.Length == 3)
+                {
+                    return vals[0];
+                }
+            }
+            return "";
+        }
+
+        public string GetParentLinkedColumnId()
+        {
+            if (!string.IsNullOrEmpty(ParentLinkedColumnName))
+            {
+                string[] vals = ParentLinkedColumnName.Split(new string[] { ";#" }, StringSplitOptions.None);
+                if (vals != null && vals.Length == 3)
+                {
+                    return vals[2];
+                }
+            }
+            return "";
+        }
+
 
         Boolean ConvertToBool(object obj)
         {

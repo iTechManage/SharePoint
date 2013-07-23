@@ -123,6 +123,8 @@ namespace CrowCanyon.CascadedLookup
                 SetCheckboxcontrolsValue();
 
                 AddingNewFieldControlVisibility();
+
+                SetRelationShipControlsValue();
             }
         }
 
@@ -131,6 +133,14 @@ namespace CrowCanyon.CascadedLookup
             CCSCascadedLookupField ccscascadeField = field as CCSCascadedLookupField;
             if (ccscascadeField != null)
             {
+                using (SPWeb selWeb = SPControl.GetContextSite(this.Context).OpenWeb(new Guid(ddlWeb.SelectedItem.Value)))
+                {
+                    ccscascadeField.LookupWebId = selWeb.ID;
+                }
+
+                ccscascadeField.LookupList = (ddlList.SelectedItem != null ? ddlList.SelectedItem.Value : "");
+                ccscascadeField.LookupField = (ddlColumn.SelectedItem != null ? ddlColumn.SelectedItem.Value : "");
+                
                 ccscascadeField.SourceWebID = ddlWeb.SelectedItem.Value;
                 ccscascadeField.LookupFieldListName = (ddlList.SelectedItem != null ? ddlList.SelectedItem.Value : "");
                 ccscascadeField.LookupFieldName = (ddlColumn.SelectedItem != null ? ddlColumn.SelectedItem.Value : "");
@@ -149,6 +159,22 @@ namespace CrowCanyon.CascadedLookup
 
                 ccscascadeField.AdditionalFields = GetAdditonalFields();
                 ccscascadeField.AdditionalFilters = GetAdditonalFilters();
+
+                if (cbxRelationshipBehavior.Enabled && cbxRelationshipBehavior.Checked)
+                {
+                    if(rbRestrictDelete.Enabled && rbRestrictDelete.Checked)
+                        ccscascadeField.RelationshipDeleteBehavior = SPRelationshipDeleteBehavior.Restrict;
+                    else if (rbCascadeDelete.Enabled && rbCascadeDelete.Checked)
+                        ccscascadeField.RelationshipDeleteBehavior = SPRelationshipDeleteBehavior.Cascade;
+                    else
+                        ccscascadeField.RelationshipDeleteBehavior = SPRelationshipDeleteBehavior.None;
+                }
+                else
+                {
+                    ccscascadeField.RelationshipDeleteBehavior = SPRelationshipDeleteBehavior.None;
+                }
+
+                ccscascadeField.AdditionalFieldControlItems = cblAdditionalFields.Items;
             }
         }
 
@@ -242,7 +268,8 @@ namespace CrowCanyon.CascadedLookup
                     {
                         if (Utilities.GeneralFields(field))
                         {
-                            columnList.Add(new ListItem(field.Title, field.Id.ToString()));
+                            //columnList.Add(new ListItem(field.Title, field.Id.ToString()));
+                            columnList.Add(new ListItem(field.Title, field.InternalName));
                         }
                     }
                 }
@@ -456,12 +483,12 @@ namespace CrowCanyon.CascadedLookup
                         {
                             if (Utilities.GeneralFields(selField))
                             {
-                                cblAdditionalFields.Items.Add(new ListItem(selField.Title, selField.Id.ToString()));
+                                cblAdditionalFields.Items.Add(new ListItem(selField.Title, selField.InternalName));
                             }
                         }
                         else
                         {
-                            cblAdditionalFilters.Items.Add(new ListItem(selField.Title, selField.Id.ToString()));
+                            cblAdditionalFilters.Items.Add(new ListItem(selField.Title, selField.InternalName));
                         }
                     }
                 }
@@ -469,7 +496,8 @@ namespace CrowCanyon.CascadedLookup
             if (cblAdditionalFilters.Items.Count > 0)
             {
                 lbAdditionalFilters.Visible = true;
-                cblAdditionalFilters.Visible = true;
+                //cblAdditionalFilters.Visible = true;
+                cblAdditionalFilters.Visible = false;
             }
             else
             {
@@ -553,9 +581,16 @@ namespace CrowCanyon.CascadedLookup
 
         private void SetAdditonalFields()
         {
-            if (_ccsCascadedField != null && !string.IsNullOrEmpty(_ccsCascadedField.AdditionalFields))
+            string additionalFieldsString = _ccsCascadedField.GetAdditionalFields();
+
+            if (_ccsCascadedField != null && !string.IsNullOrEmpty(additionalFieldsString))
             {
-                string[] ids = _ccsCascadedField.AdditionalFields.Split(new String[] { ";#" }, StringSplitOptions.RemoveEmptyEntries);
+                if (string.IsNullOrEmpty(additionalFieldsString))
+                {
+                    return;
+                }
+
+                string[] ids = additionalFieldsString.Split(new String[] { ";#" }, StringSplitOptions.RemoveEmptyEntries);
                 if (ids != null && ids.Length > 0)
                 {
                     foreach (string id in ids)
@@ -674,5 +709,46 @@ namespace CrowCanyon.CascadedLookup
             }
         }
 
+        void SetRelationShipControlsValue()
+        {
+            if (_ccsCascadedField != null)
+            {
+                if (!_ccsCascadedField.AllowMultipleValues)
+                {
+                    cbxRelationshipBehavior.Enabled = true;
+                    switch (_ccsCascadedField.RelationshipDeleteBehavior)
+                    {
+                        case SPRelationshipDeleteBehavior.None:
+                            rbRestrictDelete.Enabled = false;
+                            rbCascadeDelete.Enabled = false;
+                            
+                            rbRestrictDelete.Checked = false;
+                            rbCascadeDelete.Checked = false;
+                            break;
+                        case SPRelationshipDeleteBehavior.Restrict:
+                            rbRestrictDelete.Enabled = true;
+                            rbCascadeDelete.Enabled = true;
+
+                            rbRestrictDelete.Checked = true;
+                            rbCascadeDelete.Checked = false;
+                            break;
+                        case SPRelationshipDeleteBehavior.Cascade:
+                            rbRestrictDelete.Enabled = true;
+                            rbCascadeDelete.Enabled = true;
+
+                            rbRestrictDelete.Checked = false;
+                            rbCascadeDelete.Checked = true;
+                            break;
+
+                    }
+                }
+                else
+                {
+                    cbxRelationshipBehavior.Enabled = false;
+                    rbRestrictDelete.Enabled = false;
+                    rbCascadeDelete.Enabled = false;
+                }
+            }
+        }
     }
 }

@@ -96,7 +96,9 @@
     <Content Include="CONTROLTEMPLATES\CrowCanyon\CascadedLookup\CCSCascadedLookupFieldEditor.ascx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
-    <Content Include="XML\fldtypes_CCSCascadedLookup.xml" />
+    <Content Include="XML\fldtypes_CCSCascadedLookup.xml">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\SharePointTools\Microsoft.VisualStudio.SharePoint.targets" />

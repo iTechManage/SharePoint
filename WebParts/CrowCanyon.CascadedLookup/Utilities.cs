@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using System.Xml;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+
 using Microsoft.SharePoint;
 
 namespace CrowCanyon.CascadedLookup
@@ -90,5 +94,162 @@ namespace CrowCanyon.CascadedLookup
                 return false;
             }
         }
+
+        public static void FetchMatchedValuesFromList(CCSCascadedLookupField field, string parentFieldValue, ref List<ListItem> itemList)
+        {
+            SPListItemCollection matchedItemList = null;
+            
+            using (SPWeb LookupWeb = SPContext.Current.Site.OpenWeb(((SPFieldLookup)field).LookupWebId))
+            {
+                SPList LookupList = LookupWeb.Lists[new Guid(field.LookupFieldListName)];
+
+                //string linked_column = field.GetProperty(CustomDropDownList.LINK_COLUMN);
+                SPField ParentLinkedField = LookupList.Fields[new Guid(field.GetParentLinkedColumnId())];
+
+                SPQuery query = new SPQuery();
+
+                string fetchItemConditionString = "<Eq><FieldRef Name='" + ParentLinkedField.InternalName + "' LookupId='TRUE'/><Value Type='Lookup'>" + parentFieldValue + "</Value></Eq>";
+
+                if (string.IsNullOrEmpty(field.View))
+                {
+                    query.Query = "<Where>" + fetchItemConditionString + "</Where>";
+                }
+                else
+                {
+                    string viewQueryWhereString = "";
+                    string viewQueryOrderByString = "";
+
+                    SPView view = LookupList.GetView(new Guid(field.View));
+
+                    if (!String.IsNullOrEmpty(view.Query))
+                    {
+                        string viewQueryXML = string.Format("<Query>{0}</Query>", view.Query);
+                        XmlDocument viewQueryXMLDoc = new XmlDocument();
+                        viewQueryXMLDoc.LoadXml(viewQueryXML);
+                        XmlNode whereNode = viewQueryXMLDoc.DocumentElement.SelectSingleNode("Where");
+                        if (whereNode != null && string.IsNullOrEmpty(whereNode.InnerXml))
+                        {
+                            viewQueryWhereString = whereNode.InnerXml;
+                        }
+
+                        XmlNode orderByNode = viewQueryXMLDoc.DocumentElement.SelectSingleNode("OrderBy");
+                        if (orderByNode != null || string.IsNullOrEmpty(orderByNode.InnerXml))
+                        {
+                            viewQueryOrderByString = orderByNode.InnerXml;
+                        }
+
+                        viewQueryOrderByString = string.Format("<OrderBy>{0}</OrderBy>", viewQueryOrderByString);
+                    }
+
+                    if (!String.IsNullOrEmpty(viewQueryWhereString))
+                    {
+                        query.Query = "<Where><And>" + viewQueryWhereString + fetchItemConditionString + "</And></Where>" + viewQueryOrderByString;
+                    }
+                    else
+                    {
+                        query.Query = "<Where>" + fetchItemConditionString + "</Where>";
+                    }
+                }
+
+                matchedItemList = LookupList.GetItems(query);
+
+            }
+            foreach (SPListItem item in matchedItemList)
+            {
+                //ListItem newItem = new ListItem(Convert.ToString(item.Fields[new Guid(field.LookupFieldName)].GetFieldValueAsText(item[new Guid(field.LookupFieldName)])), item.ID.ToString());
+                ListItem newItem = new ListItem(Convert.ToString(item.Fields[field.LookupFieldName].GetFieldValueAsText(item[field.LookupFieldName])), item.ID.ToString());
+                if (!itemList.Contains(newItem))
+                {
+                    itemList.Add(newItem);
+                }
+            }
+
+        }
+
+        public static void FetchAllValuesFromList(CCSCascadedLookupField field, ref List<ListItem> itemList)
+        {
+            SPListItemCollection matchedItemList = null;
+
+            using (SPWeb LookupWeb = SPContext.Current.Site.OpenWeb(((SPFieldLookup)field).LookupWebId))
+            {
+                SPList LookupList = LookupWeb.Lists[new Guid(field.LookupFieldListName)];
+
+                SPQuery query = new SPQuery();
+                query.ViewAttributes = "Scope=\"RecursiveAll\"";
+                
+                if (!string.IsNullOrEmpty(field.View))
+                {
+                    string viewQueryWhereString = "";
+                    string viewQueryOrderByString = "";
+
+                    SPView view = LookupList.GetView(new Guid(field.View));
+
+                    if (!String.IsNullOrEmpty(view.Query))
+                    {
+                        string viewQueryXML = string.Format("<Query>{0}</Query>", view.Query);
+                        XmlDocument viewQueryXMLDoc = new XmlDocument();
+                        viewQueryXMLDoc.LoadXml(viewQueryXML);
+                        XmlNode whereNode = viewQueryXMLDoc.DocumentElement.SelectSingleNode("Where");
+                        if (whereNode != null && string.IsNullOrEmpty(whereNode.InnerXml))
+                        {
+                            viewQueryWhereString = whereNode.InnerXml;
+                        }
+
+                        XmlNode orderByNode = viewQueryXMLDoc.DocumentElement.SelectSingleNode("OrderBy");
+                        if (orderByNode != null || string.IsNullOrEmpty(orderByNode.InnerXml))
+                        {
+                            viewQueryOrderByString = orderByNode.InnerXml;
+                        }
+
+                        viewQueryOrderByString = string.Format("<OrderBy>{0}</OrderBy>", viewQueryOrderByString);
+                    }
+
+                    if (!String.IsNullOrEmpty(viewQueryWhereString))
+                    {
+                        query.Query = "<Where>" + viewQueryWhereString + "</Where>" + viewQueryOrderByString;
+                    }
+                    else
+                    {
+                        query.Query = viewQueryOrderByString;
+                    }
+
+                    matchedItemList = LookupList.GetItems(query);
+                }
+                else
+                {
+                    matchedItemList = LookupList.Items;
+                }
+
+            }
+
+            itemList = new List<ListItem>();
+            foreach (SPListItem item in matchedItemList)
+            {
+                //ListItem newItem = new ListItem(Convert.ToString(item.Fields[new Guid(field.LookupFieldName)].GetFieldValueAsText(item[new Guid(field.LookupFieldName)])), item.ID.ToString());
+                ListItem newItem = new ListItem(Convert.ToString(item.Fields[field.LookupFieldName].GetFieldValueAsText(item[field.LookupFieldName])), item.ID.ToString());
+                if (!itemList.Contains(newItem))
+                {
+                    itemList.Add(newItem);
+                }
+            }
+        }
+
+        public static void FindControlRecursive(Control Root, Type type, ref List<Control> collect)
+        {
+            if (Root.GetType() == type) { collect.Add(Root); }
+
+            if (Root != null && Root.Controls != null)
+            {
+                for (int i = 0; i < Root.Controls.Count; i++)
+                {
+                    //foreach (Control ctrl in Root.Controls)
+                    //{
+                    Control ctrl = Root.Controls[i];
+                    if (ctrl != null)
+                        FindControlRecursive(ctrl, type, ref collect);
+                }
+            }
+        }
+
     }
 }
