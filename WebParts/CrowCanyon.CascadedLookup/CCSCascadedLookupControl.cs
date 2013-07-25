@@ -14,6 +14,8 @@ namespace CrowCanyon.CascadedLookup
 {
     class CCSCascadedLookupControl : BaseFieldControl
     {
+        #region Define Controls
+
         Panel SingleValuePanel = null;
         Panel MultipleValuePanel = null;
         Panel NewEntryPanel = null;
@@ -23,14 +25,19 @@ namespace CrowCanyon.CascadedLookup
         ListBox lbRightBox = null;
         Button btnAdd = null;
         Button btnRemove = null;
-        
+
         LinkButton lnkNewEntry = null;
         TextBox txtNewEntry = null;
         LinkButton lnkAdd = null;
         LinkButton lnkCancel = null;
 
         HtmlInputHidden hiddenFieldType = null;
-        
+        HtmlInputHidden hParentValue = null;
+
+        #endregion
+
+        #region Override Properties and Methods
+
         protected override string DefaultTemplateName { get { return "CCSCascadedLookupControl"; } }
 
         protected override void OnInit(EventArgs e)
@@ -49,7 +56,7 @@ namespace CrowCanyon.CascadedLookup
 
 
             CCSCascadedLookupField field = base.Field as CCSCascadedLookupField;
-            
+
             AddeventOnParentControls();
 
             if (!Page.ClientScript.IsStartupScriptRegistered(this.Field.Id.ToString("n")))
@@ -96,7 +103,7 @@ namespace CrowCanyon.CascadedLookup
                             SPFieldLookupValue singleValue = ItemFieldValue as SPFieldLookupValue;
                             if (singleValue != null && ddlCCSCascadeFieldControl.Items != null && ddlCCSCascadeFieldControl.Items.Count > 0)
                             {
-                                for (int i = 0; i < ddlCCSCascadeFieldControl.Items.Count; i++ )
+                                for (int i = 0; i < ddlCCSCascadeFieldControl.Items.Count; i++)
                                 {
                                     if (ddlCCSCascadeFieldControl.Items[i].Value == singleValue.LookupId.ToString())
                                     {
@@ -113,6 +120,7 @@ namespace CrowCanyon.CascadedLookup
                 if (pValue != null)
                 {
                     hiddenFieldType.Value = pValue.LookupValue;
+                    hParentValue.Value = pValue.LookupId.ToString();
                 }
 
                 #endregion
@@ -122,12 +130,21 @@ namespace CrowCanyon.CascadedLookup
             {
                 string FieldId = field.Id.ToString("n");
                 string ParentColumnId = field.GetParentColumnId();
-                    
-                if (Page.Request.Params.Get("__EVENTTARGET") == FieldId || Page.Request.Params.Get("__EVENTTARGET") == ParentColumnId)
-                {
-                    //Refresh Control Value
-                    PopulatingValue();
 
+                if (Page.Request.Params.Get("__EVENTTARGET") == FieldId || Page.Request.Params.Get("__EVENTTARGET") == "ParentField" + ParentColumnId)
+                {
+
+                    PopulatingValue();
+                    
+                    // Update nested Controls
+                    UpdateChildLinkedControl(this.Field as CCSCascadedLookupField);
+                }
+                else if(Page.Request.Params.Get("__EVENTTARGET") == "ParentFieldAuto" + ParentColumnId)
+                {
+                    hParentValue.Value = Page.Request.Params.Get("__EVENTARGUMENT");
+
+                    PopulatingValue(Page.Request.Params.Get("__EVENTARGUMENT"));
+                    
                     // Update nested Controls
                     UpdateChildLinkedControl(this.Field as CCSCascadedLookupField);
                 }
@@ -142,245 +159,6 @@ namespace CrowCanyon.CascadedLookup
             }
         }
 
-        void PopulatingValue()
-        {
-             CCSCascadedLookupField field = base.Field as CCSCascadedLookupField;
-
-             if (field != null)
-             {
-                 List<ListItem> poplateItemsList = new List<ListItem>();
-
-                 if (field.LinkToParent)
-                 {
-                     object parentValue = GetParentFieldValue(field);
-
-                     if (parentValue != null)
-                     {
-                         SPFieldLookupValueCollection vals = parentValue as SPFieldLookupValueCollection;
-                         if (vals != null)
-                         {
-                             foreach (SPFieldLookupValue val in vals)
-                             {
-                                 Utilities.FetchMatchedValuesFromList(field, val.LookupId.ToString(), ref poplateItemsList);
-                             }
-                         }
-                         else
-                         {
-                             SPFieldLookupValue singleValue = parentValue as SPFieldLookupValue;
-                             if (singleValue != null)
-                             {
-                                 Utilities.FetchMatchedValuesFromList(field, singleValue.LookupId.ToString(), ref poplateItemsList);
-                             }
-                             else
-                             {
-
-                                 string stringValue = parentValue as string;
-                                 if (stringValue != null)
-                                 {
-                                     Utilities.FetchMatchedValuesFromList(field, stringValue, ref poplateItemsList);
-                                 }
-                                 else
-                                 {
-                                     int intValue = (int)parentValue;
-                                     if (intValue >= 0)
-                                     {
-                                         Utilities.FetchMatchedValuesFromList(field, intValue.ToString(), ref poplateItemsList);
-                                     }
-                                 }
-                             }
-                         }
-                     }
-
-
-                     if (parentValue == null && field.ShowAllOnEmpty)
-                     {
-                         Utilities.FetchAllValuesFromList(field, ref poplateItemsList);
-                     }
-                 }
-                 else
-                 {
-                     Utilities.FetchAllValuesFromList(field, ref poplateItemsList);
-                 }
-
-                 if (field.AllowMultipleValues)
-                 {
-                     if (poplateItemsList != null && poplateItemsList.Count > 0)
-                     {
-                         if (lbRightBox.Items != null && lbRightBox.Items.Count > 0)
-                         {
-                             List<string> vals = new List<string>();
-                             for (int i = lbRightBox.Items.Count - 1; i >= 0; i--)
-                             {
-                                 if (!CheckListItemExistandRemove(lbRightBox.Items[i], ref poplateItemsList))
-                                 {
-                                     lbRightBox.Items.RemoveAt(i);
-                                 }
-                             }
-                         }
-
-                         for (int i = lbLeftBox.Items.Count - 1; i >= 0; i--)
-                         {
-                             if (!CheckListItemExistandRemove(lbLeftBox.Items[i], ref poplateItemsList))
-                             {
-                                 lbLeftBox.Items.RemoveAt(i);
-                             }
-                         }
-
-                         lbLeftBox.Items.AddRange(poplateItemsList.ToArray());
-                     }
-                     else
-                     {
-                         lbLeftBox.Items.Clear();
-                         lbRightBox.Items.Clear();
-                     }
-                 }
-                 else
-                 {
-                     string selVal = ddlCCSCascadeFieldControl.SelectedValue;//cblAdditionalFields.Items.FindByValue(id);
-                        
-                     ddlCCSCascadeFieldControl.Items.Clear();
-                     if (this.ControlMode == SPControlMode.New || !Field.Required)
-                     {
-                         ddlCCSCascadeFieldControl.Items.Insert(0, new ListItem("(None)", "0"));
-                     }
-
-                     if (poplateItemsList != null && poplateItemsList.Count > 0)
-                     {
-                         ddlCCSCascadeFieldControl.Items.AddRange(poplateItemsList.ToArray());
-                     }
-
-                     if (ddlCCSCascadeFieldControl.Items.Count > 0)
-                     {
-                         ddlCCSCascadeFieldControl.SelectedIndex = 0;
-
-                         for (int i = 0; i < ddlCCSCascadeFieldControl.Items.Count; i++)
-                         {
-                             if (ddlCCSCascadeFieldControl.Items[i].Value == selVal)
-                             {
-                                 ddlCCSCascadeFieldControl.SelectedIndex = i;
-                             }
-                         }
-                     }
-                 }
-             }
-        }
-
-        void AddeventOnParentControls()
-        {
-            CCSCascadedLookupField field = base.Field as CCSCascadedLookupField;
-            if (field != null)
-            {
-                if (field.LinkToParent)
-                {   
-                    string ParentColumnId = field.GetParentColumnId();
-                    if (!string.IsNullOrEmpty(ParentColumnId))
-                    {
-                        SPFieldLookup fieldParent = SPContext.Current.List.Fields[new Guid(ParentColumnId)] as SPFieldLookup;
-
-                        if (fieldParent != null)
-                        {
-                            List<Control> collect = new List<Control>();
-
-                            Control parentControl = null;
-                            Utilities.FindControlRecursive(Page, typeof(MultipleLookupField), ref collect);
-                            if (collect.Count > 0)
-                            {
-                                foreach (Control ctrl in collect)
-                                {
-                                    if (((MultipleLookupField)ctrl).FieldName == fieldParent.InternalName)
-                                    {
-                                         parentControl = ctrl;
-                                    }
-                                }
-                            }
-
-                            if (parentControl == null)
-                            {
-                                collect.Clear();
-                                Utilities.FindControlRecursive(Page, typeof(LookupField), ref collect);
-
-                                if (collect.Count > 0)
-                                {
-                                    foreach (Control ctrl in collect)
-                                    {
-                                        if (((LookupField)ctrl).FieldName == fieldParent.InternalName)
-                                        {
-                                            parentControl = ctrl;
-                                        }
-                                    }
-                                }                           
-                            }
-                            
-                            if (parentControl != null)
-                            {
-                                if (fieldParent.AllowMultipleValues)
-                                {
-                                    List<Control> childParentControls = new List<Control>();
-
-                                    Utilities.FindControlRecursive(parentControl, typeof(SPHtmlSelect), ref childParentControls);
-                                    Utilities.FindControlRecursive(parentControl, typeof(System.Web.UI.HtmlControls.HtmlButton), ref childParentControls);
-                                    if (childParentControls != null && childParentControls.Count > 0)
-                                    {
-                                        RegisterJavaScriptOnMultipleLookupControl(childParentControls[0].ClientID, childParentControls[1].ClientID, childParentControls[2].ClientID, childParentControls[3].ClientID, "__doPostBack('ParentField" + ParentColumnId + "', '');");
-                                    }
-                                }
-                                else
-                                {
-                                    List<Control> childParentControls = new List<Control>();
-
-                                    Utilities.FindControlRecursive(parentControl, typeof(DropDownList), ref childParentControls);
-                                    if (childParentControls != null && childParentControls.Count > 0)
-                                    {
-                                        foreach (Control ctrl in childParentControls)
-                                        {
-                                            ((DropDownList)ctrl).SelectedIndexChanged += new EventHandler(ParentControlDropdown_SelectedIndexChanged);
-                                            ((DropDownList)ctrl).AutoPostBack = true;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        childParentControls.Clear();
-                                        Utilities.FindControlRecursive(parentControl, typeof(TextBox), ref childParentControls);
-                                        if (childParentControls != null && childParentControls.Count > 0)
-                                        {
-                                            foreach (Control ctrl in childParentControls)
-                                            {
-                                                if (!Page.ClientScript.IsStartupScriptRegistered("101"))
-                                                {
-                                                    Page.ClientScript.RegisterStartupScript(new object().GetType(), "101", "var parentFocus" + ctrl.ClientID + " = '0';");
-                                                }
-
-                                                //((TextBox)ctrl).Attributes.Add("onpropertychange", "__doPostBack('ParentField" + ParentColumnId + "', '');");
-                                                ((TextBox)ctrl).Attributes.Add("onblur", "parentFocus" + ctrl.ClientID + " = '0'");
-                                                ((TextBox)ctrl).Attributes.Add("onfocus", "parentFocus" + ctrl.ClientID + " = '1'");
-                                                ((TextBox)ctrl).Attributes.Add("onpropertychange", "if(parentFocus" + ctrl.ClientID + " != '1' &&  this.match != this.value) __doPostBack('ParentField" + ParentColumnId + "', '');");
-                                                //((TextBox)ctrl).Attributes.Add("onpropertychange", "if(this.match != document.getElementById('" + hiddenFieldType.ClientID + "').value) { alert(this.match + '  : ' + document.getElementById('" + hiddenFieldType.ClientID + "').value);  document.getElementById('" + hiddenFieldType.ClientID + "').value = this.match;}");
-                                                //((TextBox)ctrl).Attributes.Add("onpropertychange", "if(this.match != document.getElementById('" + hiddenFieldType.ClientID + "').value) { document.getElementById('" + hiddenFieldType.ClientID + "').value = this.match; __doPostBack('ParentField" + ParentColumnId + "', '');}");
-                                                //((TextBox)ctrl).Attributes.Add("onafterupdate", "alert(this.value);");
-                                                //((TextBox)ctrl).Attributes.Add("onfocusout", "debugger; CoreInvoke('HandleLoseFocus');");
-                                                //((TextBox)ctrl).TextChanged += new EventHandler(ParentControlDropdown_SelectedIndexChanged);
-                                                //((TextBox)ctrl).AutoPostBack = true;
-                                                ((TextBox)ctrl).Attributes.Add("onchange", "CoreInvoke('HandleChange'); debugger; alert(this.match);");
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        void ParentControlDropdown_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            //Refresh Control Value
-            PopulatingValue();
-
-            // Update nested Controls
-            UpdateChildLinkedControl(this.Field as CCSCascadedLookupField);
-        }
-
         protected override void CreateChildControls()
         {
             CCSCascadedLookupField field = base.Field as CCSCascadedLookupField;
@@ -392,6 +170,8 @@ namespace CrowCanyon.CascadedLookup
                     ShowControls(field);
                 }
             }
+
+            
         }
 
         public override object Value
@@ -413,6 +193,7 @@ namespace CrowCanyon.CascadedLookup
                         }
                     }
 
+                    SetParentValueIfAutoComplete(hParentValue.Value);
                     return _vals;
                 }
                 else
@@ -423,6 +204,7 @@ namespace CrowCanyon.CascadedLookup
                         val = new SPFieldLookupValue(int.Parse(ddlCCSCascadeFieldControl.SelectedItem.Value), ddlCCSCascadeFieldControl.SelectedItem.Text);
                     }
 
+                    SetParentValueIfAutoComplete(hParentValue.Value);
                     return val;
                 }
             }
@@ -442,13 +224,151 @@ namespace CrowCanyon.CascadedLookup
             }
         }
 
+        #endregion
+
+        #region Filling Data in Control
+
+        void PopulatingValue()
+        {
+            CCSCascadedLookupField field = base.Field as CCSCascadedLookupField;
+
+            object parentValue = GetParentFieldValue(field);
+
+            PopulatingValue(parentValue);
+        }
+
+        void PopulatingValue(object parentValue)
+        {
+            CCSCascadedLookupField field = base.Field as CCSCascadedLookupField;
+
+            if (field != null)
+            {
+                List<ListItem> poplateItemsList = new List<ListItem>();
+
+                if (field.LinkToParent)
+                {
+                    if (parentValue != null)
+                    {
+                        SPFieldLookupValueCollection vals = parentValue as SPFieldLookupValueCollection;
+                        if (vals != null)
+                        {
+                            foreach (SPFieldLookupValue val in vals)
+                            {
+                                Utilities.FetchMatchedValuesFromList(field, val.LookupId.ToString(), ref poplateItemsList);
+                            }
+                        }
+                        else
+                        {
+                            SPFieldLookupValue singleValue = parentValue as SPFieldLookupValue;
+                            if (singleValue != null)
+                            {
+                                Utilities.FetchMatchedValuesFromList(field, singleValue.LookupId.ToString(), ref poplateItemsList);
+                            }
+                            else
+                            {
+
+                                string stringValue = parentValue as string;
+                                if (stringValue != null)
+                                {
+                                    Utilities.FetchMatchedValuesFromList(field, stringValue, ref poplateItemsList);
+                                }
+                                else
+                                {
+                                    int intValue = (int)parentValue;
+                                    if (intValue >= 0)
+                                    {
+                                        Utilities.FetchMatchedValuesFromList(field, intValue.ToString(), ref poplateItemsList);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+
+                    if (parentValue == null && field.ShowAllOnEmpty)
+                    {
+                        Utilities.FetchAllValuesFromList(field, ref poplateItemsList);
+                    }
+                }
+                else
+                {
+                    Utilities.FetchAllValuesFromList(field, ref poplateItemsList);
+                }
+
+                if (field.AllowMultipleValues)
+                {
+                    if (poplateItemsList != null && poplateItemsList.Count > 0)
+                    {
+                        if (lbRightBox.Items != null && lbRightBox.Items.Count > 0)
+                        {
+                            List<string> vals = new List<string>();
+                            for (int i = lbRightBox.Items.Count - 1; i >= 0; i--)
+                            {
+                                if (!CheckListItemExistandRemove(lbRightBox.Items[i], ref poplateItemsList))
+                                {
+                                    lbRightBox.Items.RemoveAt(i);
+                                }
+                            }
+                        }
+
+                        for (int i = lbLeftBox.Items.Count - 1; i >= 0; i--)
+                        {
+                            if (!CheckListItemExistandRemove(lbLeftBox.Items[i], ref poplateItemsList))
+                            {
+                                lbLeftBox.Items.RemoveAt(i);
+                            }
+                        }
+
+                        lbLeftBox.Items.AddRange(poplateItemsList.ToArray());
+                    }
+                    else
+                    {
+                        lbLeftBox.Items.Clear();
+                        lbRightBox.Items.Clear();
+                    }
+                }
+                else
+                {
+                    string selVal = ddlCCSCascadeFieldControl.SelectedValue;//cblAdditionalFields.Items.FindByValue(id);
+
+                    ddlCCSCascadeFieldControl.Items.Clear();
+                    if (this.ControlMode == SPControlMode.New || !Field.Required)
+                    {
+                        ddlCCSCascadeFieldControl.Items.Insert(0, new ListItem("(None)", "0"));
+                    }
+
+                    if (poplateItemsList != null && poplateItemsList.Count > 0)
+                    {
+                        ddlCCSCascadeFieldControl.Items.AddRange(poplateItemsList.ToArray());
+                    }
+
+                    if (ddlCCSCascadeFieldControl.Items.Count > 0)
+                    {
+                        ddlCCSCascadeFieldControl.SelectedIndex = 0;
+
+                        for (int i = 0; i < ddlCCSCascadeFieldControl.Items.Count; i++)
+                        {
+                            if (ddlCCSCascadeFieldControl.Items[i].Value == selVal)
+                            {
+                                ddlCCSCascadeFieldControl.SelectedIndex = i;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region Create Control
+
         private void ShowControls(CCSCascadedLookupField field)
         {
             SingleValuePanel = (Panel)TemplateContainer.FindControl("SingleValuePanel");
             MultipleValuePanel = (Panel)TemplateContainer.FindControl("MultipleValuePanel");
             NewEntryPanel = (Panel)TemplateContainer.FindControl("NewEntryPanel");
 
-             ddlCCSCascadeFieldControl = (DropDownList)TemplateContainer.FindControl("ddlCCSCascadeFieldControl");
+            ddlCCSCascadeFieldControl = (DropDownList)TemplateContainer.FindControl("ddlCCSCascadeFieldControl");
             lbLeftBox = (ListBox)TemplateContainer.FindControl("lbLeftBox");
             lbRightBox = (ListBox)TemplateContainer.FindControl("lbRightBox");
             btnAdd = (Button)TemplateContainer.FindControl("btnAdd");
@@ -460,14 +380,15 @@ namespace CrowCanyon.CascadedLookup
             lnkCancel = (LinkButton)TemplateContainer.FindControl("lnkCancel");
 
             hiddenFieldType = (HtmlInputHidden)TemplateContainer.FindControl("HiddenFieldType");
+            hParentValue = (HtmlInputHidden)TemplateContainer.FindControl("hParentValue");
 
             if (!Page.IsPostBack)
             {
                 //PopulatingValue();
             }
 
-            
-            
+
+
             if (field.AllowMultipleValues)
             {
                 SingleValuePanel.Visible = false;
@@ -482,14 +403,14 @@ namespace CrowCanyon.CascadedLookup
             }
             else
             {
-                SingleValuePanel.Visible = true; 
+                SingleValuePanel.Visible = true;
                 MultipleValuePanel.Visible = false;
 
                 //Add event
                 ddlCCSCascadeFieldControl.SelectedIndexChanged += new EventHandler(ddlCCSCascadeFieldControl_SelectedIndexChanged);
                 ddlCCSCascadeFieldControl.AutoPostBack = true;
             }
-            
+
             if (field.AllowNewEntry)
             {
                 NewEntryPanel.Visible = true;
@@ -498,7 +419,7 @@ namespace CrowCanyon.CascadedLookup
                 txtNewEntry.Visible = false;
                 lnkAdd.Visible = false;
                 lnkCancel.Visible = false;
-                    
+
                 if (field.UseNewForm)
                 {
                     using (SPWeb spWeb = SPContext.Current.Site.OpenWeb(field.LookupWebId))
@@ -509,7 +430,7 @@ namespace CrowCanyon.CascadedLookup
                         string url = form.Url;
                         url = weburl + "/" + form.Url;
                         string title = field.InternalName;
-                        
+
                         lnkNewEntry.OnClientClick = "javascript:SP.UI.ModalDialog.showModalDialog({ url: '" + url + "', title: '" + title + "', dialogReturnValueCallback:  callbackMethod" + this.Field.Id.ToString("n") + "});";
                     }
                 }
@@ -520,19 +441,25 @@ namespace CrowCanyon.CascadedLookup
 
                     lnkAdd.Click += new EventHandler(lnkAdd_Click);
                     lnkCancel.Click += new EventHandler(lnkCancel_Click);
-
-                    //_new_element.Click += new EventHandler(_new_element_Click);
-                    //_add_entry = (LinkButton)TemplateContainer.FindControl("lbAddEntry");
-                    //_add_entry.Click += new EventHandler(_add_entry_Click);
-                    //_cancel_button = (LinkButton)TemplateContainer.FindControl("lbCancel");
-                    //_cancel_button.Click += new EventHandler(_cancel_button_Click);
-                    //Add event
                 }
             }
             else
             {
                 NewEntryPanel.Visible = false;
             }
+        }
+
+        #endregion
+
+        #region Events
+
+        void ParentControlDropdown_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //Refresh Control Value
+            PopulatingValue();
+
+            // Update nested Controls
+            UpdateChildLinkedControl(this.Field as CCSCascadedLookupField);
         }
 
         void lnkNewEntry_Click(object sender, EventArgs e)
@@ -552,22 +479,22 @@ namespace CrowCanyon.CascadedLookup
                     SPList sourceList = spWeb.Lists[new Guid(field.LookupFieldListName)];
 
                     string parentValueId = "";
-                    
+
                     object parentValue = GetParentFieldValue(field);
 
-                     SPFieldLookupValueCollection vals = parentValue as SPFieldLookupValueCollection;
-                     if (vals != null && vals.Count > 0)
-                     {
-                         parentValueId = vals[0].LookupId.ToString();
-                     }
-                     else
-                     {
-                         SPFieldLookupValue singleValue = parentValue as SPFieldLookupValue;
-                         if (singleValue != null)
-                         {
-                             parentValueId = singleValue.LookupId.ToString();
-                         }
-                     }
+                    SPFieldLookupValueCollection vals = parentValue as SPFieldLookupValueCollection;
+                    if (vals != null && vals.Count > 0)
+                    {
+                        parentValueId = vals[0].LookupId.ToString();
+                    }
+                    else
+                    {
+                        SPFieldLookupValue singleValue = parentValue as SPFieldLookupValue;
+                        if (singleValue != null)
+                        {
+                            parentValueId = singleValue.LookupId.ToString();
+                        }
+                    }
 
 
                     SPListItem item = sourceList.Items.Add();
@@ -650,6 +577,10 @@ namespace CrowCanyon.CascadedLookup
             UpdateChildLinkedControl(this.Field as CCSCascadedLookupField);
         }
 
+        #endregion
+
+        #region private functions
+        
         Boolean ParentValueNullOREmpty(CCSCascadedLookupField field)
         {
             return GetParentFieldValue(field) == null;
@@ -797,8 +728,172 @@ namespace CrowCanyon.CascadedLookup
             return null;
         }
 
+        void AddeventOnParentControls()
+        {
+            CCSCascadedLookupField field = base.Field as CCSCascadedLookupField;
+            if (field != null)
+            {
+                if (field.LinkToParent)
+                {
+                    string ParentColumnId = field.GetParentColumnId();
+                    if (!string.IsNullOrEmpty(ParentColumnId))
+                    {
+                        SPFieldLookup fieldParent = SPContext.Current.List.Fields[new Guid(ParentColumnId)] as SPFieldLookup;
+
+                        if (fieldParent != null)
+                        {
+                            List<Control> collect = new List<Control>();
+
+                            Control parentControl = null;
+                            Utilities.FindControlRecursive(Page, typeof(MultipleLookupField), ref collect);
+                            if (collect.Count > 0)
+                            {
+                                foreach (Control ctrl in collect)
+                                {
+                                    if (((MultipleLookupField)ctrl).FieldName == fieldParent.InternalName)
+                                    {
+                                        parentControl = ctrl;
+                                    }
+                                }
+                            }
+
+                            if (parentControl == null)
+                            {
+                                collect.Clear();
+                                Utilities.FindControlRecursive(Page, typeof(LookupField), ref collect);
+
+                                if (collect.Count > 0)
+                                {
+                                    foreach (Control ctrl in collect)
+                                    {
+                                        if (((LookupField)ctrl).FieldName == fieldParent.InternalName)
+                                        {
+                                            parentControl = ctrl;
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (parentControl != null)
+                            {
+                                if (fieldParent.AllowMultipleValues)
+                                {
+                                    List<Control> childParentControls = new List<Control>();
+
+                                    Utilities.FindControlRecursive(parentControl, typeof(SPHtmlSelect), ref childParentControls);
+                                    Utilities.FindControlRecursive(parentControl, typeof(System.Web.UI.HtmlControls.HtmlButton), ref childParentControls);
+                                    if (childParentControls != null && childParentControls.Count > 0)
+                                    {
+                                        RegisterJavaScriptOnMultipleLookupControl(childParentControls[0].ClientID, childParentControls[1].ClientID, childParentControls[2].ClientID, childParentControls[3].ClientID, "__doPostBack('ParentField" + ParentColumnId + "', '');");
+                                    }
+                                }
+                                else
+                                {
+                                    List<Control> childParentControls = new List<Control>();
+
+                                    Utilities.FindControlRecursive(parentControl, typeof(DropDownList), ref childParentControls);
+                                    if (childParentControls != null && childParentControls.Count > 0)
+                                    {
+                                        foreach (Control ctrl in childParentControls)
+                                        {
+                                            ((DropDownList)ctrl).SelectedIndexChanged += new EventHandler(ParentControlDropdown_SelectedIndexChanged);
+                                            ((DropDownList)ctrl).AutoPostBack = true;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        childParentControls.Clear();
+                                        Utilities.FindControlRecursive(parentControl, typeof(TextBox), ref childParentControls);
+                                        if (childParentControls != null && childParentControls.Count > 0)
+                                        {
+                                            foreach (Control ctrl in childParentControls)
+                                            {
+                                                Page.ClientScript.RegisterStartupScript(new object().GetType(), "101", "var parentFocus" + ctrl.ClientID + " = '0';");
+
+                                                ((TextBox)ctrl).Attributes.Add("onblur", "parentFocus" + ctrl.ClientID + " = '0'; this.value = this.match;");
+                                                ((TextBox)ctrl).Attributes.Add("onfocus", "parentFocus" + ctrl.ClientID + " = '1'");
+                                                ((TextBox)ctrl).Attributes.Add("onpropertychange", "if(parentFocus" + ctrl.ClientID + " != '1') { if(this.match != document.getElementById('" + hiddenFieldType.ClientID + "').value) { document.getElementById('" + hiddenFieldType.ClientID + "').value = this.match;  setTimeout(__doPostBack('ParentFieldAuto" + ParentColumnId + "',document.getElementById(this.optHid).value.toString()), 0) }}");
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        void SetParentValueIfAutoComplete(object Val)
+        {
+            CCSCascadedLookupField field = base.Field as CCSCascadedLookupField;
+            if (field != null)
+            {
+                if (field.LinkToParent)
+                {
+                    string ParentColumnId = field.GetParentColumnId();
+                    if (!string.IsNullOrEmpty(ParentColumnId))
+                    {
+                        SPFieldLookup fieldParent = SPContext.Current.List.Fields[new Guid(ParentColumnId)] as SPFieldLookup;
+
+                        if (fieldParent != null)
+                        {
+                            List<Control> collect = new List<Control>();
+
+                            Control parentControl = null;
+                            Utilities.FindControlRecursive(Page, typeof(MultipleLookupField), ref collect);
+                            if (collect.Count > 0)
+                            {
+                                foreach (Control ctrl in collect)
+                                {
+                                    if (((MultipleLookupField)ctrl).FieldName == fieldParent.InternalName)
+                                    {
+                                        parentControl = ctrl;
+                                    }
+                                }
+                            }
+
+                            if (parentControl == null)
+                            {
+                                collect.Clear();
+                                Utilities.FindControlRecursive(Page, typeof(LookupField), ref collect);
+
+                                if (collect.Count > 0)
+                                {
+                                    foreach (Control ctrl in collect)
+                                    {
+                                        if (((LookupField)ctrl).FieldName == fieldParent.InternalName)
+                                        {
+                                            parentControl = ctrl;
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (parentControl != null)
+                            {
+                                if (!fieldParent.AllowMultipleValues)
+                                {
+                                    List<Control> childParentControls = new List<Control>();
+
+                                    childParentControls.Clear();
+                                    Utilities.FindControlRecursive(parentControl, typeof(TextBox), ref childParentControls);
+                                    if (childParentControls != null && childParentControls.Count > 0)
+                                    {
+                                        fieldParent.FieldRenderingControl.ItemFieldValue = Val;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        #endregion
+
         #region Register Javascript Event on Parent MultipleLookup field Control
-        
+
         void RegisterJavaScriptOnMultipleLookupControl(string leftBox, string rightBox, string addbutton, string removeButton, string ValueString)
         {
             if (!Page.ClientScript.IsStartupScriptRegistered("Parent" + this.Field.Id.ToString("n")))
@@ -999,12 +1094,12 @@ namespace CrowCanyon.CascadedLookup
                                     foreach (DropDownList childListBox in ChildControls)
                                     {
                                         childListBox.Items.Clear();
-                                        if (this.ControlMode == SPControlMode.New || !Field.Required) 
+                                        if (this.ControlMode == SPControlMode.New || !Field.Required)
                                             childListBox.Items.Insert(0, new ListItem("(None)", "0"));
 
                                         if (poplateItemsList != null && poplateItemsList.Count > 0)
                                             childListBox.Items.AddRange(poplateItemsList.ToArray());
-                                        
+
                                         childListBox.SelectedIndex = 0;
                                     }
                                 }

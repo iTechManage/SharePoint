@@ -16,6 +16,7 @@
             <div id="cascadeControl" runat="server">
             </div>
             <div>
+                <input id="hParentValue" type="hidden" value="" runat="server" />
                 <input id="HiddenFieldType" type="hidden" value="" runat="server" />
                 <asp:Panel ID="SingleValuePanel" runat="server">
                     <asp:DropDownList ID="ddlCCSCascadeFieldControl" runat="server" AppendDataBoundItems="true">
