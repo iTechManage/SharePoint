@@ -157,7 +157,7 @@ namespace CrowCanyon.CascadedLookup
             foreach (SPListItem item in matchedItemList)
             {
                 //ListItem newItem = new ListItem(Convert.ToString(item.Fields[new Guid(field.LookupFieldName)].GetFieldValueAsText(item[new Guid(field.LookupFieldName)])), item.ID.ToString());
-                ListItem newItem = new ListItem(Convert.ToString(item.Fields[field.LookupFieldName].GetFieldValueAsText(item[field.LookupFieldName])), item.ID.ToString());
+                ListItem newItem = new ListItem(Convert.ToString(item.Fields.GetFieldByInternalName(field.LookupFieldName).GetFieldValueAsText(item[item.Fields.GetFieldByInternalName(field.LookupFieldName).Id])), item.ID.ToString());
                 if (!itemList.Contains(newItem))
                 {
                     itemList.Add(newItem);
@@ -226,7 +226,7 @@ namespace CrowCanyon.CascadedLookup
             foreach (SPListItem item in matchedItemList)
             {
                 //ListItem newItem = new ListItem(Convert.ToString(item.Fields[new Guid(field.LookupFieldName)].GetFieldValueAsText(item[new Guid(field.LookupFieldName)])), item.ID.ToString());
-                ListItem newItem = new ListItem(Convert.ToString(item.Fields[field.LookupFieldName].GetFieldValueAsText(item[field.LookupFieldName])), item.ID.ToString());
+                ListItem newItem = new ListItem(Convert.ToString(item.Fields.GetFieldByInternalName(field.LookupFieldName).GetFieldValueAsText(item[item.Fields.GetFieldByInternalName(field.LookupFieldName).Id])), item.ID.ToString());
                 if (!itemList.Contains(newItem))
                 {
                     itemList.Add(newItem);

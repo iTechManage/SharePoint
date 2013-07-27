@@ -247,40 +247,58 @@ namespace CrowCanyon.CascadedLookup {
         protected global::System.Web.UI.WebControls.CheckBox cbxUseNewForm;
         
         /// <summary>
-        /// pnlConvertFromRegular control.
+        /// pnlConvertFromLookup control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlConvertFromRegular;
+        protected global::System.Web.UI.WebControls.Panel pnlConvertFromLookup;
         
         /// <summary>
-        /// lblConvertFromRegular control.
+        /// lblConvertFromLookup control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblConvertFromRegular;
+        protected global::System.Web.UI.WebControls.Label lblConvertFromLookup;
         
         /// <summary>
-        /// ddlConvertFromRegular control.
+        /// ddlConvertFromLookup control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlConvertFromRegular;
+        protected global::System.Web.UI.WebControls.DropDownList ddlConvertFromLookup;
         
         /// <summary>
-        /// btnConvertFromRegular control.
+        /// btnConvertFromLookup control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnConvertFromRegular;
+        protected global::System.Web.UI.WebControls.Button btnConvertFromLookup;
+        
+        /// <summary>
+        /// pnlConvertToLookup control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlConvertToLookup;
+        
+        /// <summary>
+        /// btnConvertToLookup control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnConvertToLookup;
         
         /// <summary>
         /// Relationship control.

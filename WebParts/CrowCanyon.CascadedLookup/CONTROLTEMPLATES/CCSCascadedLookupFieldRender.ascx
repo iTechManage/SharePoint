@@ -48,17 +48,6 @@
                     &nbsp;<asp:LinkButton runat="server" ID="lnkAdd" Text="Add" />
                     &nbsp;<asp:LinkButton ID="lnkCancel" runat="server" Text="Cancel" />
                 </asp:Panel>
-                 <%--<script  runat="server">
-                     function Startup() {
-                         if (document.getElementById('<%=HiddenFieldType.ClientId%>').value == 1) {
-                             document.getElementById('<%=ddlCCSCascadeFieldControl.ClientId%>').onchange();
-                         }
-
-                         if (document.getElementById('<%=HiddenFieldType.ClientId%>').value == 2) {
-                             document.getElementById('<%=btnAdd.ClientId%>').click();
-                         }
-                     }
-                </script>--%>
                 </div>
             </ContentTemplate>
         </asp:UpdatePanel>                

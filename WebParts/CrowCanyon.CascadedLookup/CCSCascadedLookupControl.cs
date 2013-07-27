@@ -500,7 +500,7 @@ namespace CrowCanyon.CascadedLookup
                     SPListItem item = sourceList.Items.Add();
 
                     //item[new Guid(field.LookupFieldName)] = txtNewEntry.Text;
-                    item[field.LookupFieldName] = txtNewEntry.Text;
+                    item[item.Fields.GetFieldByInternalName(field.LookupFieldName).Id] = txtNewEntry.Text;                    
 
                     if (field.LinkToParent)
                     {
@@ -784,7 +784,7 @@ namespace CrowCanyon.CascadedLookup
                                     Utilities.FindControlRecursive(parentControl, typeof(System.Web.UI.HtmlControls.HtmlButton), ref childParentControls);
                                     if (childParentControls != null && childParentControls.Count > 0)
                                     {
-                                        RegisterJavaScriptOnMultipleLookupControl(childParentControls[0].ClientID, childParentControls[1].ClientID, childParentControls[2].ClientID, childParentControls[3].ClientID, "__doPostBack('ParentField" + ParentColumnId + "', '');");
+                                        RegisterJavaScriptOnMultipleLookupControl(fieldParent.Id.ToString("n"), childParentControls[0].ClientID, childParentControls[1].ClientID, childParentControls[2].ClientID, childParentControls[3].ClientID, "__doPostBack('ParentField" + ParentColumnId + "', '');");
                                     }
                                 }
                                 else
@@ -811,7 +811,7 @@ namespace CrowCanyon.CascadedLookup
                                                 Page.ClientScript.RegisterStartupScript(new object().GetType(), "101", "var parentFocus" + ctrl.ClientID + " = '0';");
 
                                                 ((TextBox)ctrl).Attributes.Add("onblur", "parentFocus" + ctrl.ClientID + " = '0'; this.value = this.match;");
-                                                ((TextBox)ctrl).Attributes.Add("onfocus", "parentFocus" + ctrl.ClientID + " = '1'");
+                                                ((TextBox)ctrl).Attributes.Add("onfocus", "this.match = this.value; parentFocus" + ctrl.ClientID + " = '1'");
                                                 ((TextBox)ctrl).Attributes.Add("onpropertychange", "if(parentFocus" + ctrl.ClientID + " != '1') { if(this.match != document.getElementById('" + hiddenFieldType.ClientID + "').value) { document.getElementById('" + hiddenFieldType.ClientID + "').value = this.match;  setTimeout(__doPostBack('ParentFieldAuto" + ParentColumnId + "',document.getElementById(this.optHid).value.toString()), 0) }}");
                                             }
                                         }
@@ -894,13 +894,13 @@ namespace CrowCanyon.CascadedLookup
 
         #region Register Javascript Event on Parent MultipleLookup field Control
 
-        void RegisterJavaScriptOnMultipleLookupControl(string leftBox, string rightBox, string addbutton, string removeButton, string ValueString)
+        void RegisterJavaScriptOnMultipleLookupControl(string ParentFieldId, string leftBox, string rightBox, string addbutton, string removeButton, string ValueString)
         {
-            if (!Page.ClientScript.IsStartupScriptRegistered("Parent" + this.Field.Id.ToString("n")))
+            if (!Page.ClientScript.IsStartupScriptRegistered("Parent" + ParentFieldId))
             {
                 System.Text.StringBuilder sb1 = new System.Text.StringBuilder();
 
-                sb1.Append(@"function LoadMethod" + this.Field.Id.ToString("n") + "()");
+                sb1.Append(@"function LoadMethod" + ParentFieldId + "()");
                 sb1.Append(@"{");
                 //sb1.Append(@"alert(document.getElementById('" + leftBox + "').getAttribute(\"ondblclick\"));");
 
@@ -954,11 +954,11 @@ namespace CrowCanyon.CascadedLookup
 
                 sb1.Append(@"}");
 
-                Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "Parent" + this.Field.Id.ToString("n"), sb1.ToString(), true);
+                Page.ClientScript.RegisterClientScriptBlock(this.GetType(), "Parent" + ParentFieldId, sb1.ToString(), true);
 
                 if (!Page.ClientScript.IsStartupScriptRegistered("100"))
                 {
-                    Page.ClientScript.RegisterStartupScript(new object().GetType(), "100", " if (true) _spBodyOnLoadFunctionNames.push('LoadMethod" + this.Field.Id.ToString("n") + "');", true);//if (ControlMode != SPControlMode.Display)
+                    Page.ClientScript.RegisterStartupScript(new object().GetType(), "100", " if (true) _spBodyOnLoadFunctionNames.push('LoadMethod" + ParentFieldId + "');", true);//if (ControlMode != SPControlMode.Display)
                 }
             }
         }

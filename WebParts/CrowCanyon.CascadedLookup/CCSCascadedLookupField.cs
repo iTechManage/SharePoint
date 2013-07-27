@@ -34,55 +34,40 @@ namespace CrowCanyon.CascadedLookup
         {
             base.OnAdded(op);
             Update();
-        }
 
-        public override void Update()
-        {
-            if (this.AllowMultipleValues)
+            if (!string.IsNullOrEmpty(AdditionalFields))
             {
-                XmlDocument doc = new XmlDocument();
-                doc.LoadXml(base.SchemaXml);
-                EnsureAttribute(doc, "Mult", "TRUE");
-                base.SchemaXml = doc.OuterXml;
-            }
-
-            base.Update();
-        }
-
-        public override void OnUpdated()
-        {
-            base.OnUpdated();
-
-            if (AdditionalFieldControlItems != null && AdditionalFieldControlItems.Count > 0)
-            {
-                foreach (ListItem li in AdditionalFieldControlItems)
+                string[] AdditionalFieldsArray = AdditionalFields.Split(new string[] { ";#" }, StringSplitOptions.None);
+                if (AdditionalFieldsArray.Length > 1)
                 {
-                    if (li.Selected)
+                    for (int i = 0; i < AdditionalFieldsArray.Length - 1; i += 2)
                     {
-                        if (!this.ParentList.Fields.ContainsField(this.Title + " : " + li.Text))
+                        if (!this.ParentList.Fields.ContainsField(this.Title + " : " + AdditionalFieldsArray[i]))
                         {
                             //create a new field
-                            string depLookUp = this.ParentList.Fields.AddDependentLookup(this.Title + " : " + li.Text, this.Id);
+                            string depLookUp = this.ParentList.Fields.AddDependentLookup(this.Title + " : " + AdditionalFieldsArray[i], this.Id);
                             SPFieldLookup fieldDepLookup = (SPFieldLookup)this.ParentList.Fields.GetFieldByInternalName(depLookUp);
 
                             if (fieldDepLookup != null)
                             {
                                 fieldDepLookup.LookupWebId = this.LookupWebId;
-                                fieldDepLookup.LookupField = li.Value;
+                                fieldDepLookup.LookupField = AdditionalFieldsArray[i + 1];
                                 fieldDepLookup.Update();
                             }
                         }
                     }
-                    else
-                    {
-                        if (this.ParentList.Fields.ContainsField(this.Title + " : " + li.Text))
-                        {
-                            //delete field if exist
-                            this.ParentList.Fields.GetField(this.Title + " : " + li.Text).Delete();
-                        }
-                    }
                 }
             }
+        }
+
+        public override void Update()
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(base.SchemaXml);
+            CreateAttribute(doc, "Mult", this.AllowMultipleValues.ToString().ToUpper());
+            base.SchemaXml = doc.OuterXml;
+
+            base.Update();
         }
 
         public string GetAdditionalFields()
@@ -103,7 +88,7 @@ namespace CrowCanyon.CascadedLookup
             return additionalFieldsString;
         }
 
-        private void EnsureAttribute(XmlDocument doc, string name, string value)
+        private void CreateAttribute(XmlDocument doc, string name, string value)
         {
             XmlAttribute attribute = doc.DocumentElement.Attributes[name];
             if (attribute == null)

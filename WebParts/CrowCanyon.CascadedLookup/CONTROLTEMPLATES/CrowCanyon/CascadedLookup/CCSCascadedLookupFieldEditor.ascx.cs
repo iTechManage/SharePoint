@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Xml;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
@@ -125,6 +126,8 @@ namespace CrowCanyon.CascadedLookup
                 AddingNewFieldControlVisibility();
 
                 SetRelationShipControlsValue();
+
+                if (field != null) ;
             }
         }
 
@@ -157,9 +160,6 @@ namespace CrowCanyon.CascadedLookup
                 ccscascadeField.SortByView= cbxSortByView.Checked;
                 ccscascadeField.AllowAutocomplete = false;
 
-                ccscascadeField.AdditionalFields = GetAdditonalFields();
-                ccscascadeField.AdditionalFilters = GetAdditonalFilters();
-
                 if (cbxRelationshipBehavior.Enabled && cbxRelationshipBehavior.Checked)
                 {
                     if(rbRestrictDelete.Enabled && rbRestrictDelete.Checked)
@@ -174,7 +174,46 @@ namespace CrowCanyon.CascadedLookup
                     ccscascadeField.RelationshipDeleteBehavior = SPRelationshipDeleteBehavior.None;
                 }
 
-                ccscascadeField.AdditionalFieldControlItems = cblAdditionalFields.Items;
+                ccscascadeField.AdditionalFilters = GetAdditonalFilters();
+
+                if (isNewField)
+                {
+                    ccscascadeField.AdditionalFields = GetAdditonalFields();
+                }
+                else
+                {
+                    ccscascadeField.AdditionalFields = "";
+                    if (cblAdditionalFields.Items != null && cblAdditionalFields.Items.Count > 0)
+                    {
+                        foreach (ListItem li in cblAdditionalFields.Items)
+                        {
+                            if (li.Selected)
+                            {
+                                if (!ccscascadeField.ParentList.Fields.ContainsField(ccscascadeField.Title + " : " + li.Text))
+                                {
+                                    //create a new field
+                                    string depLookUp = ccscascadeField.ParentList.Fields.AddDependentLookup(ccscascadeField.Title + " : " + li.Text, ccscascadeField.Id);
+                                    SPFieldLookup fieldDepLookup = (SPFieldLookup)ccscascadeField.ParentList.Fields.GetFieldByInternalName(depLookUp);
+
+                                    if (fieldDepLookup != null)
+                                    {
+                                        fieldDepLookup.LookupWebId = ccscascadeField.LookupWebId;
+                                        fieldDepLookup.LookupField = li.Value;
+                                        fieldDepLookup.Update();
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (ccscascadeField.ParentList.Fields.ContainsField(ccscascadeField.Title + " : " + li.Text))
+                                {
+                                    //delete field if exist
+                                    ccscascadeField.ParentList.Fields.GetField(ccscascadeField.Title + " : " + li.Text).Delete();
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -656,11 +695,11 @@ namespace CrowCanyon.CascadedLookup
                 {
                     if (val == "")
                     {
-                        val = li.Value;
+                        val = li.Text + ";#" + li.Value;
                     }
                     else
                     {
-                        val += ";#" + li.Value;
+                        val += ";#" + li.Text + ";#" + li.Value;
                     }
                 }
             }
@@ -700,11 +739,37 @@ namespace CrowCanyon.CascadedLookup
                 {
                     ddlWeb.Visible = true;
                     ddlList.Visible = true;
+
+                    //populate values
+                    
+                    cblAdditionalFilters.Items.Clear();
+
+
+                    foreach (SPField selField in SPContext.Current.List.Fields)
+                    {
+                        if (Utilities.IsDisplayField(selField))
+                        {
+                            if (selField.Type == SPFieldType.Lookup || selField.TypeAsString == "Lookup")
+                            {
+                                if (!((SPFieldLookup)selField).IsDependentLookup)
+                                {
+                                    ddlConvertFromLookup.Items.Add(new ListItem(selField.Title, selField.InternalName));
+                                    ddlConvertFromLookup.SelectedIndex = 0;
+                                }
+                            }
+                        }
+                    }
+
+                    pnlConvertFromLookup.Visible = true;
+                    pnlConvertToLookup.Visible = false;
                 }
                 else
                 {
                     ddlWeb.Enabled = false;
                     ddlList.Enabled = false;
+
+                    pnlConvertFromLookup.Visible = false; 
+                    pnlConvertToLookup.Visible = true;
                 }
             }
         }
@@ -750,5 +815,162 @@ namespace CrowCanyon.CascadedLookup
                 }
             }
         }
+
+        void ConvertToCCSCascadedLookupField(SPFieldLookup field)
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(field.SchemaXml);
+
+            //Creating Attributes
+
+            CreateAttribute(doc, "Type", "CCSCascadedLookup");
+            
+            CreateAttribute(doc, "WebId", field.LookupWebId.ToString());
+
+            CreateAttribute(doc, "SourceWebID", field.LookupWebId.ToString());
+
+            CreateAttribute(doc, "LookupFieldListName", field.LookupList);
+
+            CreateAttribute(doc, "LookupFieldName", field.LookupField);
+            
+            CreateAttribute(doc, "ParentLinkedColumnName", "");
+            
+            CreateAttribute(doc, "AllowMultipleValues", "");
+            
+            CreateAttribute(doc, "AdvancedSetting", "True");
+            
+            CreateAttribute(doc, "View", "");
+            
+            CreateAttribute(doc, "LinkToParent", "False");
+            
+            CreateAttribute(doc, "ShowAllOnEmpty", "False");
+            
+            CreateAttribute(doc, "AllowNewEntry", "False");
+            
+            CreateAttribute(doc, "UseNewForm", "False");
+            
+            CreateAttribute(doc, "SortByView", "False");
+            
+            CreateAttribute(doc, "AllowAutocomplete", "False");
+            
+            CreateAttribute(doc, "AdditionalFields", "");
+            
+            CreateAttribute(doc, "AdditionalFilters", "");
+
+
+            doc.DocumentElement.InnerXml = "<Customization><ArrayOfProperty>" + 
+                       "<Property><Name>SourceWebID</Name></Property>" +
+                       "<Property><Name>LookupFieldListName</Name></Property>" + 
+                       "<Property><Name>LookupFieldName</Name></Property>" +
+                       "<Property><Name>ParentLinkedColumnName</Name></Property>" +
+                       "<Property><Name>AllowMultipleValues</Name></Property>" +
+                       "<Property><Name>AdvancedSetting</Name></Property>" +
+                       "<Property><Name>View</Name></Property>" +
+                       "<Property><Name>LinkToParent</Name></Property>" +
+                       "<Property><Name>ShowAllOnEmpty</Name></Property>" +
+                       "<Property><Name>AllowNewEntry</Name></Property>" +
+                       "<Property><Name>UseNewForm</Name></Property>" +
+                       "<Property><Name>AdditionalFields</Name></Property>" +
+                       "<Property><Name>SortByView</Name></Property>" +
+                       "<Property><Name>AllowAutocomplete</Name></Property>" +
+                       "<Property><Name>AdditionalFilters</Name></Property>" +
+                       "</ArrayOfProperty></Customization>";
+            
+
+            field.SchemaXml = doc.OuterXml;
+
+            field.Update();
+        }
+
+        void ConvertToSPFieldLookup(CCSCascadedLookupField field)
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(field.SchemaXml);
+
+            //Creating Attributes
+
+            CreateAttribute(doc, "Type", "Lookup");
+
+            DeleteAttribute(doc, "WebId");
+
+            DeleteAttribute(doc, "SourceWebID");
+
+            DeleteAttribute(doc, "LookupFieldListName");
+
+            DeleteAttribute(doc, "LookupFieldName");
+
+            DeleteAttribute(doc, "ParentLinkedColumnName");
+
+            DeleteAttribute(doc, "AllowMultipleValues");
+
+            DeleteAttribute(doc, "AdvancedSetting");
+
+            DeleteAttribute(doc, "View");
+
+            DeleteAttribute(doc, "LinkToParent");
+
+            DeleteAttribute(doc, "ShowAllOnEmpty");
+
+            DeleteAttribute(doc, "AllowNewEntry");
+
+            DeleteAttribute(doc, "UseNewForm");
+
+            DeleteAttribute(doc, "SortByView");
+
+            DeleteAttribute(doc, "AllowAutocomplete");
+
+            DeleteAttribute(doc, "AdditionalFields");
+
+            DeleteAttribute(doc, "AdditionalFilters");
+
+
+            doc.DocumentElement.InnerXml = "";
+
+
+            field.SchemaXml = doc.OuterXml;
+
+            field.Update();
+        }
+
+        private void CreateAttribute(XmlDocument doc, string name, string value)
+        {
+            XmlAttribute attribute = doc.DocumentElement.Attributes[name];
+            if (attribute == null)
+            {
+                attribute = doc.CreateAttribute(name);
+                doc.DocumentElement.Attributes.Append(attribute);
+            }
+            doc.DocumentElement.Attributes[name].Value = value;
+        }
+
+        private void DeleteAttribute(XmlDocument doc, string name)
+        {
+            XmlAttribute attribute = doc.DocumentElement.Attributes[name];
+            if (attribute != null)
+            {
+                doc.DocumentElement.Attributes.Remove(attribute);
+            }
+        }
+
+        protected void btnConvertFromLookup_Click(object sender, EventArgs e)
+        {
+            if (ddlConvertFromLookup.SelectedItem != null)
+            {
+                SPFieldLookup field = SPContext.Current.List.Fields.GetFieldByInternalName(ddlConvertFromLookup.SelectedItem.Value) as SPFieldLookup;
+                if (field != null)
+                {
+                    ConvertToCCSCascadedLookupField(field);
+                    Page.Response.Redirect(this.Page.Request.Url.ToString());
+                }
+            }
+        }
+
+
+        protected void btnConvertToLookup_Click(object sender, EventArgs e)
+        {
+            ConvertToSPFieldLookup(_ccsCascadedField);
+            Page.Response.Redirect(this.Page.Request.Url.ToString());
+        }
+        
     }
 }
