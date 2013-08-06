@@ -127,7 +127,7 @@ namespace CrowCanyon.CascadedLookup
                         XmlDocument viewQueryXMLDoc = new XmlDocument();
                         viewQueryXMLDoc.LoadXml(viewQueryXML);
                         XmlNode whereNode = viewQueryXMLDoc.DocumentElement.SelectSingleNode("Where");
-                        if (whereNode != null && string.IsNullOrEmpty(whereNode.InnerXml))
+                        if (whereNode != null && !string.IsNullOrEmpty(whereNode.InnerXml))
                         {
                             viewQueryWhereString = whereNode.InnerXml;
                         }
@@ -190,7 +190,7 @@ namespace CrowCanyon.CascadedLookup
                         XmlDocument viewQueryXMLDoc = new XmlDocument();
                         viewQueryXMLDoc.LoadXml(viewQueryXML);
                         XmlNode whereNode = viewQueryXMLDoc.DocumentElement.SelectSingleNode("Where");
-                        if (whereNode != null && string.IsNullOrEmpty(whereNode.InnerXml))
+                        if (whereNode != null && !string.IsNullOrEmpty(whereNode.InnerXml))
                         {
                             viewQueryWhereString = whereNode.InnerXml;
                         }
@@ -249,6 +249,61 @@ namespace CrowCanyon.CascadedLookup
                         FindControlRecursive(ctrl, type, ref collect);
                 }
             }
+        }
+
+        public static void GetParametersValue(CCSCascadedLookupField field, out string webUrl, out string lookupListName, out string ParentLinkedFieldName, out string LookupFieldName, out string ViewWhereString, out string ViewOrderString)
+        {
+            webUrl = "";
+            lookupListName = "";
+            LookupFieldName = "";
+            ParentLinkedFieldName = "";
+            ViewWhereString = "";
+            ViewOrderString = "";
+
+            using (SPWeb LookupWeb = SPContext.Current.Site.OpenWeb(((SPFieldLookup)field).LookupWebId))
+            {
+                SPList LookupList = LookupWeb.Lists[new Guid(field.LookupFieldListName)];
+                webUrl = LookupWeb.Url;
+                lookupListName = LookupList.Title;
+                LookupFieldName = field.LookupFieldName;
+
+                if (!string.IsNullOrEmpty(field.GetParentLinkedColumnId()))
+                {
+                    //string linked_column = field.GetProperty(CustomDropDownList.LINK_COLUMN);
+                    SPField ParentLinkedField = LookupList.Fields[new Guid(field.GetParentLinkedColumnId())];
+                    if (ParentLinkedField != null)
+                    {
+                        ParentLinkedFieldName = ParentLinkedField.InternalName;
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(field.View))
+                {
+                    SPView view = LookupList.GetView(new Guid(field.View));
+
+                    if (!String.IsNullOrEmpty(view.Query))
+                    {
+                        string viewQueryXML = string.Format("<Query>{0}</Query>", view.Query);
+                        XmlDocument viewQueryXMLDoc = new XmlDocument();
+                        viewQueryXMLDoc.LoadXml(viewQueryXML);
+                        XmlNode whereNode = viewQueryXMLDoc.DocumentElement.SelectSingleNode("Where");
+                        if (whereNode != null && !string.IsNullOrEmpty(whereNode.InnerXml))
+                        {
+                            ViewWhereString = whereNode.InnerXml;
+                        }
+
+                        XmlNode orderByNode = viewQueryXMLDoc.DocumentElement.SelectSingleNode("OrderBy");
+                        if (orderByNode != null || string.IsNullOrEmpty(orderByNode.InnerXml))
+                        {
+                            ViewOrderString = orderByNode.InnerXml;
+                        }
+
+                        ViewOrderString = string.Format("<OrderBy>{0}</OrderBy>", ViewOrderString);
+                    }
+                }
+
+            }
+
         }
 
     }

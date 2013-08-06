@@ -76,6 +76,9 @@
       <SharePointProjectItemId>{4952aaf7-78a1-4aa1-9340-4e8d10114dac}</SharePointProjectItemId>
     </None>
     <None Include="key.snk" />
+    <None Include="Layouts\SharePointProjectItem.spdata">
+      <SharePointProjectItemId>{6e861634-5855-4a6b-a891-68520578aea6}</SharePointProjectItemId>
+    </None>
     <None Include="Package\Package.package">
       <PackageId>{e83df665-eef5-45b4-a021-c3e9740b3a9c}</PackageId>
     </None>
@@ -96,6 +99,7 @@
     <Content Include="CONTROLTEMPLATES\CrowCanyon\CascadedLookup\CCSCascadedLookupFieldEditor.ascx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
+    <Content Include="Layouts\CrowCanyon.CascadedLookup\CCSCascadeLookup.js" />
     <Content Include="XML\fldtypes_CCSCascadedLookup.xml">
       <SubType>Designer</SubType>
     </Content>

@@ -13,43 +13,56 @@
     <Template>
         <asp:UpdatePanel ID="UpdatePanel1" runat="server">
             <ContentTemplate>
-            <div id="cascadeControl" runat="server">
-            </div>
-            <div>
-                <input id="hParentValue" type="hidden" value="" runat="server" />
-                <input id="HiddenFieldType" type="hidden" value="" runat="server" />
-                <asp:Panel ID="SingleValuePanel" runat="server">
-                    <asp:DropDownList ID="ddlCCSCascadeFieldControl" runat="server" AppendDataBoundItems="true">
-                    </asp:DropDownList>
-                </asp:Panel>
-                <asp:Panel runat="server" ID="MultipleValuePanel">
-                    <table style="width: 570px">
-                        <tr>
-                            <td>
-                                <asp:ListBox ID="lbLeftBox" runat="server" SelectionMode="Multiple" 
-                                    Style="width: 205px; min-height: 125px; max-height: 150px;"></asp:ListBox>
-                            </td>
-                            <td style="vertical-align: middle; text-align: center; width: 150px; height: 125px;">
-                                <asp:Button class="ms-ButtonHeightWidth" runat="server" ID="btnAdd" Text="Add >"></asp:Button>
-                                <br />
-                                <br />
-                                <asp:Button class="ms-ButtonHeightWidth" runat="server" ID="btnRemove" Text="< Remove"></asp:Button>
-                            </td>
-                            <td>
-                                <asp:ListBox ID="lbRightBox" runat="server" SelectionMode="Multiple" 
-                                    Style="width: 205px; min-height: 125px; max-height: 150px;"></asp:ListBox>
-                            </td>
-                        </tr>
-                    </table>
-                </asp:Panel>
-               <asp:Panel ID="NewEntryPanel" runat="server">
-                    <asp:LinkButton runat="server" ID="lnkNewEntry" Text="New Entry" />
-                    &nbsp;<asp:TextBox runat="server" ID="txtNewEntry" />
-                    &nbsp;<asp:LinkButton runat="server" ID="lnkAdd" Text="Add" />
-                    &nbsp;<asp:LinkButton ID="lnkCancel" runat="server" Text="Cancel" />
-                </asp:Panel>
+                <div>
+                    <input id="hParentValue" type="hidden" value="" runat="server" />
+                    <input id="HiddenFieldType" type="hidden" value="" runat="server" />
+                    <input id="hFieldValue" type="hidden" value="" runat="server" />
+                    <asp:Panel ID="SingleValuePanel" runat="server">
+                        <select id="ddlCCSCascadeFieldControl" runat="server">
+                            <option></option>
+                        </select>
+                        <asp:DropDownList ID="ddlCCSCascadeFieldControl1" runat="server" AppendDataBoundItems="False"
+                            Visible="false">
+                        </asp:DropDownList>
+                    </asp:Panel>
+                    <asp:Panel runat="server" ID="MultipleValuePanel">
+                        <table style="width: 570px">
+                            <tr>
+                                <td>
+                                    <select id="lbLeftBox" runat="server" style="width: 205px; min-height: 125px;
+                                        max-height: 150px;">
+                                        <option></option>
+                                    </select>
+                                    <asp:ListBox ID="lbLeftBox1" runat="server" SelectionMode="Multiple" Style="width: 205px;
+                                        min-height: 125px; max-height: 150px;" Visible="false"></asp:ListBox>
+                                </td>
+                                <td style="vertical-align: middle; text-align: center; width: 150px; height: 125px;">
+                                    <asp:Button class="ms-ButtonHeightWidth" runat="server" ID="btnAdd" Text="Add >">
+                                    </asp:Button>
+                                    <br />
+                                    <br />
+                                    <asp:Button class="ms-ButtonHeightWidth" runat="server" ID="btnRemove" Text="< Remove">
+                                    </asp:Button>
+                                </td>
+                                <td>
+                                    <select id="lbRightBox" runat="server" style="width: 205px; min-height: 125px;
+                                        max-height: 150px;">
+                                        <option></option>
+                                    </select>
+                                    <asp:ListBox ID="lbRightBox1" runat="server" SelectionMode="Multiple" Style="width: 205px;
+                                        min-height: 125px; max-height: 150px;" Visible="false"></asp:ListBox>
+                                </td>
+                            </tr>
+                        </table>
+                    </asp:Panel>
+                    <asp:Panel ID="NewEntryPanel" runat="server">
+                        <asp:LinkButton runat="server" ID="lnkNewEntry" Text="New Entry" />
+                        &nbsp;<asp:TextBox runat="server" ID="txtNewEntry" />
+                        &nbsp;<asp:LinkButton runat="server" ID="lnkAdd" Text="Add" />
+                        &nbsp;<asp:LinkButton ID="lnkCancel" runat="server" Text="Cancel" />
+                    </asp:Panel>
                 </div>
             </ContentTemplate>
-        </asp:UpdatePanel>                
+        </asp:UpdatePanel>
     </Template>
 </SharePoint:RenderingTemplate>

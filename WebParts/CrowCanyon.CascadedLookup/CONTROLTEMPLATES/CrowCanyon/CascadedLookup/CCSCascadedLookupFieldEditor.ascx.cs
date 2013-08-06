@@ -127,7 +127,7 @@ namespace CrowCanyon.CascadedLookup
 
                 SetRelationShipControlsValue();
 
-                if (field != null) ;
+                //if (field != null) ;
             }
         }
 
@@ -562,7 +562,7 @@ namespace CrowCanyon.CascadedLookup
                         continue;
                     }
 
-                    ListItem item = new ListItem(view.Title, view.ID.ToString() + "|" + view.Url);
+                    ListItem item = new ListItem(view.Title, view.ID.ToString());
                     string viewId = string.Empty;
 
                     if (_ccsCascadedField != null)
