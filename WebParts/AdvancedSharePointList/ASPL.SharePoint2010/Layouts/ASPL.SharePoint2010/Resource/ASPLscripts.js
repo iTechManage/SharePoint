@@ -215,7 +215,7 @@ function SLFE_SelectTab(tabName) {
         if (el != null) {
             if (el.className.indexOf("ms-cui-") > -1) {
                 el.setAttribute('regcssclass', el.className);
-                el.className += ' ms-cui-tt-s';
+                el.className += ' ms-cui-tt-s  ccstest ';
             }
             else {
                 el.className = el.getAttribute('realclass') + ' ms-topnavselected';
