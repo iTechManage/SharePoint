@@ -74,3 +74,35 @@
 	top:0px;
 	left:-96px;
 }
+.ms-infobar
+        {
+            border: 1px solid #999999;
+            background-color:#edf0d9;
+            font-family:Tahoma;
+            font-size:11px;
+        }
+.ms-cui-cg-db.ms-cui-cg-s .ms-cui-ct-ul{background-color: white; 
+border-color: white;
+}
+.ms-cui-cg.ms-cui-cg-db.ms-cui-cg-s{border-color: white; 
+border-top-color:white;
+}
+.ms-cui-tt-a
+{
+    padding:0px;
+	height:18px;
+	font-weight:bold;
+	vertical-align: middle;
+	font-family:Arial;
+	background-image:url(images/aeroCenterUnselected.png);
+	height:28px;
+    }
+.ms-cui-tt-span
+ {
+	color:#336699;
+ }
+ .ccstest a
+ {
+     font-size:12px;
+     background-image:url(images/aeroCenter.png);
+ }

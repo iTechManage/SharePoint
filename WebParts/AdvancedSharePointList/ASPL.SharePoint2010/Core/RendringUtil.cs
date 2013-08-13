@@ -21,9 +21,9 @@ namespace ASPL.SharePoint2010.Core
                 string initHtml = @"<tr style='margin-bottom: 7px' id='TabsControl'>
                                     <td colspan=2>
                                         <script>var SLFE_TabHideEmpty ='true'</script>
-                                        <ul class='ms-cui-tts' unselectable='on' style='height:25px'>
-                                            <li class='ms-cui-cg ms-cui-cg-db ms-cui-cg-s' style='height:25px'>
-                                                <ul class='ms-cui-ct-ul' style='100%' id='ulTabCtrl'>";
+                                        <ul class='ms-cui-tts' unselectable='on' style='height:65px'>
+                                            <li class='ms-cui-cg ms-cui-cg-db ms-cui-cg-s' style='height:25px'style='white-space:normal;'>
+                                               <ul class='ms-cui-ct-ul' id='ulTabCtrl'>";
 
                 string endHtml = "</ul></li></ul></td></tr>";
 
@@ -52,8 +52,8 @@ namespace ASPL.SharePoint2010.Core
 
 
             string html = @"<li id='tab{0}' class='{1}' realclass='{3}' title='{2}' unselectable='on'>
-                            <a class='ms-cui-tt-a' title='{2}' onclick='SLFE_SelectTab(&quot;{0}&quot;);' target='_self' href='javascript:;' unselectable='on'>
-                                <span class='ms-cui-tt-span' unselectable='on'>{0}</span>
+                             <a class='ms-cui-tt-a' title='{2}' onclick='SLFE_SelectTab(&quot;{0}&quot;);' target='_self' href='javascript:;' unselectable='on'>
+                            <span class='ms-cui-tt-span' style='white-space:normal;' unselectable='on' >{0}</span>
                             </a>
                             <script>var key=unescape('{0}').replace(/\\+/g, ' ');
                             SLFE_TabToElementIDHash[key] = 'tab{0}';</script>
