@@ -32,27 +32,30 @@ namespace CrowCanyon.CascadedLookup
 
         public override void OnAdded(SPAddFieldOptions op)
         {
-            base.OnAdded(op);
-            Update();
-
-            if (!string.IsNullOrEmpty(AdditionalFields))
+            using (new EnterExitLogger("CCSCascadedLookupField:OnAdded function"))
             {
-                string[] AdditionalFieldsArray = AdditionalFields.Split(new string[] { ";#" }, StringSplitOptions.None);
-                if (AdditionalFieldsArray.Length > 1)
-                {
-                    for (int i = 0; i < AdditionalFieldsArray.Length - 1; i += 2)
-                    {
-                        if (!this.ParentList.Fields.ContainsField(this.Title + " : " + AdditionalFieldsArray[i]))
-                        {
-                            //create a new field
-                            string depLookUp = this.ParentList.Fields.AddDependentLookup(this.Title + " : " + AdditionalFieldsArray[i], this.Id);
-                            SPFieldLookup fieldDepLookup = (SPFieldLookup)this.ParentList.Fields.GetFieldByInternalName(depLookUp);
+                base.OnAdded(op);
+                Update();
 
-                            if (fieldDepLookup != null)
+                if (!string.IsNullOrEmpty(AdditionalFields))
+                {
+                    string[] AdditionalFieldsArray = AdditionalFields.Split(new string[] { ";#" }, StringSplitOptions.None);
+                    if (AdditionalFieldsArray.Length > 1)
+                    {
+                        for (int i = 0; i < AdditionalFieldsArray.Length - 1; i += 2)
+                        {
+                            if (!this.ParentList.Fields.ContainsField(this.Title + " : " + AdditionalFieldsArray[i]))
                             {
-                                fieldDepLookup.LookupWebId = this.LookupWebId;
-                                fieldDepLookup.LookupField = AdditionalFieldsArray[i + 1];
-                                fieldDepLookup.Update();
+                                //create a new field
+                                string depLookUp = this.ParentList.Fields.AddDependentLookup(this.Title + " : " + AdditionalFieldsArray[i], this.Id);
+                                SPFieldLookup fieldDepLookup = (SPFieldLookup)this.ParentList.Fields.GetFieldByInternalName(depLookUp);
+
+                                if (fieldDepLookup != null)
+                                {
+                                    fieldDepLookup.LookupWebId = this.LookupWebId;
+                                    fieldDepLookup.LookupField = AdditionalFieldsArray[i + 1];
+                                    fieldDepLookup.Update();
+                                }
                             }
                         }
                     }
@@ -62,41 +65,52 @@ namespace CrowCanyon.CascadedLookup
 
         public override void Update()
         {
-            XmlDocument doc = new XmlDocument();
-            doc.LoadXml(base.SchemaXml);
-            CreateAttribute(doc, "Mult", this.AllowMultipleValues.ToString().ToUpper());
-            base.SchemaXml = doc.OuterXml;
+            using (new EnterExitLogger("CCSCascadedLookupField:Update function"))
+            {
 
-            base.Update();
+                XmlDocument doc = new XmlDocument();
+                doc.LoadXml(base.SchemaXml);
+                CreateAttribute(doc, "Mult", this.AllowMultipleValues.ToString().ToUpper());
+                base.SchemaXml = doc.OuterXml;
+
+                base.Update();
+            }
         }
 
         public string GetAdditionalFields()
         {
-            string additionalFieldsString = "";
-            if (this != null && this.ParentList != null)
+            using (new EnterExitLogger("CCSCascadedLookupField:GetAdditionalFields function"))
             {
-                for(int i=0; i < this.ParentList.Fields.Count; i++)
+                string additionalFieldsString = "";
+                if (this != null && this.ParentList != null)
                 {
-                    SPFieldLookup field = this.ParentList.Fields[i] as SPFieldLookup;
-                    if(field != null && field.IsDependentLookup && field.PrimaryFieldId != null && field.PrimaryFieldId == this.Id.ToString())
+                    for (int i = 0; i < this.ParentList.Fields.Count; i++)
                     {
-                        additionalFieldsString = additionalFieldsString + ";#" + field.LookupField; 
+                        SPFieldLookup field = this.ParentList.Fields[i] as SPFieldLookup;
+                        if (field != null && field.IsDependentLookup && field.PrimaryFieldId != null && field.PrimaryFieldId == this.Id.ToString())
+                        {
+                            additionalFieldsString = additionalFieldsString + ";#" + field.LookupField;
+                        }
                     }
                 }
+                Utils.LogManager.write("AdditionalFieldsString : " + additionalFieldsString);
+                return additionalFieldsString;
             }
-
-            return additionalFieldsString;
         }
 
         private void CreateAttribute(XmlDocument doc, string name, string value)
         {
-            XmlAttribute attribute = doc.DocumentElement.Attributes[name];
-            if (attribute == null)
+            using (new EnterExitLogger("CCSCascadedLookupField:CreateAttribute function"))
             {
-                attribute = doc.CreateAttribute(name);
-                doc.DocumentElement.Attributes.Append(attribute);
+                Utils.LogManager.write("Atribute Name: " + name + ", Value: " + value);
+                XmlAttribute attribute = doc.DocumentElement.Attributes[name];
+                if (attribute == null)
+                {
+                    attribute = doc.CreateAttribute(name);
+                    doc.DocumentElement.Attributes.Append(attribute);
+                }
+                doc.DocumentElement.Attributes[name].Value = value;
             }
-            doc.DocumentElement.Attributes[name].Value = value;
         } 
 
         public override Microsoft.SharePoint.WebControls.BaseFieldControl FieldRenderingControl
@@ -383,28 +397,38 @@ namespace CrowCanyon.CascadedLookup
 
         public string GetParentColumnId()
         {
-            if (!string.IsNullOrEmpty(ParentLinkedColumnName))
+            using (new EnterExitLogger("CCSCascadedLookupField:GetParentLinkedColumnId function"))
             {
-                string[] vals = ParentLinkedColumnName.Split(new string[] { ";#" }, StringSplitOptions.None);
-                if (vals != null && vals.Length == 3)
+                if (!string.IsNullOrEmpty(ParentLinkedColumnName))
                 {
-                    return vals[0];
+                    string[] vals = ParentLinkedColumnName.Split(new string[] { ";#" }, StringSplitOptions.None);
+                    if (vals != null && vals.Length == 3)
+                    {
+                        Utils.LogManager.write("Parent ColumnId: vals[0]");
+                        return vals[0];
+                    }
                 }
+                Utils.LogManager.write("Parent ColumnId: EMPTY");
+                return "";
             }
-            return "";
         }
 
         public string GetParentLinkedColumnId()
         {
-            if (!string.IsNullOrEmpty(ParentLinkedColumnName))
+            using (new EnterExitLogger("CCSCascadedLookupField:GetParentLinkedColumnId function"))
             {
-                string[] vals = ParentLinkedColumnName.Split(new string[] { ";#" }, StringSplitOptions.None);
-                if (vals != null && vals.Length == 3)
+                if (!string.IsNullOrEmpty(ParentLinkedColumnName))
                 {
-                    return vals[2];
+                    string[] vals = ParentLinkedColumnName.Split(new string[] { ";#" }, StringSplitOptions.None);
+                    if (vals != null && vals.Length == 3)
+                    {
+                        Utils.LogManager.write("ParentLinkedColumnId: vals[2]");
+                        return vals[2];
+                    }
                 }
+                Utils.LogManager.write("ParentLinkedColumnId: EMPTY");
+                return "";
             }
-            return "";
         }
 
 
@@ -420,18 +444,27 @@ namespace CrowCanyon.CascadedLookup
 
         public new void SetCustomProperty(string attribute, object value)
         {
-            Type type = typeof(CCSCascadedLookupField);
-            MethodInfo mi = type.GetMethod("SetFieldAttributeValue", BindingFlags.Instance | BindingFlags.NonPublic);
-            mi.Invoke(this, new object[] { attribute, value });
+            using (new EnterExitLogger("CCSCascadedLookupField:SetCustomProperty function"))
+            {
+                Utils.LogManager.write("Attribute Name: : " + attribute + ", Value: " + (value == null ? "" : value.ToString()));
+                Type type = typeof(CCSCascadedLookupField);
+                MethodInfo mi = type.GetMethod("SetFieldAttributeValue", BindingFlags.Instance | BindingFlags.NonPublic);
+                mi.Invoke(this, new object[] { attribute, value });
+            }
         }
 
         public new object GetCustomProperty(string attribute)
         {
-            Type type = typeof(CCSCascadedLookupField);
-            MethodInfo mi = type.GetMethod("GetFieldAttributeValue", BindingFlags.Instance | BindingFlags.NonPublic, null, new Type[] { typeof(String) }, null);
-            object obj = mi.Invoke(this, new object[] { attribute });
+            using (new EnterExitLogger("CCSCascadedLookupField:GetCustomProperty function"))
+            {
+                Utils.LogManager.write("Attribute Name: " + attribute);
+                Type type = typeof(CCSCascadedLookupField);
+                MethodInfo mi = type.GetMethod("GetFieldAttributeValue", BindingFlags.Instance | BindingFlags.NonPublic, null, new Type[] { typeof(String) }, null);
+                object obj = mi.Invoke(this, new object[] { attribute });
 
-            return obj == null ? "" : obj; 
+                Utils.LogManager.write("Attribute Value: " + (obj == null ? "" : obj.ToString()));
+                return obj == null ? "" : obj;
+            }
         }
     }
 }

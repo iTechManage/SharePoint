@@ -128,7 +128,6 @@ function getQueryString(control) {
 
 
 function UpdateMyChildControls(triggerObjectId) {
-
     if (CascadedControls.length > 0) {
         for (var i = 0; i < CascadedControls.length; i++) {
             if (CascadedControls[i].ParentControlId != '') {

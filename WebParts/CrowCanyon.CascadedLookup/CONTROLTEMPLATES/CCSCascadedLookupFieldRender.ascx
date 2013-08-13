@@ -14,8 +14,7 @@
         <asp:UpdatePanel ID="UpdatePanel1" runat="server">
             <ContentTemplate>
                 <div>
-                    <input id="hParentValue" type="hidden" value="" runat="server" />
-                    <input id="HiddenFieldType" type="hidden" value="" runat="server" />
+                    <asp:Literal ID="ErrorText" runat="server"></asp:Literal>
                     <input id="hFieldValue" type="hidden" value="" runat="server" />
                     <asp:Panel ID="SingleValuePanel" runat="server">
                         <select id="ddlCCSCascadeFieldControl" runat="server">

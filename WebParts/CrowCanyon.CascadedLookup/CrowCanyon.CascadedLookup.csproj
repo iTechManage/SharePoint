@@ -68,6 +68,7 @@
     <Compile Include="CONTROLTEMPLATES\CrowCanyon\CascadedLookup\CCSCascadedLookupFieldEditor.ascx.designer.cs">
       <DependentUpon>CCSCascadedLookupFieldEditor.ascx.cs</DependentUpon>
     </Compile>
+    <Compile Include="LoggingManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>

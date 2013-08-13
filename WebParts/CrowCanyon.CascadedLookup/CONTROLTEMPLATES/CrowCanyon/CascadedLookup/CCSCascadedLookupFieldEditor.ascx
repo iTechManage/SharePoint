@@ -35,6 +35,7 @@
                             }
                         </style>
                         <div style="width: 100%; text-align: left; border-width: 0px;">
+                        <asp:Literal ID="ErrorText" runat="server"></asp:Literal>
                             <table style="width: 100%; border-width: 0px; border-collapse: collapse;" cellpadding="0"
                                 cellspacing="0">
                                 <tr>
