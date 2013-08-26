@@ -73,6 +73,7 @@
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
     <None Include="CONTROLTEMPLATES\SharePointProjectItem.spdata">
       <SharePointProjectItemId>{4952aaf7-78a1-4aa1-9340-4e8d10114dac}</SharePointProjectItemId>
     </None>

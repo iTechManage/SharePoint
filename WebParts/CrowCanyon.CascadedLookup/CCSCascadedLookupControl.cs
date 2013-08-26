@@ -409,17 +409,20 @@ namespace CrowCanyon.CascadedLookup
                     if (field.UseNewForm)
                     {
                         Utils.LogManager.write("Field: " + field.Title + ", Use New Form: true");
-                        using (SPWeb spWeb = SPContext.Current.Site.OpenWeb(field.LookupWebId))
-                        {
-                            string weburl = spWeb.Url;
-                            SPList sourceList = spWeb.Lists[new Guid(field.LookupFieldListName)];
-                            SPForm form = sourceList.Forms[PAGETYPE.PAGE_NEWFORM];
-                            string url = form.Url;
-                            url = weburl + "/" + form.Url;
-                            string title = field.InternalName;
+                        SPSecurity.RunWithElevatedPrivileges(delegate
+                            {
+                                using (SPWeb spWeb = SPContext.Current.Site.OpenWeb(field.LookupWebId))
+                                {
+                                    string weburl = spWeb.Url;
+                                    SPList sourceList = spWeb.Lists[new Guid(field.LookupFieldListName)];
+                                    SPForm form = sourceList.Forms[PAGETYPE.PAGE_NEWFORM];
+                                    string url = form.Url;
+                                    url = weburl + "/" + form.Url;
+                                    string title = field.InternalName;
 
-                            lnkNewEntry.OnClientClick = "javascript:SP.UI.ModalDialog.showModalDialog({ url: '" + url + "', title: '" + title + "', dialogReturnValueCallback:  callbackMethod" + this.Field.Id.ToString("n") + "});";
-                        }
+                                    lnkNewEntry.OnClientClick = "javascript:SP.UI.ModalDialog.showModalDialog({ url: '" + url + "', title: '" + title + "', dialogReturnValueCallback:  callbackMethod" + this.Field.Id.ToString("n") + "});";
+                                }
+                            });
                     }
                     else
                     {
@@ -560,7 +563,7 @@ namespace CrowCanyon.CascadedLookup
                                 {
                                     foreach (Control ctrl in collect)
                                     {
-                                        if (((MultipleLookupField)ctrl).FieldName == fieldParent.InternalName)
+                                        if (((MultipleLookupField)ctrl).FieldName.Equals(fieldParent.InternalName, StringComparison.InvariantCultureIgnoreCase))
                                         {
                                             Utils.LogManager.write("Return Parent Field : " + fieldParent.Title + ", MultipleLookupField Value: " + (((MultipleLookupField)ctrl).Value != null ? ((MultipleLookupField)ctrl).Value : "NULL"));
                                             return ((MultipleLookupField)ctrl).Value;
@@ -574,7 +577,7 @@ namespace CrowCanyon.CascadedLookup
                                 {
                                     foreach (Control ctrl in collect)
                                     {
-                                        if (((CCSCascadedLookupControl)ctrl).FieldName == fieldParent.InternalName)
+                                        if (((CCSCascadedLookupControl)ctrl).FieldName.Equals(fieldParent.InternalName, StringComparison.InvariantCultureIgnoreCase))
                                         {
                                             Utils.LogManager.write("Return Parent Field : " + fieldParent.Title + ", CCSCascadedLookupControl Value: " + (((CCSCascadedLookupControl)ctrl).Value != null ? ((CCSCascadedLookupControl)ctrl).Value : "NULL"));
                                             return ((CCSCascadedLookupControl)ctrl).Value;
@@ -589,7 +592,7 @@ namespace CrowCanyon.CascadedLookup
                                 {
                                     foreach (Control ctrl in collect)
                                     {
-                                        if (((LookupField)ctrl).FieldName == fieldParent.InternalName)
+                                        if (((LookupField)ctrl).FieldName.Equals(fieldParent.InternalName, StringComparison.InvariantCultureIgnoreCase))
                                         {
                                             Utils.LogManager.write("Return Parent Field : " + fieldParent.Title + ", LookupField Value: " + (((LookupField)ctrl).Value != null ? ((LookupField)ctrl).Value : "NULL"));
                                             return ((LookupField)ctrl).Value;
@@ -631,7 +634,7 @@ namespace CrowCanyon.CascadedLookup
                                 {
                                     foreach (Control ctrl in collect)
                                     {
-                                        if (((MultipleLookupField)ctrl).FieldName == fieldParent.InternalName)
+                                        if (((MultipleLookupField)ctrl).FieldName.Equals(fieldParent.InternalName, StringComparison.InvariantCultureIgnoreCase))
                                         {
                                             Utils.LogManager.write("Get the Parent Control Type is MultipleLookupField");
                                             parentControl = ctrl;
@@ -648,7 +651,7 @@ namespace CrowCanyon.CascadedLookup
                                     {
                                         foreach (Control ctrl in collect)
                                         {
-                                            if (((LookupField)ctrl).FieldName == fieldParent.InternalName)
+                                            if (((LookupField)ctrl).FieldName.Equals(fieldParent.InternalName, StringComparison.InvariantCultureIgnoreCase))
                                             {
                                                 Utils.LogManager.write("Get the Parent Control Type is LookupField");
                                                 parentControl = ctrl;
@@ -725,7 +728,7 @@ namespace CrowCanyon.CascadedLookup
                                     {
                                         foreach (Control ctrl in collect)
                                         {
-                                            if (((CCSCascadedLookupControl)ctrl).FieldName == fieldParent.InternalName)
+                                            if (((CCSCascadedLookupControl)ctrl).FieldName.Equals(fieldParent.InternalName, StringComparison.InvariantCultureIgnoreCase))
                                             {
                                                 Utils.LogManager.write("Get the Parent Control Type is CCSCascadedLookupControl");
                                                 parentControl = ctrl;
@@ -936,7 +939,7 @@ namespace CrowCanyon.CascadedLookup
                             {
                                 for (int i = 0; i < ddlCCSCascadeFieldControl.Items.Count; i++)
                                 {
-                                    if (ddlCCSCascadeFieldControl.Items[i].Value == singleValue.LookupId.ToString())
+                                    if (ddlCCSCascadeFieldControl.Items[i].Value.Equals(singleValue.LookupId.ToString(), StringComparison.InvariantCultureIgnoreCase))
                                     {
                                         Utils.LogManager.write("Selected index : " + i.ToString());
                                         ddlCCSCascadeFieldControl.SelectedIndex = i;

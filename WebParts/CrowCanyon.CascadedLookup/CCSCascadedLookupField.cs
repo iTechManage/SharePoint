@@ -87,7 +87,7 @@ namespace CrowCanyon.CascadedLookup
                     for (int i = 0; i < this.ParentList.Fields.Count; i++)
                     {
                         SPFieldLookup field = this.ParentList.Fields[i] as SPFieldLookup;
-                        if (field != null && field.IsDependentLookup && field.PrimaryFieldId != null && field.PrimaryFieldId == this.Id.ToString())
+                        if (field != null && field.IsDependentLookup && field.PrimaryFieldId != null && field.PrimaryFieldId.Equals(this.Id.ToString(), StringComparison.InvariantCultureIgnoreCase))
                         {
                             additionalFieldsString = additionalFieldsString + ";#" + field.LookupField;
                         }

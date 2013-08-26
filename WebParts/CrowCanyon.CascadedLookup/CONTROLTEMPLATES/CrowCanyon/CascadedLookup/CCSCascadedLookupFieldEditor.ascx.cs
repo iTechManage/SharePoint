@@ -160,7 +160,7 @@ namespace CrowCanyon.CascadedLookup
 
         public void InitializeWithField(SPField field)
         {
-            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:ConvertToSPFieldLookup function"))
+            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:InitializeWithField function"))
             {
                 try
                 {
@@ -189,7 +189,7 @@ namespace CrowCanyon.CascadedLookup
 
         public void OnSaveChange(SPField field, bool isNewField)
         {
-            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:ConvertToSPFieldLookup function"))
+            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:OnSaveChange function"))
             {
                 try
                 {
@@ -197,11 +197,14 @@ namespace CrowCanyon.CascadedLookup
                     CCSCascadedLookupField ccscascadeField = field as CCSCascadedLookupField;
                     if (ccscascadeField != null)
                     {
-                        using (SPWeb selWeb = SPControl.GetContextSite(this.Context).OpenWeb(new Guid(ddlWeb.SelectedItem.Value)))
-                        {
-                            ccscascadeField.LookupWebId = selWeb.ID;
-                            Utils.LogManager.write("ccscascadeField.LookupWebId: " + selWeb.ID.ToString());
-                        }
+                        SPSecurity.RunWithElevatedPrivileges(delegate
+                            {
+                                using (SPWeb selWeb = SPContext.Current.Site.OpenWeb(new Guid(ddlWeb.SelectedItem.Value)))
+                                {
+                                    ccscascadeField.LookupWebId = selWeb.ID;
+                                    Utils.LogManager.write("ccscascadeField.LookupWebId: " + selWeb.ID.ToString());
+                                }
+                            });
 
                         ccscascadeField.LookupList = (ddlList.SelectedItem != null ? ddlList.SelectedItem.Value : "");
                         Utils.LogManager.write("ccscascadeField.LookupList: " + ddlList.SelectedItem.Value);
@@ -331,15 +334,17 @@ namespace CrowCanyon.CascadedLookup
 
         private SPList GetList(string webId, string listId)
         {
-            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:ConvertToSPFieldLookup function"))
+            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:GetList function"))
             {
                 Utils.LogManager.write("Parameters webId : " + webId + ", listId: " + listId);
                 SPList list = null;
-                SPSite currSite = SPControl.GetContextSite(this.Context);
-                using (SPWeb selWeb = currSite.OpenWeb(new Guid(webId)))
-                {
-                    list = selWeb.Lists[new Guid(listId)];
-                }
+                SPSecurity.RunWithElevatedPrivileges(delegate
+                    {
+                        using (SPWeb selWeb = SPContext.Current.Site.OpenWeb(new Guid(webId)))
+                        {
+                            list = selWeb.Lists[new Guid(listId)];
+                        }
+                    });
 
                 return list;
             }
@@ -347,21 +352,23 @@ namespace CrowCanyon.CascadedLookup
 
         private List<ListItem> GetWebCollection()
         {
-            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:ConvertToSPFieldLookup function"))
+            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:GetWebCollection function"))
             {
                 List<ListItem> webList = new List<ListItem>();
 
-                SPSite currentSite = SPControl.GetContextSite(this.Context);
-
-                SPWebCollection webCollection = currentSite.AllWebs;
-
-                foreach (SPWeb web in webCollection)
-                {
-                    if (web.DoesUserHavePermissions(SPBasePermissions.ViewPages | SPBasePermissions.OpenItems | SPBasePermissions.ViewListItems))
+                SPSecurity.RunWithElevatedPrivileges(delegate
                     {
-                        webList.Add(new ListItem(web.Title, web.ID.ToString()));
-                    }
-                }
+                        using (SPSite site = new SPSite(SPContext.Current.Site.ID))
+                        {
+                            foreach (SPWeb web in site.AllWebs)
+                            {
+                                if (web.DoesUserHavePermissions(SPBasePermissions.ViewPages | SPBasePermissions.OpenItems | SPBasePermissions.ViewListItems))
+                                {
+                                    webList.Add(new ListItem(web.Title, web.ID.ToString()));
+                                }
+                            }
+                        }
+                    });
 
                 if (webList.Count > 0)
                 {
@@ -377,19 +384,21 @@ namespace CrowCanyon.CascadedLookup
 
         private List<ListItem> GetListCollection(string WebId)
         {
-            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:ConvertToSPFieldLookup function"))
+            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:GetListCollection function"))
             {
                 List<ListItem> spListList = new List<ListItem>();
 
                 if (!string.IsNullOrEmpty(WebId))
                 {
                     Utils.LogManager.write("Parameters WebId: " + WebId);
-                    SPSite currentSite = SPControl.GetContextSite(this.Context);
                     SPListCollection spListColl = null;
-                    using (SPWeb CurrentWeb = currentSite.OpenWeb(new Guid(WebId)))
-                    {
-                        spListColl = CurrentWeb.Lists;
-                    }
+                    SPSecurity.RunWithElevatedPrivileges(delegate
+                        {
+                            using (SPWeb CurrentWeb = SPContext.Current.Site.OpenWeb(new Guid(WebId)))
+                            {
+                                spListColl = CurrentWeb.Lists;
+                            }
+                        });
 
                     foreach (SPList list in spListColl)
                     {
@@ -413,7 +422,7 @@ namespace CrowCanyon.CascadedLookup
 
         private List<ListItem> GetColumnCollection(string WebId, string ListId)
         {
-            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:ConvertToSPFieldLookup function"))
+            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:GetColumnCollection function"))
             {
                 List<ListItem> columnList = new List<ListItem>();
                 if (!string.IsNullOrEmpty(WebId))
@@ -451,7 +460,13 @@ namespace CrowCanyon.CascadedLookup
 
         private List<ListItem> GetParentLinkedColumnCollection(string WebId, string ListId)
         {
-            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:ConvertToSPFieldLookup function"))
+            List<string> TitleFieldNames = new List<string>();
+            TitleFieldNames.Add("title");
+            TitleFieldNames.Add("linktitlenomenu");
+            TitleFieldNames.Add("linktitle");
+            TitleFieldNames.Add("linktitle2");
+
+            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:GetParentLinkedColumnCollection function"))
             {
                 List<ListItem> columnList = new List<ListItem>();
                 if (!string.IsNullOrEmpty(WebId))
@@ -465,17 +480,19 @@ namespace CrowCanyon.CascadedLookup
 
                     foreach (SPField field in currListFields)
                     {
-                        if (Utilities.IsLookupType(field) && Utilities.IsDisplayField(field))
+                        if (Utilities.IsLookupType(field) && Utilities.IsDisplayField(field) && !((SPFieldLookup)field).IsDependentLookup)
                         {
                             foreach (SPField selfield in selListfields)
                             {
-                                if (Utilities.IsLookupType(selfield) && Utilities.IsDisplayField(selfield))
-                                {
+                                if (Utilities.IsLookupType(selfield) && Utilities.IsDisplayField(selfield) && !((SPFieldLookup)selfield).IsDependentLookup)
+                                { 
                                     try
                                     {
-                                        if (((SPFieldLookup)selfield).LookupList.ToString() == ((SPFieldLookup)field).LookupList.ToString() && ((SPFieldLookup)selfield).LookupField.ToString() == ((SPFieldLookup)field).LookupField.ToString())
-                                        {
+                                        Guid sellistGuid = new Guid(((SPFieldLookup)selfield).LookupList);
+                                        Guid currListGuid = new Guid(((SPFieldLookup)field).LookupList);
 
+                                        if (sellistGuid.ToString().Equals(currListGuid.ToString(), StringComparison.InvariantCultureIgnoreCase) && (((SPFieldLookup)selfield).LookupField.Equals(((SPFieldLookup)field).LookupField, StringComparison.InvariantCultureIgnoreCase) || (TitleFieldNames.Contains(((SPFieldLookup)selfield).LookupField.ToLower()) && TitleFieldNames.Contains(((SPFieldLookup)field).LookupField.ToLower()))))
+                                        {
                                             string val = field.Id.ToString() + ";#" + selfield.Title + ";#" + selfield.Id.ToString();
                                             columnList.Add(new ListItem(field.Title, val));
 
@@ -508,18 +525,18 @@ namespace CrowCanyon.CascadedLookup
 
         private void PopulateAndSetValuesControls()
         {
-            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:ConvertToSPFieldLookup function"))
+            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:PopulateAndSetValuesControls function"))
             {
 
                 string contextWebId = "";
 
                 if (_ccsCascadedField != null)
                 {
-                    contextWebId = string.IsNullOrEmpty(_ccsCascadedField.SourceWebID) ? SPControl.GetContextWeb(this.Context).ID.ToString() : _ccsCascadedField.SourceWebID;
+                    contextWebId = string.IsNullOrEmpty(_ccsCascadedField.SourceWebID) ? SPContext.Current.Web.ID.ToString() : _ccsCascadedField.SourceWebID;
                 }
                 else
                 {
-                    contextWebId = SPControl.GetContextWeb(this.Context).ID.ToString();
+                    contextWebId = SPContext.Current.Web.ID.ToString();
                 }
 
                 ddlWeb.Items.Clear();
@@ -537,7 +554,7 @@ namespace CrowCanyon.CascadedLookup
 
         private void PopulateList(string webId)
         {
-            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:ConvertToSPFieldLookup function"))
+            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:PopulateList function"))
             {
                 Utils.LogManager.write("Parameters WebId: " + webId);
                 ddlList.Items.Clear();
@@ -547,7 +564,7 @@ namespace CrowCanyon.CascadedLookup
                 {
                     if (_ccsCascadedField != null)
                     {
-                        string selListId = string.IsNullOrEmpty(_ccsCascadedField.LookupFieldListName) ? SPControl.GetContextWeb(this.Context).ID.ToString() : _ccsCascadedField.LookupFieldListName;
+                        string selListId = string.IsNullOrEmpty(_ccsCascadedField.LookupList) ? SPContext.Current.List.ID.ToString() : _ccsCascadedField.LookupList;
                         ListItem li = ddlList.Items.FindByValue(selListId);
                         if (li != null)
                         {
@@ -577,7 +594,7 @@ namespace CrowCanyon.CascadedLookup
 
         private void PopulateColumns(string webId, string listId)
         {
-            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:ConvertToSPFieldLookup function"))
+            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:PopulateColumns function"))
             {
 
                 ddlColumn.Items.Clear();
@@ -648,7 +665,7 @@ namespace CrowCanyon.CascadedLookup
 
         private void PopulateAdditionalFields(string webId, string listId)
         {
-            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:ConvertToSPFieldLookup function"))
+            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:PopulateAdditionalFields function"))
             {
 
                 cblAdditionalFields.Items.Clear();
@@ -695,7 +712,7 @@ namespace CrowCanyon.CascadedLookup
 
         private void PopulateViewDropDown(string webId, string listId)
         {
-            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:ConvertToSPFieldLookup function"))
+            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:PopulateViewDropDown function"))
             {
                 ddlView.Items.Clear();
 
@@ -722,7 +739,7 @@ namespace CrowCanyon.CascadedLookup
                             }
                         }
 
-                        if (((view.ID.ToString() == viewId) || (view.ID.ToString() + "|" + view.Url == viewId)))
+                        if (((view.ID.ToString().Equals(viewId, StringComparison.InvariantCultureIgnoreCase)) || ((view.ID.ToString() + "|" + view.Url).Equals(viewId, StringComparison.InvariantCultureIgnoreCase))))
                         {
                             item.Selected = true;
                             cbxSortByView.Enabled = true;
@@ -740,7 +757,7 @@ namespace CrowCanyon.CascadedLookup
 
         private void SetLinkColumnValue(ListItem parentSelecteItem)
         {
-            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:ConvertToSPFieldLookup function"))
+            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:SetLinkColumnValue function"))
             {
                 Utils.LogManager.write("Parameters parentSelecteItem: " + parentSelecteItem); 
                 string[] vals = parentSelecteItem.Value.Split(new string[] { ";#" }, StringSplitOptions.None);
@@ -760,7 +777,7 @@ namespace CrowCanyon.CascadedLookup
 
         private void SetLinkedParentControl(bool flag)
         {
-            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:ConvertToSPFieldLookup function"))
+            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:SetLinkedParentControl function"))
             {
                 Utils.LogManager.write("Parameters flag: " + flag.ToString());
                 //cbxLinkParent.Enabled = flag;
@@ -778,7 +795,7 @@ namespace CrowCanyon.CascadedLookup
 
         private void SetAdditonalFields()
         {
-            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:ConvertToSPFieldLookup function"))
+            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:SetAdditonalFields function"))
             {
                 string additionalFieldsString = _ccsCascadedField.GetAdditionalFields();
 
@@ -805,7 +822,7 @@ namespace CrowCanyon.CascadedLookup
 
         private void SetAdditonalFilters()
         {
-            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:ConvertToSPFieldLookup function"))
+            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:SetAdditonalFilters function"))
             {
                 if (_ccsCascadedField != null && !string.IsNullOrEmpty(_ccsCascadedField.AdditionalFilters))
                 {
@@ -825,7 +842,7 @@ namespace CrowCanyon.CascadedLookup
 
         private void SetCheckboxcontrolsValue()
         {
-            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:ConvertToSPFieldLookup function"))
+            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:SetCheckboxcontrolsValue function"))
             {
                 if (_ccsCascadedField != null)
                 {
@@ -855,14 +872,14 @@ namespace CrowCanyon.CascadedLookup
 
         private string GetAdditonalFields()
         {
-            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:ConvertToSPFieldLookup function"))
+            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:GetAdditonalFields function"))
             {
                 string val = "";
                 foreach (ListItem li in cblAdditionalFields.Items)
                 {
                     if (li.Selected)
                     {
-                        if (val == "")
+                        if (string.IsNullOrEmpty(val))
                         {
                             val = li.Text + ";#" + li.Value;
                         }
@@ -880,14 +897,14 @@ namespace CrowCanyon.CascadedLookup
 
         private string GetAdditonalFilters()
         {
-            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:ConvertToSPFieldLookup function"))
+            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:GetAdditonalFilters function"))
             {
                 string val = "";
                 foreach (ListItem li in cblAdditionalFilters.Items)
                 {
                     if (li.Selected)
                     {
-                        if (val == "")
+                        if (string.IsNullOrEmpty(val ))
                         {
                             val = li.Value;
                         }
@@ -904,7 +921,7 @@ namespace CrowCanyon.CascadedLookup
 
         private void AddingNewFieldControlVisibility()
         {
-            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:ConvertToSPFieldLookup function"))
+            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:AddingNewFieldControlVisibility function"))
             {
 
                 string referrer = this.Request.Url.AbsoluteUri;
@@ -926,7 +943,7 @@ namespace CrowCanyon.CascadedLookup
                         {
                             if (Utilities.IsDisplayField(selField))
                             {
-                                if (selField.Type == SPFieldType.Lookup || selField.TypeAsString == "Lookup")
+                                if (selField.Type == SPFieldType.Lookup || selField.TypeAsString.Equals("Lookup", StringComparison.InvariantCultureIgnoreCase))
                                 {
                                     if (!((SPFieldLookup)selField).IsDependentLookup)
                                     {
@@ -948,7 +965,7 @@ namespace CrowCanyon.CascadedLookup
 
         void SetRelationShipControlsValue()
         {
-            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:ConvertToSPFieldLookup function"))
+            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:SetRelationShipControlsValue function"))
             {
                 if (_ccsCascadedField != null)
                 {
@@ -993,7 +1010,7 @@ namespace CrowCanyon.CascadedLookup
 
         void ConvertToCCSCascadedLookupField(SPFieldLookup field)
         {
-            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:ConvertToSPFieldLookup function"))
+            using (new EnterExitLogger("CCSCascadedLookupFieldEditor:ConvertToCCSCascadedLookupField function"))
             {
                 XmlDocument doc = new XmlDocument();
                 Utils.LogManager.write("Before SPFieldLookup xmlScema: " + field.SchemaXml);
@@ -1148,7 +1165,7 @@ namespace CrowCanyon.CascadedLookup
                 if (field != null)
                 {
                     ConvertToCCSCascadedLookupField(field);
-                    Page.Response.Redirect(this.Page.Request.Url.ToString());
+                    Page.Response.Redirect(GetFieldEditUrl(field));
                 }
             }
         }
@@ -1157,7 +1174,8 @@ namespace CrowCanyon.CascadedLookup
         protected void btnConvertToLookup_Click(object sender, EventArgs e)
         {
             ConvertToSPFieldLookup(_ccsCascadedField);
-            Page.Response.Redirect(this.Page.Request.Url.ToString());
+
+            Page.Response.Redirect(GetFieldEditUrl(_ccsCascadedField));
         }
 
         void ShowErrorMessage(string errorMessage)
@@ -1171,6 +1189,11 @@ namespace CrowCanyon.CascadedLookup
                     ErrorText.Visible = true;
                 }
             }
+        }
+
+        string GetFieldEditUrl(SPField field)
+        {
+            return System.IO.Path.Combine(field.ParentList.ParentWeb.Url, string.Format("_layouts/FldEditEx.aspx?List={0}&Field={1}", field.ParentList.ID.ToString(), field.InternalName));
         }
     }
 }
